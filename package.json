@@ -1,0 +1,48 @@
+{
+  "name": "yang-haobo-sleep-awake-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "content:publish": "node scripts/generate-public-content.mjs",
+    "validate:public": "node scripts/validate-public-content.mjs",
+    "scan:repo": "node scripts/scan-sensitive.mjs repo",
+    "scan:history": "node scripts/scan-git-history.mjs",
+    "prebuild": "npm run validate:public && npm run scan:repo",
+    "build": "tsc -b && vite build",
+    "postbuild": "node scripts/scan-sensitive.mjs dist",
+    "release:build": "npm run content:publish && npm run build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:links": "node scripts/check-public-links.mjs",
+    "test:watch": "vitest",
+    "pretest:e2e": "npm run build",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.7.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.1",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "jsdom": "^30.0.1",
+    "oxlint": "^1.75.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "generatedAt": "2026-08-01",
+  "profile": {
+    "name": "杨皓博",
+    "brand": "睡醒实验室",
+    "role": "AI 产品 × AI 应用工程",
+    "tagline": "把 RAG、Agent 和后端能力做成可控、可验证、能交付的产品。",
+    "statusLine": "2027 届本科 · 深圳 · 寻找 AI 产品 / AI 应用工程实习 · 可尽快到岗 · 每周 5 天 · 可持续 3 个月以上",
+    "email": "920816086@qq.com",
+    "github": "https://github.com/uu-bb",
+    "skills": [
+      "RAG",
+      "Agent",
+      "FastAPI",
+      "产品落地"
+    ]
+  },
+  "sourceRefs": [
+    "resume-profile-v20260731",
+    "resume-product-v20260731",
+    "resume-ai-app-v20260731",
+    "resume-python-v20260731",
+    "project-job-test-v20260801",
+    "project-xiaoyu-v1-report-v20260715",
+    "project-rag-test-v20260801",
+    "project-agent-test-v20260731"
+  ],
+  "lenses": {
+    "overview": [
+      "job-assistant",
+      "xiaoyu",
+      "rag-knowledge-base"
+    ],
+    "product": [
+      "xiaoyu",
+      "job-assistant",
+      "rag-knowledge-base"
+    ],
+    "ai-app": [
+      "job-assistant",
+      "rag-knowledge-base",
+      "agent-toolkit"
+    ],
+    "python": [
+      "job-assistant",
+      "rag-knowledge-base",
+      "agent-toolkit"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "job-tests",
+      "label": "32 项测试通过",
+      "detail": "32/32 项测试通过",
+      "framework": "pytest",
+      "status": "verified",
+      "verifiedAt": "2026-08-01",
+      "boundary": "测试覆盖评分、链接安全、令牌重放、状态写入与异常路径，不等同于真实投递结果。",
+      "sourceRefs": [
+        "project-job-test-v20260801"
+      ]
+    },
+    {
+      "id": "xiaoyu-tests",
+      "label": "29 项 v1 测试通过",
+      "detail": "29/29 项 v1 交付基线测试通过",
+      "framework": "pytest",
+      "status": "verified",
+      "verifiedAt": "2026-07-15",
+      "boundary": "这是 Windows v1 交付基线；后续版本的扩展回归集不与该数字混用。",
+      "sourceRefs": [
+        "project-xiaoyu-v1-report-v20260715"
+      ]
+    },
+    {
+      "id": "rag-tests",
+      "label": "7 项测试通过",
+      "detail": "7/7 项 Lite 与元数据链路测试通过",
+      "framework": "unittest",
+      "status": "verified",
+      "verifiedAt": "2026-08-01",
+      "boundary": "测试覆盖 Lite 检索、来源保护和 SQLite 元数据，不声明未运行的完整模型效果。",
+      "sourceRefs": [
+        "project-rag-test-v20260801"
+      ]
+    },
+    {
+      "id": "agent-toolkit-tests",
+      "label": "10 项专项测试",
+      "detail": "10 项专项测试覆盖评分与输入边界",
+      "framework": "pytest",
+      "status": "verified",
+      "verifiedAt": "2026-07-31",
+      "sourceRefs": [
+        "project-agent-test-v20260731"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "job-assistant",
+      "title": "深圳 AI 求职助手",
+      "shortTitle": "求职助手",
+      "role": "独立完成 · 产品设计 / AI 应用 / Python 后端",
+      "status": "iterating",
+      "statusLabel": "持续迭代",
+      "problem": "把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。",
+      "keyImplementation": "分离 browser-use 只读分析与 Playwright 确定性执行，以白名单和一次性令牌限制副作用。",
+      "evidenceIds": [
+        "job-tests"
+      ],
+      "tags": [
+        "FastAPI",
+        "React",
+        "SQLite",
+        "Agent"
+      ],
+      "github": "https://github.com/uu-bb/shenzhen-ai-job-copilot",
+      "details": {
+        "problem": "多平台岗位信息分散、判断标准重复，自动化又容易越过用户确认边界。",
+        "tradeoffs": [
+          "把自动执行速度让位于逐岗位预览与人工确认。",
+          "验证码、登录失效或结果不确定时默认停止。"
+        ],
+        "implementation": [
+          "FastAPI 接口、React 工作台、Gradio Agent 运行台与 SQLite 状态模型。",
+          "三平台域名白名单、10 分钟一次性预览令牌和执行结果核验。"
+        ],
+        "boundary": "公开成果不声明未经验证的真实投递结果，外部操作始终保留人工确认。"
+      },
+      "sourceRefs": [
+        "resume-ai-app-v20260731",
+        "project-job-test-v20260801"
+      ]
+    },
+    {
+      "id": "xiaoyu",
+      "title": "小u鱼 Windows 智能桌宠",
+      "shortTitle": "小u鱼",
+      "role": "个人项目 · 产品设计与 MVP 实现",
+      "status": "iterating",
+      "statusLabel": "持续迭代",
+      "problem": "为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。",
+      "keyImplementation": "将人格安全、时间、偏好记忆、最近上下文和 JSON 动作契约拆成可控层。",
+      "evidenceIds": [
+        "xiaoyu-tests"
+      ],
+      "tags": [
+        "Python",
+        "PyQt5",
+        "Ollama",
+        "产品设计"
+      ],
+      "details": {
+        "problem": "桌面陪伴需要有存在感，但提醒、语音和聊天不能打断用户，也不能越权操作系统。",
+        "tradeoffs": [
+          "只保留聊天、提醒、番茄钟、TTS 和八种视觉状态。",
+          "明确不执行系统命令，偏好与提醒使用 Windows DPAPI 加密。"
+        ],
+        "implementation": [
+          "Python、PyQt5、Ollama qwen3:8b 与 PyInstaller 完成 Windows v1。",
+          "覆盖三档 DPI、提醒与番茄钟端到端验收。"
+        ],
+        "boundary": "当前为本地 Windows 项目，不公开私密部署地址，也不把未来版本能力写成已完成。"
+      },
+      "sourceRefs": [
+        "resume-product-v20260731",
+        "project-xiaoyu-v1-report-v20260715"
+      ]
+    },
+    {
+      "id": "rag-knowledge-base",
+      "title": "RAG 智能知识库问答系统",
+      "shortTitle": "RAG 知识库",
+      "role": "个人项目 · AI 应用与后端",
+      "status": "completed",
+      "statusLabel": "已完成",
+      "problem": "让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。",
+      "keyImplementation": "组合 Embedding、BM25、RRF/加权融合与 Reranker，并在回答中保留来源。",
+      "evidenceIds": [
+        "rag-tests"
+      ],
+      "tags": [
+        "RAG",
+        "BM25",
+        "Reranker",
+        "FastAPI"
+      ],
+      "github": "https://github.com/uu-bb/rag-knowledge-base",
+      "details": {
+        "problem": "单纯向量检索缺少关键词召回和证据回溯，完整模型环境也不适合每次演示。",
+        "tradeoffs": [
+          "设计 Lite 与 Full 双模式，优先保证零模型下载时的可复现演示。",
+          "对本机来源路径做保护，只展示安全的文件引用。"
+        ],
+        "implementation": [
+          "支持 PDF、DOCX、TXT、Markdown 解析、文件元数据和增量同步。",
+          "记录检索、重排和生成阶段耗时，并提供 FastAPI 与 Gradio 入口。"
+        ],
+        "boundary": "公开证据只覆盖 Lite 与元数据链路，不声称当前环境未运行的 Full 模式效果。"
+      },
+      "sourceRefs": [
+        "resume-ai-app-v20260731",
+        "project-rag-test-v20260801"
+      ]
+    },
+    {
+      "id": "agent-toolkit",
+      "title": "Agent Service Toolkit 岗位匹配 Agent",
+      "shortTitle": "Agent Toolkit",
+      "role": "开源二次开发",
+      "status": "completed",
+      "statusLabel": "已完成",
+      "problem": "把 JD 要求与简历证据拆开，稳定输出命中项、差距项和可执行追问。",
+      "keyImplementation": "新增确定性 jd-match-agent，并接入 LangGraph 状态入口、注册表和 FastAPI 契约。",
+      "evidenceIds": [
+        "agent-toolkit-tests"
+      ],
+      "tags": [
+        "LangGraph",
+        "FastAPI",
+        "结构化输出"
+      ],
+      "github": "https://github.com/uu-bb/resume-jd-agent-toolkit",
+      "details": {
+        "problem": "岗位匹配容易把推测写成证据，也容易在评分与建议之间失去稳定结构。",
+        "tradeoffs": [
+          "优先使用确定性规则组织输入和结果，再把模型能力限定在建议层。"
+        ],
+        "implementation": [
+          "接入 Agent 注册表、服务契约和专项输入边界测试。"
+        ],
+        "boundary": "这是开源二次开发，公开说明新增范围，不把上游能力算作个人原创。"
+      },
+      "sourceRefs": [
+        "resume-ai-app-v20260731",
+        "project-agent-test-v20260731"
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "id": "lightrag",
+      "title": "LightRAG 中文简历-JD 增强",
+      "summary": "构建脱敏语料、四类 Prompt 与 hybrid 查询生命周期，作为 RAG 案例的开源扩展。",
+      "status": "completed",
+      "statusLabel": "已完成",
+      "tags": [
+        "LightRAG",
+        "Hybrid Search"
+      ],
+      "github": "https://github.com/uu-bb/resume-jd-lightrag",
+      "sourceRefs": [
+        "resume-profile-v20260731"
+      ]
+    },
+    {
+      "id": "finetuning-lab",
+      "title": "大语言模型高效微调实验",
+      "summary": "实现 LoRA、QLoRA、Prompt Tuning 与 Full Fine-tuning 脚本，并对未完成的 7B 效果保持空缺。",
+      "status": "prototype",
+      "statusLabel": "实验原型",
+      "tags": [
+        "Qwen2.5",
+        "LoRA",
+        "QLoRA"
+      ],
+      "github": "https://github.com/uu-bb/llm-finetuning-lab",
+      "sourceRefs": [
+        "resume-profile-v20260731"
+      ]
+    },
+    {
+      "id": "recruitment-automation",
+      "title": "智能招聘自动化平台",
+      "summary": "隔离 Boss 与牛客的页面、会话和状态，并把外部操作组织为预览、确认、执行与核验。",
+      "status": "prototype",
+      "statusLabel": "实验原型",
+      "tags": [
+        "Playwright",
+        "Automation"
+      ],
+      "github": "https://github.com/uu-bb/lakejobai-job-radar",
+      "sourceRefs": [
+        "resume-profile-v20260731"
+      ]
+    },
+    {
+      "id": "smart-album",
+      "title": "智能相册计算机视觉项目",
+      "summary": "整理 QThread、SQLite、Siamese Network 与 128 维编码器相关源码，并完成公开仓库安全迁移。",
+      "status": "archived",
+      "statusLabel": "课程归档",
+      "tags": [
+        "PyQt5",
+        "OpenCV",
+        "Siamese Network"
+      ],
+      "github": "https://github.com/uu-bb/smart-album-cv",
+      "sourceRefs": [
+        "resume-profile-v20260731"
+      ]
+    },
+    {
+      "id": "architect-agent",
+      "title": "架构师 Agent",
+      "summary": "用固定结构定义核心用户、MVP、暂缓项、风险和三套差异化方案。",
+      "status": "completed",
+      "statusLabel": "已完成",
+      "tags": [
+        "Prompt Product",
+        "MVP"
+      ],
+      "sourceRefs": [
+        "resume-product-v20260731"
+      ]
+    }
+  ]
+}
