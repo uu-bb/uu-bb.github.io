@@ -1,0 +1,18 @@
+.click-spark-root {
+  min-height: 100vh;
+}
+
+.click-spark-canvas {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .click-spark-canvas {
+    display: none;
+  }
+}

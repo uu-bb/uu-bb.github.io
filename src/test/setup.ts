@@ -17,3 +17,45 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: () => false,
   }),
 })
+
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root = null
+  readonly rootMargin = '0px'
+  readonly scrollMargin = '0px'
+  readonly thresholds = [0]
+  private readonly callback: IntersectionObserverCallback
+
+  constructor(callback: IntersectionObserverCallback) {
+    this.callback = callback
+  }
+
+  observe(target: Element) {
+    const rect = target.getBoundingClientRect()
+    this.callback(
+      [{
+        boundingClientRect: rect,
+        intersectionRatio: 1,
+        intersectionRect: rect,
+        isIntersecting: true,
+        rootBounds: null,
+        target,
+        time: 0,
+      }],
+      this,
+    )
+  }
+
+  disconnect() {}
+  unobserve() {}
+  takeRecords() { return [] }
+}
+
+Object.defineProperty(globalThis, 'IntersectionObserver', {
+  writable: true,
+  value: MockIntersectionObserver,
+})
+
+Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+  writable: true,
+  value: () => null,
+})

@@ -91,8 +91,8 @@ export function LazyLab() {
 
       <div className="lab-frame">
         <div className="lab-frame__meta">
-          <span>STATIC ASSET / V1</span>
-          <span>33,584 TRIANGLES</span>
+          <span>WEB GLB / OPTIMIZED</span>
+          <span>152,352 TRIANGLES</span>
         </div>
         <div className="lab-viewport">
           {enabled ? (

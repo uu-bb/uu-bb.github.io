@@ -1,22 +1,18 @@
-import { Bounds, Clone, OrbitControls, useGLTF } from '@react-three/drei'
+import { Clone, OrbitControls, useGLTF } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { assetPath } from '../utils/assets'
 
 function CharacterModel() {
   const { scene } = useGLTF(assetPath('models/sleepy-boy.glb'))
-  return (
-    <Bounds fit clip observe margin={1.15}>
-      <Clone object={scene} />
-    </Bounds>
-  )
+  return <Clone object={scene} />
 }
 
 export default function ThreeScene() {
   return (
     <Canvas
       className="three-canvas"
-      camera={{ position: [0, 1.2, 4], fov: 32 }}
+      camera={{ position: [0, 0.52, 2.2], fov: 28 }}
       dpr={[1, 1.5]}
       fallback={
         <img
@@ -36,9 +32,10 @@ export default function ThreeScene() {
         <CharacterModel />
       </Suspense>
       <OrbitControls
+        target={[0, 0.49, 0]}
         enablePan={false}
-        minDistance={2.2}
-        maxDistance={6}
+        minDistance={1.6}
+        maxDistance={4.5}
         autoRotate
         autoRotateSpeed={0.55}
       />
