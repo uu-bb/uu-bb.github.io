@@ -118,6 +118,27 @@
       "github": "https://github.com/uu-bb/shenzhen-ai-job-copilot",
       "details": {
         "problem": "多平台岗位信息分散、判断标准重复，自动化又容易越过用户确认边界。",
+        "audience": [
+          "需要系统整理深圳 AI 岗位、但不愿把投递控制权交给脚本的求职者。",
+          "希望先看匹配依据和招呼语，再决定是否执行外部操作的使用者。"
+        ],
+        "userFlow": [
+          "输入目标岗位与筛选条件，系统汇总并结构化岗位信息。",
+          "将 JD 要求与简历证据分开评分，生成排序、招呼语和推荐简历。",
+          "逐岗位查看预览，确认后发放短时一次性令牌。",
+          "确定性执行器操作页面；只有检测到明确成功状态才记录成功。"
+        ],
+        "features": [
+          "岗位发现、结构化抽取、去重与双向匹配评分。",
+          "招呼语生成、简历推荐和逐岗位预览确认。",
+          "执行后成功状态核验与可追踪结果记录。"
+        ],
+        "architecture": [
+          "React 工作台｜展示岗位、匹配依据、预览与人工确认。",
+          "Gradio Agent｜组织只读发现、JD 分析与内容生成。",
+          "FastAPI 服务｜校验请求、签发一次性令牌并调度执行。",
+          "Playwright 执行器 + SQLite｜确定性操作页面并保存核验后的状态。"
+        ],
         "tradeoffs": [
           "把自动执行速度让位于逐岗位预览与人工确认。",
           "验证码、登录失效或结果不确定时默认停止。"
@@ -126,6 +147,26 @@
           "FastAPI 接口、React 工作台、Gradio Agent 运行台与 SQLite 状态模型。",
           "三平台域名白名单、10 分钟一次性预览令牌和执行结果核验。"
         ],
+        "failurePaths": [
+          "URL 不在允许域名、页面要求登录或出现验证码时立即停止。",
+          "找不到明确投递入口，或点击后没有明确成功文案时返回失败且不写入成功记录。"
+        ],
+        "contribution": [
+          "独立完成产品流程、数据结构、前后端接口与执行边界设计。",
+          "编写评分、链接安全、令牌重放、状态写入和异常路径测试。"
+        ],
+        "codeExample": {
+          "title": "只有明确成功，才把外部操作算作完成",
+          "language": "python",
+          "code": "async def execute(self, job, greeting):\n    url = validate_job_url(job[\"url\"], self.allowed_domains)\n    page = await self._open_page(url)\n    state = await self._inspect(page)\n\n    if state[\"risk_detected\"]:\n        return self._failure(\"页面触发登录、验证或风控\")\n\n    target = await self._find_apply_target(page)\n    if target is None:\n        return self._failure(\"未找到明确操作入口\")\n\n    await self._fill_greeting(page, greeting)\n    await target.click()\n    final_state = await self._inspect(page)\n\n    if final_state[\"risk_detected\"]:\n        return self._failure(\"操作后出现验证或风控\")\n    if not final_state[\"success_detected\"]:\n        return self._failure(\"页面没有明确成功状态\")\n\n    return {\"ok\": True, \"evidence\": final_state[\"success_evidence\"]}",
+          "input": "一个已结构化岗位、一段待填写的招呼语，以及受限域名集合。",
+          "judgment": "先查风险与明确操作入口，执行后再次检查风险和成功证据。",
+          "output": "只有页面出现明确成功状态时返回成功与证据，其余情况统一失败。",
+          "rationale": "自动化最危险的不是慢，而是把不确定结果误记为成功；因此采用默认停止和双阶段核验。",
+          "sourceRefs": [
+            "repo-job-assistant-main-v20260802"
+          ]
+        },
         "boundary": "公开成果不声明未经验证的真实投递结果，外部操作始终保留人工确认。"
       },
       "sourceRefs": [
@@ -153,6 +194,27 @@
       ],
       "details": {
         "problem": "桌面陪伴需要有存在感，但提醒、语音和聊天不能打断用户，也不能越权操作系统。",
+        "audience": [
+          "长时间在 Windows 电脑前学习或工作的学生与年轻创作者。",
+          "想要轻量陪伴、提醒和专注节奏，但不需要复杂系统控制的人。"
+        ],
+        "userFlow": [
+          "用户通过桌宠气泡发起聊天、提醒或番茄钟请求。",
+          "本地模型按固定 JSON 契约返回回复、情绪和可选动作。",
+          "应用校验动作类型、时间范围与文本长度，再决定是否执行。",
+          "最近上下文、显式偏好和提醒被限量保存，用于下一次会话。"
+        ],
+        "features": [
+          "本地聊天、TTS、提醒、番茄钟与八种视觉状态。",
+          "显式偏好记忆、最近上下文和 Windows 本地加密存储。",
+          "三档 DPI 与离线 Windows 打包交付。"
+        ],
+        "architecture": [
+          "PyQt5 桌面壳｜承载角色状态、气泡交互与计时器。",
+          "Ollama 本地模型｜按严格 JSON 契约生成回复、情绪和动作建议。",
+          "动作校验层｜限制动作类型、提醒时间和番茄钟时长。",
+          "有界状态存储｜只保留有限上下文、显式偏好和提醒，并使用本地加密。"
+        ],
         "tradeoffs": [
           "只保留聊天、提醒、番茄钟、TTS 和八种视觉状态。",
           "明确不执行系统命令，偏好与提醒使用 Windows DPAPI 加密。"
@@ -161,6 +223,27 @@
           "Python、PyQt5、Ollama qwen3:8b 与 PyInstaller 完成 Windows v1。",
           "覆盖三档 DPI、提醒与番茄钟端到端验收。"
         ],
+        "failurePaths": [
+          "模型返回未知动作、无效时间或越界番茄钟时长时降级为空动作。",
+          "疑似密码、验证码、密钥或会话凭据的文本不会进入偏好记忆。",
+          "状态文件损坏时隔离异常文件并回到空状态。"
+        ],
+        "contribution": [
+          "独立定义桌宠 MVP、人格边界、交互状态和本地数据策略。",
+          "完成 PyQt5 应用、模型契约、动作校验、存储与 Windows 打包测试。"
+        ],
+        "codeExample": {
+          "title": "模型可以建议动作，但不能绕过产品规则",
+          "language": "python",
+          "code": "def parse_action(payload, now):\n    action_type = parse_type(payload.get(\"type\"))\n\n    if action_type == \"set_reminder\":\n        trigger_at = parse_datetime(payload.get(\"trigger_at\"))\n        latest = now + timedelta(days=365)\n        if trigger_at is None or not now < trigger_at <= latest:\n            return no_action()\n        return reminder(trigger_at, clean_label(payload.get(\"label\")))\n\n    if action_type == \"start_pomodoro\":\n        minutes = payload.get(\"minutes\")\n        if isinstance(minutes, bool) or not isinstance(minutes, int):\n            return no_action()\n        if not 1 <= minutes <= 120:\n            return no_action()\n        return pomodoro(minutes)\n\n    if action_type == \"stop_timer\":\n        return stop_timer()\n\n    return no_action()",
+          "input": "模型输出的动作对象和当前时间。",
+          "judgment": "只接受白名单动作；提醒必须在未来一年内，番茄钟必须是 1–120 分钟整数。",
+          "output": "合法动作对象，或无副作用的空动作。",
+          "rationale": "把模型输出视为不可信建议，所有会改变状态的动作都由确定性代码二次校验。",
+          "sourceRefs": [
+            "project-xiaoyu-v1-code-v20260802"
+          ]
+        },
         "boundary": "当前为本地 Windows 项目，不公开私密部署地址，也不把未来版本能力写成已完成。"
       },
       "sourceRefs": [
@@ -189,6 +272,27 @@
       "github": "https://github.com/uu-bb/rag-knowledge-base",
       "details": {
         "problem": "单纯向量检索缺少关键词召回和证据回溯，完整模型环境也不适合每次演示。",
+        "audience": [
+          "需要在中文 PDF、Word、TXT 和 Markdown 中追溯答案来源的知识工作者。",
+          "想评估混合检索链路、同时需要轻量演示模式的 AI 应用开发者。"
+        ],
+        "userFlow": [
+          "导入本地文档，解析器切分文本并记录来源元数据。",
+          "问题同时进入语义检索与 BM25 关键词检索。",
+          "RRF 或加权融合合并候选，再由 Reranker 选出高相关片段。",
+          "生成器基于片段回答，并在界面中展示来源与阶段耗时。"
+        ],
+        "features": [
+          "四类文档解析、元数据记录与增量同步。",
+          "语义检索、BM25、RRF/加权融合和 BGE Reranker。",
+          "Lite/Full 双模式、FastAPI 接口与 Gradio 演示。"
+        ],
+        "architecture": [
+          "文档层｜解析、切分并为每个片段保留来源元数据。",
+          "召回层｜语义向量与 BM25 并行召回候选。",
+          "排序层｜RRF/加权融合后再做精排。",
+          "生成与呈现层｜基于证据生成回答，并展示引用和阶段耗时。"
+        ],
         "tradeoffs": [
           "设计 Lite 与 Full 双模式，优先保证零模型下载时的可复现演示。",
           "对本机来源路径做保护，只展示安全的文件引用。"
@@ -197,6 +301,26 @@
           "支持 PDF、DOCX、TXT、Markdown 解析、文件元数据和增量同步。",
           "记录检索、重排和生成阶段耗时，并提供 FastAPI 与 Gradio 入口。"
         ],
+        "failurePaths": [
+          "缺少完整模型时切换到 Lite 模式，仍演示检索与来源链路。",
+          "无法安全公开的来源信息在呈现前被剥离，回答仍保留可辨识的文件引用。"
+        ],
+        "contribution": [
+          "独立完成文档处理、混合检索、融合、重排、接口和演示链路。",
+          "设计 Lite/Full 边界，并为来源保护和元数据链路编写测试。"
+        ],
+        "codeExample": {
+          "title": "用排序名次融合两种不可直接比较的分数",
+          "language": "python",
+          "code": "def rrf_fusion(semantic_results, bm25_results, k=60):\n    scores = {}\n\n    for rank, (doc, _) in enumerate(semantic_results, start=1):\n        chunk_id = doc.metadata.get(\"chunk_id\", doc.page_content)\n        scores[chunk_id] = (doc, SEMANTIC_WEIGHT / (k + rank))\n\n    for rank, (doc, _) in enumerate(bm25_results, start=1):\n        chunk_id = doc.metadata.get(\"chunk_id\", doc.page_content)\n        previous = scores.get(chunk_id, (doc, 0.0))[1]\n        scores[chunk_id] = (\n            doc,\n            previous + BM25_WEIGHT / (k + rank),\n        )\n\n    return sorted(\n        scores.values(),\n        key=lambda item: item[1],\n        reverse=True,\n    )",
+          "input": "语义检索结果和 BM25 结果；两者的原始分数尺度不同。",
+          "judgment": "忽略不可直接比较的原始分数，按各自排名计算倒数排名贡献，并按片段 ID 合并。",
+          "output": "一组按融合分数降序排列的文档片段。",
+          "rationale": "RRF 对不同检索器的分数尺度不敏感，更适合作为默认、可解释的融合策略。",
+          "sourceRefs": [
+            "repo-rag-main-v20260802"
+          ]
+        },
         "boundary": "公开证据只覆盖 Lite 与元数据链路，不声称当前环境未运行的 Full 模式效果。"
       },
       "sourceRefs": [
@@ -224,12 +348,53 @@
       "github": "https://github.com/uu-bb/resume-jd-agent-toolkit",
       "details": {
         "problem": "岗位匹配容易把推测写成证据，也容易在评分与建议之间失去稳定结构。",
+        "audience": [
+          "需要快速拆解 JD、检查能力命中与缺口的求职者。",
+          "想把岗位匹配能力接入 API 或 Agent 工作流的开发者。"
+        ],
+        "userFlow": [
+          "输入 JD 与对话上下文，Agent 读取最近一条有效用户消息。",
+          "确定性规则把能力分成已覆盖与待补强，并计算基础匹配分。",
+          "生成简历表达建议与面试追问，统一格式化为结构化报告。",
+          "LangGraph 保存新消息状态，FastAPI 对外提供稳定调用入口。"
+        ],
+        "features": [
+          "JD 能力命中、缺口识别与确定性基础评分。",
+          "简历表达建议、面试追问和结构化报告。",
+          "LangGraph 状态入口、Agent 注册表与 FastAPI 契约。"
+        ],
+        "architecture": [
+          "输入解析｜从对话状态中提取最近有效用户文本。",
+          "确定性匹配｜按技能词表区分已覆盖能力与缺口。",
+          "报告生成｜组合评分、建议和追问，保持固定输出结构。",
+          "LangGraph + FastAPI｜保存会话状态并作为服务组件暴露。"
+        ],
         "tradeoffs": [
           "优先使用确定性规则组织输入和结果，再把模型能力限定在建议层。"
         ],
         "implementation": [
           "接入 Agent 注册表、服务契约和专项输入边界测试。"
         ],
+        "failurePaths": [
+          "输入为空时仍返回稳定报告结构，不虚构岗位证据。",
+          "未命中的能力明确进入缺口列表，不用建议文本伪装成已有经历。"
+        ],
+        "contribution": [
+          "在现有开源框架上新增岗位匹配 Agent、确定性评分与报告结构。",
+          "完成注册表、服务契约和输入边界专项测试；上游框架能力不计入个人原创。"
+        ],
+        "codeExample": {
+          "title": "先分开证据和缺口，再生成建议",
+          "language": "python",
+          "code": "def build_report(text):\n    matched, missing = extract_matches(text)\n    score = round(len(matched) / len(SKILL_KEYWORDS) * 100)\n\n    return MatchReport(\n        score=score,\n        matched=matched,\n        missing=missing,\n        resume_bullets=build_resume_suggestions(matched),\n        interview_questions=build_questions(missing),\n    )",
+          "input": "一段 JD 或包含岗位要求的用户消息。",
+          "judgment": "按固定技能分类识别命中项与未命中项，基础分只来自确定性命中结果。",
+          "output": "包含分数、已覆盖能力、待补强能力、简历建议和面试追问的报告。",
+          "rationale": "先把事实分类，再生成表达建议，可以避免模型把建议误写成候选人已经具备的证据。",
+          "sourceRefs": [
+            "repo-agent-toolkit-main-v20260802"
+          ]
+        },
         "boundary": "这是开源二次开发，公开说明新增范围，不把上游能力算作个人原创。"
       },
       "sourceRefs": [

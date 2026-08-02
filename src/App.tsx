@@ -9,6 +9,7 @@ import { FadeIn } from './components/FadeIn'
 import { LazyLab } from './components/LazyLab'
 import { Magnet } from './components/Magnet'
 import { MarqueeSection } from './components/MarqueeSection'
+import { OptionWheel } from './components/OptionWheel'
 import { PillNav } from './components/PillNav'
 import { ProjectDetailPage } from './components/ProjectDetailPage'
 import { ProjectShowcaseCard } from './components/ProjectShowcaseCard'
@@ -64,6 +65,53 @@ const capabilities = [
   },
 ]
 
+const contactIntents = [
+  {
+    label: '实习机会',
+    code: '01 / INTERNSHIP',
+    title: '一起聊聊合适的实习岗位。',
+    description: '如果你正在寻找愿意理解问题、也能把方案做出来的实习生，可以把岗位、团队和期待告诉我。',
+    subject: '实习机会｜来自 Slumber Wake Lab',
+  },
+  {
+    label: '项目合作',
+    code: '02 / COLLABORATION',
+    title: '把一个还模糊的想法聊清楚。',
+    description: '欢迎讨论 AI 产品原型、RAG、Agent 工作流或 Python 应用的合作可能。',
+    subject: '项目合作｜来自 Slumber Wake Lab',
+  },
+  {
+    label: '技术交流',
+    code: '03 / TECH TALK',
+    title: '交换方法、判断与踩坑经验。',
+    description: '如果你也在做 AI 应用或工程实践，我们可以从真实问题和实现细节开始聊。',
+    subject: '技术交流｜来自 Slumber Wake Lab',
+  },
+  {
+    label: '作品反馈',
+    code: '04 / FEEDBACK',
+    title: '告诉我哪里清楚，哪里还不够。',
+    description: '对项目叙事、交互或技术表达的具体反馈，都会帮助这个作品集继续生长。',
+    subject: '作品反馈｜来自 Slumber Wake Lab',
+  },
+  {
+    label: '保持联系',
+    code: '05 / STAY IN TOUCH',
+    title: '先认识，再等待合适的时机。',
+    description: '即使暂时没有明确合作，也欢迎简单介绍你自己，留下未来继续交流的入口。',
+    subject: '保持联系｜来自 Slumber Wake Lab',
+  },
+]
+
+const contactIntentLabels = contactIntents.map((intent) => intent.label)
+
+const navigationItems = [
+  { label: '关于', href: '#about' },
+  { label: '能力', href: '#focus' },
+  { label: '项目', href: '#projects' },
+  { label: '联系', href: '#contact' },
+]
+
 function copyWithFallback(value: string): Promise<void> {
   if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(value)
 
@@ -87,13 +135,9 @@ function Portfolio() {
   const [copyStatus, setCopyStatus] = useState('')
   const [awake, setAwake] = useState(true)
   const [heroReady, setHeroReady] = useState(false)
+  const [contactIntentIndex, setContactIntentIndex] = useState(0)
+  const contactIntent = contactIntents[contactIntentIndex]
   const resumePath = assetPath('resume/yang-haobo-ai-product-application.pdf')
-  const navigationItems = [
-    { label: '关于', href: '#about' },
-    { label: '能力', href: '#focus' },
-    { label: '项目', href: '#projects' },
-    { label: '联系', href: '#contact' },
-  ]
 
   const orderedProjects = useMemo(() => {
     const orderedIds = [...getProjectOrder(lens), ...coreProjectIds]
@@ -397,8 +441,43 @@ function Portfolio() {
           <div className="contact-editorial__panel">
             <p className="section-kicker">CONTACT / BACK COVER</p>
             <h2 id="contact-title">Wake<br />something up.</h2>
-            <p>{publicContent.profile.name} · {publicContent.profile.role}</p>
-            <div className="contact-editorial__links">
+            <p className="contact-editorial__intro">先选择一个想聊的话题，再用最舒服的方式联系我。</p>
+
+            <div className="contact-choice">
+              <div className="contact-choice__wheel">
+                <span>拖动 / 滚轮 / 方向键</span>
+                <OptionWheel
+                  items={contactIntentLabels}
+                  defaultSelected={0}
+                  onChange={(index) => setContactIntentIndex(index)}
+                  textColor="#07131a"
+                  activeColor="#f4efe3"
+                  fontSize={2.1}
+                  spacing={1.28}
+                  curve={0.9}
+                  tilt={7}
+                  blur={0.7}
+                  fade={0}
+                  minOpacity={1}
+                  smoothing={170}
+                  inset={14}
+                  soundUrl=""
+                  ariaLabel="选择联系目的"
+                />
+              </div>
+              <div className="contact-choice__detail" aria-live="polite">
+                <span>{contactIntent.code}</span>
+                <h3>{contactIntent.title}</h3>
+                <p>{contactIntent.description}</p>
+                <a
+                  href={`mailto:${publicContent.profile.email}?subject=${encodeURIComponent(contactIntent.subject)}`}
+                >
+                  以“{contactIntent.label}”为主题写信 ↗
+                </a>
+              </div>
+            </div>
+
+            <div className="contact-editorial__links" aria-label="快捷联系方式">
               <a href={`mailto:${publicContent.profile.email}`}>{publicContent.profile.email}</a>
               <button type="button" onClick={copyEmail}>复制邮箱</button>
               <a href={publicContent.profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
@@ -421,7 +500,7 @@ function Portfolio() {
 
 function App() {
   const requestedProjectId = new URLSearchParams(window.location.search).get('project')
-  const project = requestedProjectId && coreProjectIds.includes(requestedProjectId)
+  const project = requestedProjectId
     ? projectById.get(requestedProjectId)
     : undefined
 

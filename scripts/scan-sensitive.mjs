@@ -1,6 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { extname, join, relative, resolve } from 'node:path'
-import { scanPublicValue } from './content-schema.mjs'
+import { isForbiddenPublicFileName, scanPublicValue } from './content-schema.mjs'
 
 const mode = process.argv[2]
 if (!['repo', 'dist'].includes(mode)) {
@@ -34,7 +34,12 @@ async function collect(directory) {
       if (!ignoredDirectories.has(entry.name)) await collect(join(directory, entry.name))
       continue
     }
-    if (textExtensions.has(extname(entry.name).toLowerCase())) files.push(join(directory, entry.name))
+    if (
+      textExtensions.has(extname(entry.name).toLowerCase()) ||
+      isForbiddenPublicFileName(entry.name)
+    ) {
+      files.push(join(directory, entry.name))
+    }
   }
 }
 
@@ -42,6 +47,11 @@ try {
   await collect(root)
   let blocked = 0
   for (const file of files) {
+    if (isForbiddenPublicFileName(file)) {
+      blocked += 1
+      console.error(`SENSITIVE_SCAN_BLOCKED:${relative(root, file)}:FORBIDDEN_FILE:1`)
+      continue
+    }
     const content = await readFile(file, 'utf8')
     const findings = scanPublicValue(content)
     if (findings.length > 0) {

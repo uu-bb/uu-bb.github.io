@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process'
 import { extname } from 'node:path'
-import { scanPublicValue } from './content-schema.mjs'
+import { isForbiddenPublicFileName, scanPublicValue } from './content-schema.mjs'
 
 const textExtensions = new Set([
   '.css', '.html', '.js', '.json', '.jsx', '.mjs', '.md', '.map', '.ts', '.tsx',
@@ -30,9 +30,20 @@ try {
     const files = git(['ls-tree', '-r', '--name-only', commit])
       .trim()
       .split(/\r?\n/)
-      .filter((file) => textExtensions.has(extname(file).toLowerCase()))
+      .filter(
+        (file) =>
+          textExtensions.has(extname(file).toLowerCase()) ||
+          isForbiddenPublicFileName(file),
+      )
 
     for (const file of files) {
+      if (isForbiddenPublicFileName(file)) {
+        blocked += 1
+        console.error(
+          `HISTORY_SCAN_BLOCKED:${commit.slice(0, 12)}:${file}:FORBIDDEN_FILE`,
+        )
+        continue
+      }
       const findings = scanPublicValue(git(['show', `${commit}:${file}`]))
       if (findings.length > 0) {
         const rules = [...new Set(findings.map((item) => item.rule))].sort()

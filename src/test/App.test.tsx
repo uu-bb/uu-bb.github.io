@@ -29,4 +29,51 @@ describe('portfolio experience', () => {
     )
     expect(screen.getByLabelText(/SLUMBER WAKE LAB/)).toBeInTheDocument()
   })
+
+  it('routes 3D capabilities to verified projects', () => {
+    render(<App />)
+
+    const ragGuide = screen.getByRole('button', { name: /RAG 系统/ })
+    fireEvent.click(ragGuide)
+
+    expect(ragGuide).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', {
+      level: 4,
+      name: 'RAG 智能知识库问答系统',
+    })).toBeInTheDocument()
+    expect(screen.getByText('7 项测试通过 · unittest')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '进入项目讲解 ↗' })).toHaveAttribute(
+      'href',
+      '/?project=rag-knowledge-base&focus=ai-app',
+    )
+  })
+
+  it('changes the contact message with keyboard input', () => {
+    render(<App />)
+
+    const wheel = screen.getByRole('listbox', { name: '选择联系目的' })
+    fireEvent.keyDown(wheel, { key: 'ArrowDown' })
+
+    expect(screen.getByRole('option', { name: '项目合作' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+    expect(screen.getByRole('heading', { name: '把一个还模糊的想法聊清楚。' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '以“项目合作”为主题写信 ↗' })).toHaveAttribute(
+      'href',
+      expect.stringContaining(encodeURIComponent('项目合作｜来自 Slumber Wake Lab')),
+    )
+  })
+
+  it('turns a project route into a complete interview-ready walkthrough', () => {
+    window.history.pushState({}, '', '/?project=job-assistant&focus=ai-app')
+    render(<App />)
+
+    expect(screen.getByRole('navigation', { name: '项目讲解目录' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '谁会使用它，发生在什么场景？' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '用户怎样完成一次任务？' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '系统怎样分工？' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '读一段真正影响边界的代码。' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeInTheDocument()
+  })
 })

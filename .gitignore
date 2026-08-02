@@ -15,6 +15,18 @@ output/
 playwright-report/
 test-results/
 
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

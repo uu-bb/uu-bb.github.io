@@ -1,0 +1,69 @@
+.option-wheel {
+  --option-text: #0f5f83;
+  --option-active: #f4efe3;
+  --option-font-size: 2.25rem;
+  --option-inset: 16px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: none;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.option-wheel::after {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  border-top: 1px solid color-mix(in srgb, var(--option-active) 60%, transparent);
+  content: '';
+  pointer-events: none;
+}
+
+.option-wheel:focus-visible {
+  outline: 2px solid var(--option-active);
+  outline-offset: 5px;
+}
+
+.option-wheel--dragging {
+  cursor: grabbing;
+}
+
+.option-wheel__item {
+  position: absolute;
+  top: 50%;
+  left: var(--option-inset);
+  z-index: 1;
+  color: color-mix(
+    in srgb,
+    var(--option-active) calc(var(--option-progress, 0) * 100%),
+    var(--option-text)
+  );
+  font-family: "Bodoni MT", Didot, "Times New Roman", serif;
+  font-size: var(--option-font-size);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transform-origin: left center;
+  cursor: pointer;
+  will-change: transform, opacity, filter;
+}
+
+.option-wheel--right .option-wheel__item {
+  right: var(--option-inset);
+  left: auto;
+  transform-origin: right center;
+}
+
+.option-wheel__item--selected {
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option-wheel__item {
+    will-change: auto;
+  }
+}

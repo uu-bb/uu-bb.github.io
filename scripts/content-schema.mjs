@@ -25,6 +25,22 @@ const evidenceBaseSchema = z
   })
   .strict()
 
+const codeExampleSchema = z
+  .object({
+    title: z.string().min(1),
+    language: z.string().min(1),
+    code: z
+      .string()
+      .min(1)
+      .refine((value) => value.split('\n').length <= 28, 'Code example must stay within 28 lines'),
+    input: z.string().min(1),
+    judgment: z.string().min(1),
+    output: z.string().min(1),
+    rationale: z.string().min(1),
+    sourceRefs: z.array(sourceRefSchema).min(1),
+  })
+  .strict()
+
 const publicProjectSchema = z
   .object({
     id: projectIdSchema,
@@ -41,8 +57,15 @@ const publicProjectSchema = z
     details: z
       .object({
         problem: z.string().min(1),
+        audience: z.array(z.string().min(1)).min(1),
+        userFlow: z.array(z.string().min(1)).min(2),
+        features: z.array(z.string().min(1)).min(2),
+        architecture: z.array(z.string().min(1)).min(2),
         tradeoffs: z.array(z.string()).min(1),
         implementation: z.array(z.string()).min(1),
+        failurePaths: z.array(z.string().min(1)).min(1),
+        contribution: z.array(z.string().min(1)).min(1),
+        codeExample: codeExampleSchema,
         boundary: z.string().min(1),
       })
       .strict(),
@@ -148,9 +171,37 @@ const textRules = [
   ['USER_HOME_PATH', userHomePattern],
   ['MOBILE_NUMBER', /(?<![\d.])1[3-9]\d{9}(?![\d.])/],
   ['SECRET_TOKEN', /\b(?:gho|ghp|github_pat)_[A-Za-z0-9_]+\b/],
+  ['OPENAI_TOKEN', /\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/],
+  ['AWS_ACCESS_KEY', /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/],
+  ['GOOGLE_API_KEY', /\bAIza[0-9A-Za-z_-]{30,}\b/],
+  ['SLACK_TOKEN', /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/],
+  ['JWT_TOKEN', /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/],
+  ['PRIVATE_KEY', /-----BEGIN (?:RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----/],
+  [
+    'DATABASE_CREDENTIAL',
+    /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis):\/\/[^\s:@/]+:[^\s@/]+@/i,
+  ],
+  [
+    'GENERIC_SECRET_ASSIGNMENT',
+    /\b(?:api[_-]?key|access[_-]?token|client[_-]?secret|password|passwd|pwd)\s*[:=]\s*["'][^"'\s]{8,}["']/i,
+  ],
   ['INTERNAL_LABEL', internalLabelsPattern],
   ['INTERNAL_CITATION', new RegExp(forbiddenToken, 'i')],
 ]
+
+const forbiddenFilePatterns = [
+  /^(?:\.env)(?:\..+)?$/i,
+  /^(?:id_rsa|id_ed25519)$/i,
+  /\.(?:key|pem|p12|pfx)$/i,
+]
+
+export function isForbiddenPublicFileName(fileName) {
+  const normalized = fileName.replaceAll('\\', '/').split('/').at(-1) ?? ''
+  if (/^\.env(?:\..+)?\.example$/i.test(normalized) || normalized === '.env.example') {
+    return false
+  }
+  return forbiddenFilePatterns.some((pattern) => pattern.test(normalized))
+}
 
 export function scanPublicValue(value, path = '$', findings = []) {
   if (Array.isArray(value)) {

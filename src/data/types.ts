@@ -29,8 +29,24 @@ export interface ProjectCase {
   github?: string
   details: {
     problem: string
+    audience: string[]
+    userFlow: string[]
+    features: string[]
+    architecture: string[]
     tradeoffs: string[]
     implementation: string[]
+    failurePaths: string[]
+    contribution: string[]
+    codeExample: {
+      title: string
+      language: string
+      code: string
+      input: string
+      judgment: string
+      output: string
+      rationale: string
+      sourceRefs: string[]
+    }
     boundary: string
   }
   sourceRefs: string[]

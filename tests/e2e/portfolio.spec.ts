@@ -57,11 +57,12 @@ test('首屏导航、睡醒切换和点击火花都可操作', async ({ page }) 
     await expect(page.locator('#mobile-primary-menu').getByRole('link', { name: '项目' })).toBeVisible()
     await menuButton.click()
   } else {
-    await page.locator('.pill').filter({ hasText: '项目' }).hover()
-    await expect(page.locator('.pill').filter({ hasText: '项目' }).locator('.pill-label-hover')).toHaveCSS(
-      'opacity',
-      '1',
-    )
+    const projectNav = page.locator('.pill[href="#projects"]')
+    await expect(projectNav).toBeVisible()
+    await projectNav.click()
+    await expect(page).toHaveURL(/#projects$/)
+    await page.getByRole('link', { name: '返回首页' }).click()
+    await expect(page).toHaveURL(/#top$/)
   }
 
   const wakeToggle = page.locator('.hero-wake')
@@ -108,6 +109,32 @@ test('三个核心项目使用可分享的独立案例页', async ({ page }) => 
   expect(layout.content).toBeLessThanOrEqual(layout.viewport)
 })
 
+test('四个项目链接都提供完整讲解结构与代表代码', async ({ page }) => {
+  const cases = [
+    ['job-assistant', '深圳 AI 求职助手'],
+    ['xiaoyu', '小u鱼 Windows 智能桌宠'],
+    ['rag-knowledge-base', 'RAG 智能知识库问答系统'],
+    ['agent-toolkit', 'Agent Service Toolkit 岗位匹配 Agent'],
+  ] as const
+
+  for (const [id, title] of cases) {
+    await page.goto(`/?project=${id}&focus=ai-app`)
+    await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: '项目讲解目录' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '谁会使用它，发生在什么场景？' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '用户怎样完成一次任务？' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '系统怎样分工？' })).toBeVisible()
+    await expect(page.locator('.case-code pre')).toBeVisible()
+    await expect(page.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeVisible()
+
+    const layout = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      content: document.documentElement.scrollWidth,
+    }))
+    expect(layout.content).toBeLessThanOrEqual(layout.viewport)
+  }
+})
+
 test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   await page.goto('/#contact')
@@ -128,6 +155,36 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
 
   await page.getByRole('button', { name: '复制邮箱' }).click()
   await expect(page.getByRole('status')).toHaveText('邮箱已复制')
+})
+
+test('3D 导览台把能力选择连接到真实项目与证据', async ({ page }) => {
+  await page.goto('/#lab')
+
+  const ragGuide = page.getByRole('button', { name: '02 RAG 系统' })
+  await ragGuide.click()
+  await expect(ragGuide).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.lab-guide__project h4')).toHaveText('RAG 智能知识库问答系统')
+  await expect(page.locator('.lab-guide__project')).toContainText('7 项测试通过 · unittest')
+  await expect(page.getByRole('link', { name: '进入项目讲解 ↗' })).toHaveAttribute(
+    'href',
+    '/?project=rag-knowledge-base&focus=ai-app',
+  )
+})
+
+test('联系转盘支持键盘选择并生成对应邮件主题', async ({ page }) => {
+  await page.goto('/#contact')
+
+  const wheel = page.getByRole('listbox', { name: '选择联系目的' })
+  await wheel.press('ArrowDown')
+  await expect(page.getByRole('option', { name: '项目合作' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  )
+  await expect(page.getByRole('heading', { name: '把一个还模糊的想法聊清楚。' })).toBeVisible()
+  await expect(page.getByRole('link', { name: '以“项目合作”为主题写信 ↗' })).toHaveAttribute(
+    'href',
+    `mailto:920816086@qq.com?subject=${encodeURIComponent('项目合作｜来自 Slumber Wake Lab')}`,
+  )
 })
 
 test('首页和独立案例页没有阻断级无障碍问题', async ({ page }) => {

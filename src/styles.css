@@ -1050,9 +1050,22 @@ footer {
   letter-spacing: 0.08em;
 }
 
+.lab-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(340px, 0.68fr);
+  min-height: 650px;
+}
+
+.lab-viewer {
+  position: relative;
+  min-width: 0;
+  border-right: 1px solid #86897f;
+  background: #4d5048;
+}
+
 .lab-viewport {
   display: grid;
-  height: min(72vh, 720px);
+  height: 100%;
   min-height: 420px;
   overflow: hidden;
   background: #4d5048;
@@ -1068,6 +1081,142 @@ footer {
 .lab-poster {
   display: block;
   object-fit: contain;
+}
+
+.lab-guide {
+  display: flex;
+  min-width: 0;
+  padding: clamp(24px, 3vw, 44px);
+  flex-direction: column;
+  background: #12191f;
+}
+
+.lab-guide__heading > span,
+.lab-guide__project > div:first-child,
+.lab-guide__project dt {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.lab-guide__heading h3 {
+  max-width: 430px;
+  margin: 18px 0 30px;
+  font-size: clamp(1.8rem, 3vw, 3.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.lab-guide__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid rgba(215, 226, 234, 0.34);
+  border-left: 1px solid rgba(215, 226, 234, 0.34);
+}
+
+.lab-guide__options button {
+  display: flex;
+  min-height: 76px;
+  padding: 13px;
+  border: 0;
+  border-right: 1px solid rgba(215, 226, 234, 0.34);
+  border-bottom: 1px solid rgba(215, 226, 234, 0.34);
+  align-items: flex-end;
+  justify-content: space-between;
+  color: #d7e2ea;
+  background: transparent;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.lab-guide__options button span {
+  align-self: flex-start;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.58rem;
+}
+
+.lab-guide__options button:hover,
+.lab-guide__options button:focus-visible,
+.lab-guide__options button.is-active {
+  color: #101110;
+  background: #d7e2ea;
+}
+
+.lab-guide__project {
+  display: flex;
+  flex: 1;
+  padding-top: clamp(28px, 4vw, 52px);
+  flex-direction: column;
+}
+
+.lab-guide__project > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  color: #93a4af;
+}
+
+.lab-guide__project h4 {
+  margin: 18px 0 12px;
+  font-size: clamp(2rem, 3.4vw, 3.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+}
+
+.lab-guide__project > p,
+.lab-guide__project dd {
+  color: #b9c5cc;
+  line-height: 1.55;
+}
+
+.lab-guide__project dl {
+  display: grid;
+  gap: 17px;
+  margin: 25px 0;
+}
+
+.lab-guide__project dl > div {
+  padding-top: 12px;
+  border-top: 1px solid rgba(215, 226, 234, 0.25);
+}
+
+.lab-guide__project dt {
+  margin-bottom: 8px;
+  color: #93a4af;
+}
+
+.lab-guide__project dd {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.lab-guide__tags {
+  display: flex;
+  gap: 7px;
+  margin: auto 0 18px;
+  flex-wrap: wrap;
+}
+
+.lab-guide__tags span {
+  padding: 5px 8px;
+  border: 1px solid rgba(215, 226, 234, 0.34);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.58rem;
+}
+
+.lab-guide__project > a {
+  display: flex;
+  min-height: 48px;
+  padding: 12px 15px;
+  border: 1px solid #d7e2ea;
+  align-items: center;
+  justify-content: space-between;
+  color: #101110;
+  background: #d7e2ea;
+  font-weight: 850;
+  text-decoration: none;
 }
 
 .lab-enable {
@@ -1226,6 +1375,15 @@ footer {
 }
 
 @media (max-width: 767px) {
+  .lab-workbench {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-viewer {
+    border-right: 0;
+    border-bottom: 1px solid #86897f;
+  }
+
   .site-nav {
     min-height: 60px;
     padding-inline: 18px;
@@ -1433,6 +1591,22 @@ footer {
   .lab-viewport {
     height: 62vh;
     min-height: 380px;
+  }
+
+  .lab-viewer {
+    min-height: 0;
+  }
+
+  .lab-guide {
+    padding: 24px 18px;
+  }
+
+  .lab-guide__heading h3 {
+    font-size: 2.25rem;
+  }
+
+  .lab-guide__project h4 {
+    font-size: 2.6rem;
   }
 
   .contact-panel > div {
