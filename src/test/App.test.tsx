@@ -79,6 +79,7 @@ describe('portfolio experience', () => {
     expect(screen.getByRole('heading', { name: '用户怎样完成一次任务？' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '系统怎样分工？' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '读一段真正影响边界的代码。' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '这段代码实现了什么？' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeInTheDocument()
     expect(
       await screen.findByRole('heading', { name: '先看懂，再看细节。' }, { timeout: 3000 }),

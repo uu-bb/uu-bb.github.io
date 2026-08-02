@@ -393,13 +393,13 @@ function Portfolio() {
               <p>如果你对我的作品、合作方式或正在探索的问题感兴趣，可以直接写信给我。</p>
               <div>
                 <a
-                  className="specular-surface"
+                  className="about-contact-card__link specular-surface"
                   data-specular
                   href={`mailto:${publicContent.profile.email}?subject=${encodeURIComponent('来自 Slumber Wake Lab 的联系')}`}
                 >
                   发送邮件 ↗
                 </a>
-                <a className="about-contact-card__email specular-surface" data-specular href={`mailto:${publicContent.profile.email}`}>
+                <a className="about-contact-card__link specular-surface" data-specular href={`mailto:${publicContent.profile.email}`}>
                   {publicContent.profile.email}
                 </a>
               </div>
@@ -486,7 +486,6 @@ function Portfolio() {
               height="854"
               loading="lazy"
             />
-            <figcaption>左：试验工作台 / 右：验证与归档</figcaption>
           </figure>
           <div className="experiments-editorial__content">
             <p className="section-kicker">MORE EXPERIMENTS</p>
@@ -526,7 +525,6 @@ function Portfolio() {
               height="853"
               loading="lazy"
             />
-            <figcaption>左：收到消息 / 中：建立联系 / 右：开始协作</figcaption>
           </figure>
           <div className="contact-editorial__panel">
             <p className="section-kicker">CONTACT / BACK COVER</p>
@@ -574,7 +572,6 @@ function Portfolio() {
               <button className="specular-surface" data-specular type="button" onClick={copyEmail}>复制邮箱</button>
               <a className="specular-surface" data-specular href={publicContent.profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
               <a className="specular-surface" data-specular href={resumePath} target="_blank" rel="noopener noreferrer">查看简历 ↗</a>
-              <a className="specular-surface" data-specular href={resumePath} download="杨皓博_AI产品与应用工程_公开简历.pdf">下载 PDF ↓</a>
             </div>
             <p className="copy-status" role="status" aria-live="polite">{copyStatus}</p>
           </div>

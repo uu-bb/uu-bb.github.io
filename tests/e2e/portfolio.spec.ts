@@ -91,7 +91,7 @@ test('首屏导航、睡醒切换和点击火花都可操作', async ({ page }) 
   await expect(page.locator('.hero-stage__media--sleep')).toHaveCSS('opacity', '1')
 })
 
-test('核心项目采用独立微场景并解释左右叙事', async ({ page }) => {
+test('核心项目采用独立微场景且不叠加解释性图注', async ({ page }) => {
   await page.goto('/#projects')
 
   const projectImages = page.locator('.stack-project__visual img')
@@ -100,9 +100,8 @@ test('核心项目采用独立微场景并解释左右叙事', async ({ page }) 
     images.map((image) => image.getAttribute('src')),
   )
   expect(new Set(sources).size).toBe(3)
-  await expect(page.getByText('左：分散岗位输入 / 中：整理与判断 / 右：排序、检查与确认')).toBeVisible()
-  await expect(page.getByText('左：专注工作 / 右：低打扰陪伴与提醒')).toBeVisible()
-  await expect(page.getByText('左：文档来源 / 中：混合检索 / 右：带引用回答')).toBeVisible()
+  await expect(page.locator('.stack-project__visual figcaption')).toHaveCount(0)
+  await expect(page.locator('figcaption').filter({ hasText: '左：' })).toHaveCount(0)
 })
 
 test('三个核心项目使用可分享的独立案例页', async ({ page }) => {
@@ -146,6 +145,8 @@ test('四个项目链接都提供完整讲解结构与代表代码', async ({ pa
     await expect(page.getByRole('heading', { name: '项目理解' })).toBeVisible()
     await expect(page.getByRole('heading', { name: '关键取舍与边界' })).toBeVisible()
     await expect(page.locator('.case-code pre')).toBeVisible()
+    await expect(page.getByRole('heading', { name: '这段代码实现了什么？' })).toBeVisible()
+    await expect(page.locator('.case-artwork figcaption')).toHaveCount(0)
     await expect(page.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeVisible()
 
     const layout = await page.evaluate(() => ({
@@ -164,11 +165,28 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
   expect(resume.ok()).toBeTruthy()
   expect(resume.headers()['content-type']).toContain('application/pdf')
 
-  const download = page.getByRole('link', { name: '下载 PDF ↓' }).last()
+  const download = page.getByRole('link', { name: '下载 PDF' }).first()
   await expect(download).toHaveAttribute(
     'download',
     '杨皓博_AI产品与应用工程_公开简历.pdf',
   )
+  await expect(page.locator('.contact-editorial__links').getByRole('link', { name: '下载 PDF ↓' })).toHaveCount(0)
+
+  const aboutContactLinks = page.locator('.about-contact-card__link')
+  await expect(aboutContactLinks).toHaveCount(2)
+  const aboutLinkStyles = await aboutContactLinks.evaluateAll((links) => links.map((link) => {
+    const styles = window.getComputedStyle(link)
+    return {
+      minHeight: styles.minHeight,
+      padding: styles.padding,
+      borderRadius: styles.borderRadius,
+      borderTop: `${styles.borderTopWidth} ${styles.borderTopStyle} ${styles.borderTopColor}`,
+      fontFamily: styles.fontFamily,
+      fontSize: styles.fontSize,
+      fontWeight: styles.fontWeight,
+    }
+  }))
+  expect(aboutLinkStyles[0]).toEqual(aboutLinkStyles[1])
 
   const github = page.getByRole('link', { name: 'GitHub ↗' })
   await expect(github).toHaveAttribute('href', 'https://github.com/uu-bb')

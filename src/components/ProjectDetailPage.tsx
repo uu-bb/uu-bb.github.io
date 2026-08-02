@@ -104,7 +104,6 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
 
         <figure className="case-artwork">
           <img src={assetPath(visual.src)} alt={visual.alt} width="1280" height="853" />
-          <figcaption>{visual.caption}</figcaption>
         </figure>
 
         <Suspense fallback={<section className="project-bento" aria-label="正在加载项目讲解地图" />}>
@@ -188,6 +187,13 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
               <div><dt>为什么这样设计</dt><dd>{codeExample.rationale}</dd></div>
             </dl>
           </div>
+          <aside className="case-code__explanation" aria-labelledby="code-explanation-title">
+            <span>PLAIN LANGUAGE / 通俗解释</span>
+            <h3 id="code-explanation-title">这段代码实现了什么？</h3>
+            <p><strong>它接收：</strong>{codeExample.input}</p>
+            <p><strong>执行时：</strong>{codeExample.judgment}</p>
+            <p><strong>最终得到：</strong>{codeExample.output}</p>
+          </aside>
         </section>
 
         <section className="case-evidence case-chapter" id="evidence">

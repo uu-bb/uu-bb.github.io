@@ -89,7 +89,6 @@ export function ProjectShowcaseCard({
               height="853"
               loading="lazy"
             />
-            <figcaption>{visual.caption}</figcaption>
           </figure>
         </div>
       </motion.article>

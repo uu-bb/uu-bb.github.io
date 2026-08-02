@@ -89,16 +89,19 @@
   gap: 18px;
 }
 
-.project-bento__card-header > span,
-.project-bento__card-header > small {
+.project-bento__card-header > span {
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  font-size: 0.62rem;
-  font-weight: 850;
-  letter-spacing: 0.08em;
+  font-size: clamp(0.86rem, 1.2vw, 1.05rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
 }
 
 .project-bento__card-header > small {
   color: rgba(215, 226, 234, 0.56);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
 }
 
 .project-bento__card:nth-child(6) .project-bento__card-header > small {
@@ -108,8 +111,7 @@
 .project-bento__card h3 {
   position: relative;
   z-index: 2;
-  margin: auto 0 18px;
-  padding-top: 56px;
+  margin: clamp(36px, 4vw, 58px) 0 18px;
   font-size: clamp(1.45rem, 2.4vw, 2.6rem);
   line-height: 1.02;
   letter-spacing: -0.045em;
