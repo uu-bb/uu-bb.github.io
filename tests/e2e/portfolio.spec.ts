@@ -242,7 +242,7 @@ test('首页和独立案例页没有阻断级无障碍问题', async ({ page }) 
 
 test('JavaScript 关闭时仍有简历与联系静态入口', async ({ browser }) => {
   const page = await browser.newPage({ javaScriptEnabled: false })
-  await page.goto('http://127.0.0.1:4173/')
+  await page.goto(process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173/')
   await expect(page.getByRole('heading', { name: 'Slumber Wake Lab' })).toBeVisible()
   await expect(page.getByRole('link', { name: '查看综合简历' })).toHaveAttribute(
     'href',
