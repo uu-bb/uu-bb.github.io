@@ -37,8 +37,26 @@ test('能力透镜更新叙事和项目排序', async ({ page }) => {
   await productLens.click()
   await expect(productLens).toHaveAttribute('aria-pressed', 'true')
   await expect(page).toHaveURL(/\?focus=product#projects$/)
+  await expect(page.getByRole('heading', {
+    name: '先把用户、场景和边界讲清楚，再决定 AI 应该出现在哪里。',
+  })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Problem Framing' })).toBeVisible()
   await expect(page.locator('.stack-project h3').first()).toHaveText('小u鱼 Windows 智能桌宠')
   await expect(page.getByRole('link', { name: '阅读案例 ↗' })).toHaveCount(3)
+})
+
+test('彩色弧形画廊自动加载并遵守滚轮方向', async ({ page }) => {
+  await page.goto('/')
+  const gallery = page.locator('.circular-gallery')
+  await gallery.scrollIntoViewIfNeeded()
+  await expect(gallery).toBeVisible()
+  await expect(gallery.locator('canvas')).toBeVisible()
+  await expect(page.locator('.circular-gallery__status')).toContainText('FRAME')
+
+  await gallery.dispatchEvent('wheel', { deltaY: 420 })
+  await expect(gallery).toHaveAttribute('data-wheel-direction', 'right')
+  await gallery.dispatchEvent('wheel', { deltaY: -420 })
+  await expect(gallery).toHaveAttribute('data-wheel-direction', 'left')
 })
 
 test('首屏导航、睡醒切换和点击火花都可操作', async ({ page }) => {
@@ -124,6 +142,9 @@ test('四个项目链接都提供完整讲解结构与代表代码', async ({ pa
     await expect(page.getByRole('heading', { name: '谁会使用它，发生在什么场景？' })).toBeVisible()
     await expect(page.getByRole('heading', { name: '用户怎样完成一次任务？' })).toBeVisible()
     await expect(page.getByRole('heading', { name: '系统怎样分工？' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /先看懂.*再看细节/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '项目理解' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '关键取舍与边界' })).toBeVisible()
     await expect(page.locator('.case-code pre')).toBeVisible()
     await expect(page.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeVisible()
 
@@ -218,8 +239,14 @@ test('JavaScript 关闭时仍有简历与联系静态入口', async ({ browser }
 
 test('3D 只在进入实验室后按设备规则加载', async ({ page }) => {
   const requests: string[] = []
+  const modelErrors: string[] = []
   page.on('request', (request) => {
     if (/\.glb(?:$|\?)/i.test(request.url())) requests.push(request.url())
+  })
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /GLTFLoader|texture|blob:|WebAssembly/i.test(message.text())) {
+      modelErrors.push(message.text())
+    }
   })
   await page.goto('/')
   expect(requests).toEqual([])
@@ -231,4 +258,7 @@ test('3D 只在进入实验室后按设备规则加载', async ({ page }) => {
     await page.getByRole('button', { name: '加载可交互 3D' }).click()
   }
   await expect.poll(() => requests.length).toBeGreaterThan(0)
+  await expect(page.locator('.three-canvas canvas')).toBeVisible()
+  await page.waitForTimeout(700)
+  expect(modelErrors).toEqual([])
 })

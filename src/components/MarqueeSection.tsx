@@ -1,90 +1,80 @@
-import { useEffect, useRef } from 'react'
-import { useReducedMotion } from 'motion/react'
-import { publicContent } from '../data/content'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import type { CircularGalleryItem } from './CircularGallery'
 import { assetPath } from '../utils/assets'
 
-const imageTiles = [
+const CircularGallery = lazy(() => import('./CircularGallery').then((module) => ({
+  default: module.CircularGallery,
+})))
+
+const galleryItems: CircularGalleryItem[] = [
   {
-    src: 'editorial/job-assistant-scene.webp',
-    alt: '深圳 AI 求职助手从分散岗位输入到整理确认的微场景',
+    image: assetPath('editorial/job-assistant-scene.webp'),
+    text: '深圳 AI 求职助手 / 从岗位噪声到人工确认',
+    alt: '岗位资料经过整理、判断、排序和人工确认形成可追踪工作流',
   },
   {
-    src: 'cover/slumber-wake-transition-1280.webp',
-    alt: '睡眠与醒来之间的角色主视觉',
+    image: assetPath('editorial/xiaoyu-scene.webp'),
+    text: '小u鱼 / 低打扰陪伴与可控动作',
+    alt: '小u鱼桌宠围绕专注、计时、提醒和锁定提供低打扰陪伴',
   },
   {
-    src: 'editorial/experiments-workbench.webp',
-    alt: '从试验工作台到验证归档架的微场景',
+    image: assetPath('editorial/rag-knowledge-scene.webp'),
+    text: 'RAG 知识库 / 来源、检索与带引用回答',
+    alt: '本地文档进入混合检索链路后生成带引用来源的回答',
+  },
+  {
+    image: assetPath('cover/slumber-wake-transition-1280.webp'),
+    text: 'Slumber / Wake / 从休眠到开始创造',
+    alt: '睡醒实验室角色从昏暗睡眠空间走向明亮创作工作台',
+  },
+  {
+    image: assetPath('editorial/experiments-workbench.webp'),
+    text: 'Field Notes / 实验、验证与归档',
+    alt: '实验工作台与验证归档架组成持续迭代的项目现场',
+  },
+  {
+    image: assetPath('editorial/contact-conversation.webp'),
+    text: 'Wake something up / 从消息到协作',
+    alt: '创作者收到消息后通过沟通建立联系并开始协作',
   },
 ]
 
 export function MarqueeSection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const firstRowRef = useRef<HTMLDivElement>(null)
-  const secondRowRef = useRef<HTMLDivElement>(null)
-  const reduceMotion = useReducedMotion()
-  const labels = [
-    ...publicContent.projects.slice(0, 3).map((project) => project.title),
-    ...publicContent.evidence.slice(0, 3).map((evidence) => evidence.label),
-    'RAG · AGENT · FASTAPI · PRODUCT',
-  ]
+  const [galleryReady, setGalleryReady] = useState(false)
 
   useEffect(() => {
-    if (reduceMotion) return
-
-    let frame = 0
-    const update = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        const section = sectionRef.current
-        const firstRow = firstRowRef.current
-        const secondRow = secondRowRef.current
-        if (!section || !firstRow || !secondRow) return
-
-        const sectionTop = section.getBoundingClientRect().top + window.scrollY
-        const offset = (window.scrollY - sectionTop + window.innerHeight) * 0.28
-        firstRow.style.transform = `translate3d(${offset - 240}px, 0, 0)`
-        secondRow.style.transform = `translate3d(${-offset + 80}px, 0, 0)`
-      })
+    const section = sectionRef.current
+    if (!section || typeof window.IntersectionObserver === 'undefined') {
+      setGalleryReady(true)
+      return
     }
-
-    update()
-    window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-    }
-  }, [reduceMotion])
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setGalleryReady(true)
+        observer.disconnect()
+      }
+    }, { rootMargin: '360px' })
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <section className="marquee-section" ref={sectionRef} aria-label="项目与证据胶片">
-      <div className="marquee-row marquee-row--text" ref={firstRowRef}>
-        {Array.from({ length: 3 }, (_, repeatIndex) =>
-          labels.map((label, index) => (
-            <span key={`${repeatIndex}-${index}-${label}`} aria-hidden={repeatIndex > 0}>
-              {label}
-            </span>
-          )),
-        )}
-      </div>
-      <div className="marquee-row marquee-row--images" ref={secondRowRef}>
-        {Array.from({ length: 3 }, (_, repeatIndex) =>
-          imageTiles.map((tile, index) => (
-            <figure key={`${repeatIndex}-${tile.src}`} aria-hidden={repeatIndex > 0}>
-              <img
-                src={assetPath(tile.src)}
-                alt={repeatIndex === 0 ? tile.alt : ''}
-                width="1280"
-                height="853"
-                loading="lazy"
-              />
-              <figcaption>FRAME 0{index + 1}</figcaption>
-            </figure>
-          )),
-        )}
-      </div>
+    <section className="marquee-section" ref={sectionRef} aria-labelledby="gallery-title">
+      <header className="marquee-section__heading">
+        <p>PROJECTS / EVIDENCE REEL</p>
+        <h2 id="gallery-title">Scenes from<br />the lab.</h2>
+        <span>彩色项目场景自动轮播。向下滚动时画面向右，向上滚动时画面向左。</span>
+      </header>
+      {galleryReady ? (
+        <Suspense fallback={<div className="circular-gallery-shell"><div className="circular-gallery__loading" /></div>}>
+          <CircularGallery items={galleryItems} bend={2.8} scrollEase={0.055} autoSpeed={0.42} />
+        </Suspense>
+      ) : (
+        <div className="circular-gallery-shell" aria-hidden="true">
+          <div className="circular-gallery__loading" />
+        </div>
+      )}
     </section>
   )
 }

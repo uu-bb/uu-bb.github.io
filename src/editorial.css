@@ -290,69 +290,50 @@
 .marquee-section {
   position: relative;
   overflow: hidden;
-  padding: clamp(100px, 12vw, 180px) 0 clamp(60px, 8vw, 110px);
+  padding: clamp(90px, 11vw, 150px) 0 clamp(70px, 8vw, 110px);
   background: #0c0c0c;
 }
 
-.marquee-row {
-  display: flex;
-  width: max-content;
-  will-change: transform;
-}
-
-.marquee-row--text {
-  gap: 12px;
-  margin-left: -35vw;
-}
-
-.marquee-row--text span {
+.marquee-section__heading {
   display: grid;
-  min-width: clamp(280px, 32vw, 520px);
-  min-height: 112px;
-  padding: 22px 26px;
-  border: 1px solid rgba(215, 226, 234, 0.42);
-  border-radius: 56px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.5fr);
+  gap: 22px clamp(30px, 7vw, 110px);
+  align-items: end;
+  padding: 0 clamp(22px, 5vw, 84px) clamp(54px, 7vw, 88px);
   color: #d7e2ea;
-  font-size: clamp(1.1rem, 2vw, 2rem);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  place-items: center;
-  text-align: center;
-  text-transform: uppercase;
 }
 
-.marquee-row--images {
-  gap: 12px;
-  margin-top: 12px;
-  margin-left: -10vw;
-}
-
-.marquee-row--images figure {
-  position: relative;
-  width: clamp(280px, 30vw, 440px);
-  height: clamp(190px, 20vw, 290px);
+.marquee-section__heading > p {
+  grid-column: 1 / -1;
   margin: 0;
-  overflow: hidden;
-  border: 1px solid rgba(215, 226, 234, 0.5);
-  border-radius: 28px;
-}
-
-.marquee-row--images img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.marquee-row--images figcaption {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  padding: 6px 8px;
-  color: #0c0c0c;
-  background: rgba(244, 239, 227, 0.86);
+  color: var(--editorial-blue);
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.marquee-section__heading h2 {
+  margin: 0;
+  color: transparent;
+  background: linear-gradient(180deg, #646973 0%, #bbccd7 100%);
+  background-clip: text;
+  font-family: "Bodoni MT", Didot, "Times New Roman", serif;
+  font-size: clamp(4.2rem, 9vw, 8.5rem);
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: -0.075em;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.marquee-section__heading > span {
+  max-width: 430px;
+  padding-bottom: 8px;
+  color: rgba(215, 226, 234, 0.68);
+  font-size: 0.94rem;
+  line-height: 1.75;
+  text-wrap: pretty;
 }
 
 .about-editorial {
@@ -523,12 +504,64 @@
   letter-spacing: 0.1em;
 }
 
-.lens-note {
-  max-width: 760px;
-  margin: 24px 0 clamp(40px, 7vw, 84px);
-  font-size: clamp(1rem, 1.6vw, 1.35rem);
+.lens-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: clamp(28px, 6vw, 96px);
+  margin: clamp(34px, 5vw, 64px) 0 clamp(52px, 8vw, 96px);
+  animation: lens-story-in 380ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.lens-story > div:first-child > span {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.lens-story h3 {
+  max-width: 820px;
+  margin: 16px 0 0;
+  font-family: "Bodoni MT", Didot, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 4.8vw, 5.2rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  text-wrap: pretty;
+}
+
+.lens-story > div:last-child {
+  align-self: end;
+}
+
+.lens-story p {
+  margin: 0 0 22px;
+  color: rgba(12, 12, 12, 0.68);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
   font-weight: 650;
-  line-height: 1.6;
+  line-height: 1.65;
+}
+
+.lens-story ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lens-story li {
+  padding: 7px 10px;
+  border: 1px solid rgba(12, 12, 12, 0.38);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.64rem;
+  font-weight: 750;
+}
+
+@keyframes lens-story-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .capability-list {
@@ -1819,16 +1852,17 @@
     padding-block: 90px 70px;
   }
 
-  .marquee-row--text span {
-    min-width: 250px;
-    min-height: 90px;
-    border-radius: 42px;
-    font-size: 1rem;
+  .marquee-section__heading {
+    grid-template-columns: 1fr;
+    padding-inline: 18px;
   }
 
-  .marquee-row--images figure {
-    width: 260px;
-    height: 176px;
+  .marquee-section__heading > p {
+    grid-column: auto;
+  }
+
+  .marquee-section__heading h2 {
+    font-size: clamp(4.2rem, 20vw, 6.4rem);
   }
 
   .about-editorial {
@@ -1858,6 +1892,11 @@
 
   .lens-switcher {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lens-story {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .lens-switcher button:nth-child(2) {
@@ -2056,8 +2095,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-stage__magnet,
-  .marquee-row {
+  .hero-stage__magnet {
     transform: none !important;
     will-change: auto;
   }

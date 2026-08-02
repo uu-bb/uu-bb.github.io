@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import type { EvidenceRecord, ProjectCase } from '../data/types'
 import { publicContent } from '../data/content'
 import { assetPath } from '../utils/assets'
@@ -6,6 +6,10 @@ import { parseRoleLens } from '../utils/focus'
 import { getProjectVisual } from '../data/projectVisuals'
 import { CircularText } from './CircularText'
 import { FadeIn } from './FadeIn'
+
+const ProjectBento = lazy(() => import('./ProjectBento').then((module) => ({
+  default: module.ProjectBento,
+})))
 
 interface ProjectDetailPageProps {
   project: ProjectCase
@@ -63,7 +67,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
         <span>CASE GUIDE</span>
         <div>
           {chapterLinks.map(([id, label], index) => (
-            <a href={`#${id}`} key={id}>
+            <a className="specular-surface" data-specular href={`#${id}`} key={id}>
               {String(index + 1).padStart(2, '0')} {label}
             </a>
           ))}
@@ -103,6 +107,10 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
           <figcaption>{visual.caption}</figcaption>
         </figure>
 
+        <Suspense fallback={<section className="project-bento" aria-label="正在加载项目讲解地图" />}>
+          <ProjectBento project={project} />
+        </Suspense>
+
         <section className="case-audience case-chapter" id="audience">
           <header className="case-section-heading">
             <span>02 / AUDIENCE &amp; SCENE</span>
@@ -118,7 +126,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
           </header>
           <div className="case-flow__track" aria-label="项目用户流程">
             {project.details.userFlow.map((item, index) => (
-              <article key={item}>
+              <article className="specular-surface" data-specular key={item}>
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 <p>{item}</p>
               </article>
@@ -126,7 +134,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
           </div>
           <div className="case-feature-grid">
             {project.details.features.map((feature) => (
-              <p key={feature}>{feature}</p>
+              <p className="specular-surface" data-specular key={feature}>{feature}</p>
             ))}
           </div>
         </section>
@@ -138,7 +146,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
           </header>
           <div className="case-architecture__diagram" aria-label="项目架构与数据流">
             {project.details.architecture.map((layer, index) => (
-              <article key={layer}>
+              <article className="specular-surface" data-specular key={layer}>
                 <span>L{String(index + 1).padStart(2, '0')}</span>
                 <p>{layer}</p>
               </article>
@@ -189,7 +197,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
           </header>
           <div className="case-evidence__grid">
             {evidence.map((item, index) => (
-              <article key={item.id}>
+              <article className="specular-surface" data-specular key={item.id}>
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 <h3>{item.detail}</h3>
                 <p>
@@ -199,7 +207,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
                 {item.boundary ? <small>{item.boundary}</small> : null}
               </article>
             ))}
-            <article className="case-evidence__failures">
+            <article className="case-evidence__failures specular-surface" data-specular>
               <span>FAIL SAFE</span>
               <h3>系统如何失败</h3>
               <ul>
@@ -218,13 +226,13 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
           <NumberedList items={project.details.contribution} />
           <div className="case-contribution__actions">
             {project.github ? (
-              <a href={project.github} target="_blank" rel="noopener noreferrer">
+              <a className="specular-surface" data-specular href={project.github} target="_blank" rel="noopener noreferrer">
                 查看 GitHub ↗
               </a>
             ) : (
               <p>当前没有公开仓库，以本案例中的已核验事实和脱敏代码为准。</p>
             )}
-            <a href={homeUrl}>继续浏览作品集 →</a>
+            <a className="specular-surface" data-specular href={homeUrl}>继续浏览作品集 →</a>
           </div>
         </section>
       </main>

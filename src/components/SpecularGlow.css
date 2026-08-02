@@ -1,0 +1,70 @@
+.specular-surface {
+  --specular-x: 50%;
+  --specular-y: 50%;
+  --specular-rgb: 215, 226, 234;
+  position: relative;
+  isolation: isolate;
+}
+
+.specular-surface::before,
+.specular-surface::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.specular-surface::before {
+  z-index: 3;
+  padding: 1.5px;
+  background: radial-gradient(
+    150px circle at var(--specular-x) var(--specular-y),
+    rgba(var(--specular-rgb), 0.98) 0%,
+    rgba(var(--specular-rgb), 0.46) 34%,
+    transparent 72%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.specular-surface::after {
+  z-index: -1;
+  background: radial-gradient(
+    220px circle at var(--specular-x) var(--specular-y),
+    rgba(var(--specular-rgb), 0.1),
+    transparent 68%
+  );
+}
+
+.specular-surface:hover::before,
+.specular-surface:hover::after,
+.specular-surface:focus-visible::before,
+.specular-surface:focus-visible::after,
+.specular-surface:focus-within::before,
+.specular-surface:focus-within::after {
+  opacity: 1;
+}
+
+.specular-surface:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .specular-surface::before,
+  .specular-surface::after {
+    transition: none;
+  }
+
+  .specular-surface:active {
+    transform: none;
+  }
+}

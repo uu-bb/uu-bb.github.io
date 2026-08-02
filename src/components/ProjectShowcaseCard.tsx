@@ -40,7 +40,8 @@ export function ProjectShowcaseCard({
   return (
     <div className="stack-card-space" ref={containerRef}>
       <motion.article
-        className={`stack-project stack-project--${index + 1}`}
+        className={`stack-project stack-project--${index + 1} specular-surface`}
+        data-specular
         style={{
           scale: reduceMotion ? 1 : scale,
           top: `${88 + index * 24}px`,
@@ -53,7 +54,7 @@ export function ProjectShowcaseCard({
             <span>{project.statusLabel}</span>
           </div>
           <h3>{project.title}</h3>
-          <a href={detailUrl}>阅读案例 ↗</a>
+          <a className="specular-surface" data-specular href={detailUrl}>阅读案例 ↗</a>
         </header>
 
         <div className="stack-project__body">

@@ -164,7 +164,8 @@ export function LazyLab() {
                 <button
                   key={guide.label}
                   type="button"
-                  className={selectedGuideIndex === index ? 'is-active' : ''}
+                  className={`${selectedGuideIndex === index ? 'is-active ' : ''}specular-surface`}
+                  data-specular
                   aria-pressed={selectedGuideIndex === index}
                   onClick={() => setSelectedGuideIndex(index)}
                 >
@@ -200,7 +201,11 @@ export function LazyLab() {
                 <div className="lab-guide__tags" aria-label="项目技术标签">
                   {selectedProject.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
                 </div>
-                <a href={`/?project=${selectedProject.id}&focus=${selectedGuide.focus}`}>
+                <a
+                  className="specular-surface"
+                  data-specular
+                  href={`/?project=${selectedProject.id}&focus=${selectedGuide.focus}`}
+                >
                   进入项目讲解 ↗
                 </a>
               </div>

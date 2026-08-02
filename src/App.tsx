@@ -14,6 +14,7 @@ import { PillNav } from './components/PillNav'
 import { ProjectDetailPage } from './components/ProjectDetailPage'
 import { ProjectShowcaseCard } from './components/ProjectShowcaseCard'
 import { SideRays } from './components/SideRays'
+import { SpecularGlow } from './components/SpecularGlow'
 import { evidenceById, projectById, publicContent } from './data/content'
 import type { RoleLens } from './data/types'
 import { assetPath } from './utils/assets'
@@ -27,43 +28,117 @@ const heroIntroduction = {
   openness: '保持好奇，持续做作品，也欢迎新的问题、合作与创作可能。',
 }
 
-const lensMeta: Record<RoleLens, { label: string; note: string }> = {
+interface CapabilityItem {
+  title: string
+  description: string
+}
+
+interface LensDefinition {
+  label: string
+  note: string
+  headline: string
+  focusTopics: string[]
+  capabilities: CapabilityItem[]
+}
+
+const lensMeta: Record<RoleLens, LensDefinition> = {
   overview: {
     label: '综合',
     note: '把产品判断、AI 能力和工程交付放在同一条叙事里。',
+    headline: '从一个真实问题出发，把判断、实现、验证和交付连起来。',
+    focusTopics: ['问题是否值得做', 'AI 能力如何受控', '工程是否可验证', '结果能否继续交付'],
+    capabilities: [
+      {
+        title: 'RAG Systems',
+        description: '把检索、融合、重排、来源和降级路径组织成可解释的知识链路。',
+      },
+      {
+        title: 'Agent Workflows',
+        description: '用白名单、状态机、人工确认和结构化契约控制 Agent 的副作用。',
+      },
+      {
+        title: 'FastAPI Backend',
+        description: '围绕真实业务状态设计接口、校验、持久化和自动化测试。',
+      },
+      {
+        title: 'Product Delivery',
+        description: '从问题定义、MVP 取舍到验收证据，持续把想法收敛成可交付版本。',
+      },
+    ],
   },
   product: {
     label: 'AI 产品',
     note: '优先阅读场景拆解、范围取舍、验收标准与安全边界。',
+    headline: '先把用户、场景和边界讲清楚，再决定 AI 应该出现在哪里。',
+    focusTopics: ['用户与场景', 'MVP 范围', '安全边界', '验收证据'],
+    capabilities: [
+      {
+        title: 'Problem Framing',
+        description: '把模糊诉求拆成具体用户、触发场景、任务路径和可验证问题。',
+      },
+      {
+        title: 'MVP & Scope',
+        description: '区分首版必须完成、后续增强和明确不做，控制产品承诺与实现成本。',
+      },
+      {
+        title: 'Safe Interaction',
+        description: '用人工确认、权限白名单、失败降级和清晰反馈守住高风险动作边界。',
+      },
+      {
+        title: 'Acceptance Evidence',
+        description: '把功能完成转换成可复查的测试、状态、日期和已知限制。',
+      },
+    ],
   },
   'ai-app': {
     label: 'AI 应用',
     note: '优先阅读 RAG、Agent、结构化输出和完整工作流。',
+    headline: '让模型负责不确定性，让规则、结构和证据负责可控性。',
+    focusTopics: ['检索与来源', 'Agent 契约', '结构化输出', '降级与评估'],
+    capabilities: [
+      {
+        title: 'Retrieval Chain',
+        description: '组合解析、Embedding、BM25、融合与重排，并保留来源和无模型降级路径。',
+      },
+      {
+        title: 'Agent Contracts',
+        description: '通过动作白名单、一次性令牌和人工确认，把模型建议与真实执行分开。',
+      },
+      {
+        title: 'Structured Output',
+        description: '用明确 Schema、输入校验和错误回退减少模型输出进入系统后的不确定性。',
+      },
+      {
+        title: 'Evaluation Loop',
+        description: '用测试、失败路径和核验日期说明系统在什么条件下可信、何时需要人工接管。',
+      },
+    ],
   },
   python: {
     label: 'Python 后端',
     note: '优先阅读接口、状态模型、输入校验与自动化可靠性。',
+    headline: '把一次 Demo 变成可维护的接口、状态和确定性执行链路。',
+    focusTopics: ['API 契约', '状态与持久化', '输入校验', '自动化测试'],
+    capabilities: [
+      {
+        title: 'API Contracts',
+        description: '围绕业务动作设计请求、响应、错误和权限边界，而不是只暴露模型调用。',
+      },
+      {
+        title: 'State & Storage',
+        description: '用清晰状态模型和持久化记录保证任务可追踪、可恢复、可人工核对。',
+      },
+      {
+        title: 'Deterministic Automation',
+        description: '把浏览器与系统操作收敛为确定性步骤，并限制外部副作用。',
+      },
+      {
+        title: 'Testable Delivery',
+        description: '用单元测试、接口测试和关键路径验证支撑版本交付与后续迭代。',
+      },
+    ],
   },
 }
-
-const capabilities = [
-  {
-    title: 'RAG Systems',
-    description: '把检索、融合、重排、来源和降级路径组织成可解释的知识链路。',
-  },
-  {
-    title: 'Agent Workflows',
-    description: '用白名单、状态机、人工确认和结构化契约控制 Agent 的副作用。',
-  },
-  {
-    title: 'FastAPI Backend',
-    description: '围绕真实业务状态设计接口、校验、持久化和自动化测试。',
-  },
-  {
-    title: 'Product Delivery',
-    description: '从问题定义、MVP 取舍到验收证据，持续把想法收敛成可交付版本。',
-  },
-]
 
 const contactIntents = [
   {
@@ -275,13 +350,14 @@ function Portfolio() {
           </FadeIn>
 
           <FadeIn className="hero-actions" y={24} delay={0.4}>
-            <a className="button button--primary" href="#projects">查看项目</a>
-            <a className="button button--secondary" href="#focus">切换方向</a>
-            <a className="button button--secondary" href={resumePath} target="_blank" rel="noopener noreferrer">
+            <a className="button button--primary specular-surface" data-specular href="#projects">查看项目</a>
+            <a className="button button--secondary specular-surface" data-specular href="#focus">切换方向</a>
+            <a className="button button--secondary specular-surface" data-specular href={resumePath} target="_blank" rel="noopener noreferrer">
               查看综合简历
             </a>
             <a
-              className="button button--text"
+              className="button button--text specular-surface"
+              data-specular
               href={resumePath}
               download="杨皓博_AI产品与应用工程_公开简历.pdf"
               aria-label="下载 PDF"
@@ -317,11 +393,13 @@ function Portfolio() {
               <p>如果你对我的作品、合作方式或正在探索的问题感兴趣，可以直接写信给我。</p>
               <div>
                 <a
+                  className="specular-surface"
+                  data-specular
                   href={`mailto:${publicContent.profile.email}?subject=${encodeURIComponent('来自 Slumber Wake Lab 的联系')}`}
                 >
                   发送邮件 ↗
                 </a>
-                <a className="about-contact-card__email" href={`mailto:${publicContent.profile.email}`}>
+                <a className="about-contact-card__email specular-surface" data-specular href={`mailto:${publicContent.profile.email}`}>
                   {publicContent.profile.email}
                 </a>
               </div>
@@ -340,7 +418,8 @@ function Portfolio() {
               <button
                 key={lensId}
                 type="button"
-                className={lens === lensId ? 'is-active' : ''}
+                className={`${lens === lensId ? 'is-active ' : ''}specular-surface`}
+                data-specular
                 aria-pressed={lens === lensId}
                 onClick={() => updateLens(lensId)}
               >
@@ -349,10 +428,21 @@ function Portfolio() {
               </button>
             ))}
           </div>
-          <p className="lens-note">{lensMeta[lens].note}</p>
+          <div className="lens-story" key={lens} aria-live="polite">
+            <div>
+              <span>VIEWPOINT / {lensMeta[lens].label}</span>
+              <h3>{lensMeta[lens].headline}</h3>
+            </div>
+            <div>
+              <p>{lensMeta[lens].note}</p>
+              <ul aria-label={`${lensMeta[lens].label}视角关注点`}>
+                {lensMeta[lens].focusTopics.map((topic) => <li key={topic}>{topic}</li>)}
+              </ul>
+            </div>
+          </div>
 
           <div className="capability-list">
-            {capabilities.map((capability, index) => (
+            {lensMeta[lens].capabilities.map((capability, index) => (
               <FadeIn className="capability-item" y={38} delay={index * 0.08} key={capability.title}>
                 <span>0{index + 1}</span>
                 <h3>{capability.title}</h3>
@@ -414,7 +504,7 @@ function Portfolio() {
                   </>
                 )
                 return experiment.github ? (
-                  <a key={experiment.id} href={experiment.github} target="_blank" rel="noopener noreferrer">
+                  <a className="specular-surface" data-specular key={experiment.id} href={experiment.github} target="_blank" rel="noopener noreferrer">
                     {content}
                   </a>
                 ) : (
@@ -470,6 +560,8 @@ function Portfolio() {
                 <h3>{contactIntent.title}</h3>
                 <p>{contactIntent.description}</p>
                 <a
+                  className="specular-surface"
+                  data-specular
                   href={`mailto:${publicContent.profile.email}?subject=${encodeURIComponent(contactIntent.subject)}`}
                 >
                   以“{contactIntent.label}”为主题写信 ↗
@@ -478,11 +570,11 @@ function Portfolio() {
             </div>
 
             <div className="contact-editorial__links" aria-label="快捷联系方式">
-              <a href={`mailto:${publicContent.profile.email}`}>{publicContent.profile.email}</a>
-              <button type="button" onClick={copyEmail}>复制邮箱</button>
-              <a href={publicContent.profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-              <a href={resumePath} target="_blank" rel="noopener noreferrer">查看简历 ↗</a>
-              <a href={resumePath} download="杨皓博_AI产品与应用工程_公开简历.pdf">下载 PDF ↓</a>
+              <a className="specular-surface" data-specular href={`mailto:${publicContent.profile.email}`}>{publicContent.profile.email}</a>
+              <button className="specular-surface" data-specular type="button" onClick={copyEmail}>复制邮箱</button>
+              <a className="specular-surface" data-specular href={publicContent.profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+              <a className="specular-surface" data-specular href={resumePath} target="_blank" rel="noopener noreferrer">查看简历 ↗</a>
+              <a className="specular-surface" data-specular href={resumePath} download="杨皓博_AI产品与应用工程_公开简历.pdf">下载 PDF ↓</a>
             </div>
             <p className="copy-status" role="status" aria-live="polite">{copyStatus}</p>
           </div>
@@ -506,18 +598,20 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ClickSpark>
-        {project ? (
-          <ProjectDetailPage
-            project={project}
-            evidence={project.evidenceIds
-              .map((id) => evidenceById.get(id))
-              .filter((item) => item !== undefined)}
-          />
-        ) : (
-          <Portfolio />
-        )}
-      </ClickSpark>
+      <SpecularGlow>
+        <ClickSpark>
+          {project ? (
+            <ProjectDetailPage
+              project={project}
+              evidence={project.evidenceIds
+                .map((id) => evidenceById.get(id))
+                .filter((item) => item !== undefined)}
+            />
+          ) : (
+            <Portfolio />
+          )}
+        </ClickSpark>
+      </SpecularGlow>
     </ErrorBoundary>
   )
 }

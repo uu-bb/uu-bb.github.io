@@ -22,6 +22,11 @@ describe('portfolio experience', () => {
     fireEvent.click(productLens)
 
     expect(productLens).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', {
+      name: '先把用户、场景和边界讲清楚，再决定 AI 应该出现在哪里。',
+    })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Problem Framing' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'RAG Systems' })).not.toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: '阅读案例 ↗' })).toHaveLength(3)
     expect(screen.getAllByRole('link', { name: '阅读案例 ↗' })[0]).toHaveAttribute(
       'href',
@@ -65,7 +70,7 @@ describe('portfolio experience', () => {
     )
   })
 
-  it('turns a project route into a complete interview-ready walkthrough', () => {
+  it('turns a project route into a complete interview-ready walkthrough', async () => {
     window.history.pushState({}, '', '/?project=job-assistant&focus=ai-app')
     render(<App />)
 
@@ -75,5 +80,11 @@ describe('portfolio experience', () => {
     expect(screen.getByRole('heading', { name: '系统怎样分工？' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '读一段真正影响边界的代码。' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: '先看懂，再看细节。' }, { timeout: 3000 }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '项目理解' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '面向对象' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '关键取舍与边界' })).toBeInTheDocument()
   })
 })
