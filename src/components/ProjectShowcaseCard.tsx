@@ -40,6 +40,8 @@ export function ProjectShowcaseCard({
   return (
     <div className="stack-card-space" ref={containerRef}>
       <motion.article
+        id={project.id}
+        tabIndex={-1}
         className={`stack-project stack-project--${index + 1} specular-surface`}
         data-specular
         style={{

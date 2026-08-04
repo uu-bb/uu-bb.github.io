@@ -1,19 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import './styles.css'
 import './editorial.css'
 import { AnimatedText } from './components/AnimatedText'
-import { CircularText } from './components/CircularText'
 import { ClickSpark } from './components/ClickSpark'
+import { EvidenceOverview } from './components/EvidenceOverview'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { FadeIn } from './components/FadeIn'
 import { LazyLab } from './components/LazyLab'
-import { Magnet } from './components/Magnet'
 import { MarqueeSection } from './components/MarqueeSection'
 import { OptionWheel } from './components/OptionWheel'
 import { PillNav } from './components/PillNav'
 import { ProjectDetailPage } from './components/ProjectDetailPage'
 import { ProjectShowcaseCard } from './components/ProjectShowcaseCard'
-import { SideRays } from './components/SideRays'
+import { RecruiterHero } from './components/RecruiterHero'
 import { SpecularGlow } from './components/SpecularGlow'
 import { evidenceById, projectById, publicContent } from './data/content'
 import type { RoleLens } from './data/types'
@@ -21,12 +20,6 @@ import { assetPath } from './utils/assets'
 import { getProjectOrder, parseRoleLens } from './utils/focus'
 
 const coreProjectIds = ['job-assistant', 'xiaoyu', 'rag-knowledge-base']
-
-const heroIntroduction = {
-  identity: '产品思考 × 技术实现 × 独立创作',
-  statement: '我喜欢把模糊的想法，做成清晰、可运行、值得继续生长的作品。',
-  openness: '保持好奇，持续做作品，也欢迎新的问题、合作与创作可能。',
-}
 
 interface CapabilityItem {
   title: string
@@ -169,13 +162,6 @@ const contactIntents = [
     description: '对项目叙事、交互或技术表达的具体反馈，都会帮助这个作品集继续生长。',
     subject: '作品反馈｜来自 Slumber Wake Lab',
   },
-  {
-    label: '保持联系',
-    code: '05 / STAY IN TOUCH',
-    title: '先认识，再等待合适的时机。',
-    description: '即使暂时没有明确合作，也欢迎简单介绍你自己，留下未来继续交流的入口。',
-    subject: '保持联系｜来自 Slumber Wake Lab',
-  },
 ]
 
 const contactIntentLabels = contactIntents.map((intent) => intent.label)
@@ -208,8 +194,6 @@ function Portfolio() {
   )
   const [lens, setLens] = useState<RoleLens>(initialLens)
   const [copyStatus, setCopyStatus] = useState('')
-  const [awake, setAwake] = useState(true)
-  const [heroReady, setHeroReady] = useState(false)
   const [contactIntentIndex, setContactIntentIndex] = useState(0)
   const contactIntent = contactIntents[contactIntentIndex]
   const resumePath = assetPath('resume/yang-haobo-ai-product-application.pdf')
@@ -245,11 +229,6 @@ function Portfolio() {
     window.setTimeout(() => setCopyStatus(''), 2400)
   }
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => setHeroReady(true))
-    return () => window.cancelAnimationFrame(frame)
-  }, [])
-
   return (
     <div className="site-shell editorial-site">
       <a className="skip-link" href="#main-content">跳到主要内容</a>
@@ -273,109 +252,9 @@ function Portfolio() {
       </header>
 
       <main id="main-content">
-        <section
-          className={`hero-stage${awake ? ' is-awake' : ''}${heroReady ? ' is-ready' : ''}`}
-          id="top"
-        >
-          <Magnet className="hero-stage__magnet" padding={180} strength={42}>
-            <picture className="hero-stage__media hero-stage__media--sleep">
-              <source
-                type="image/webp"
-                srcSet={`${assetPath('cover/slumber-sleep-768.webp')} 768w, ${assetPath('cover/slumber-sleep-1280.webp')} 1280w, ${assetPath('cover/slumber-sleep-1672.webp')} 1672w`}
-                sizes="100vw"
-              />
-              <img
-                src={assetPath('cover/slumber-sleep-1672.webp')}
-                alt="角色戴着睡帽在深色卧室的床上安静入睡"
-                width="1672"
-                height="941"
-              />
-            </picture>
-            <picture className="hero-stage__media hero-stage__media--awake">
-              <source
-                type="image/webp"
-                srcSet={`${assetPath('cover/slumber-wake-transition-768.webp')} 768w, ${assetPath('cover/slumber-wake-transition-1280.webp')} 1280w, ${assetPath('cover/slumber-wake-transition-1672.webp')} 1672w`}
-                sizes="100vw"
-              />
-              <img
-                src={assetPath('cover/slumber-wake-transition-1672.webp')}
-                alt="角色从昏暗睡眠空间伸懒腰走向明亮创作工作台"
-                width="1672"
-                height="941"
-                fetchPriority="high"
-              />
-            </picture>
-          </Magnet>
-          <SideRays
-            className={`hero-stage__rays${awake ? ' is-awake' : ''}`}
-            speed={0.18}
-            rayColor1="#f6d69a"
-            rayColor2="#79aeca"
-            intensity={0.72}
-            spread={1.2}
-            origin="top-right"
-            tilt={-10}
-            saturation={0.72}
-            blend={0.28}
-            falloff={1.62}
-            opacity={0.56}
-          />
-          <div className="hero-stage__shade" aria-hidden="true" />
+        <RecruiterHero resumePath={resumePath} />
 
-          <FadeIn className="hero-stage__edition" y={-18}>
-            <span>PORTFOLIO / 2026</span>
-            <span>SHENZHEN / AVAILABLE</span>
-          </FadeIn>
-
-          <FadeIn className="hero-wordmark" y={44} delay={0.12}>
-            <h1 aria-label="Slumber Wake Lab · 睡醒实验室">
-              <span className="hero-wordmark__slumber">Slumber</span>
-              <span className="hero-wordmark__wake">Wake Lab</span>
-            </h1>
-          </FadeIn>
-
-          <Magnet className="hero-orbit" padding={120} strength={8}>
-            <CircularText
-              text="SLUMBER*WAKE*LAB*"
-              spinDuration={20}
-              onHover="speedUp"
-            />
-            <strong aria-hidden="true">S/W</strong>
-          </Magnet>
-
-          <FadeIn className="hero-stage__intro" y={24} delay={0.32}>
-            <p>{publicContent.profile.name} · {heroIntroduction.identity}</p>
-            <p>{heroIntroduction.statement}</p>
-            <p>{heroIntroduction.openness}</p>
-          </FadeIn>
-
-          <FadeIn className="hero-actions" y={24} delay={0.4}>
-            <a className="button button--primary specular-surface" data-specular href="#projects">查看项目</a>
-            <a className="button button--secondary specular-surface" data-specular href="#focus">切换方向</a>
-            <a className="button button--secondary specular-surface" data-specular href={resumePath} target="_blank" rel="noopener noreferrer">
-              查看综合简历
-            </a>
-            <a
-              className="button button--text specular-surface"
-              data-specular
-              href={resumePath}
-              download="杨皓博_AI产品与应用工程_公开简历.pdf"
-              aria-label="下载 PDF"
-            >
-              下载 PDF ↓
-            </a>
-          </FadeIn>
-
-          <button
-            className="hero-wake"
-            type="button"
-            aria-pressed={awake}
-            onClick={() => setAwake((value) => !value)}
-          >
-            <span aria-hidden="true">{awake ? '●' : '○'}</span>
-            {awake ? '让实验室入睡' : '叫醒实验室'}
-          </button>
-        </section>
+        <EvidenceOverview />
 
         <MarqueeSection />
 
@@ -528,52 +407,62 @@ function Portfolio() {
           </figure>
           <div className="contact-editorial__panel">
             <p className="section-kicker">CONTACT / BACK COVER</p>
-            <h2 id="contact-title">Wake<br />something up.</h2>
-            <p className="contact-editorial__intro">先选择一个想聊的话题，再用最舒服的方式联系我。</p>
+            <h2 id="contact-title">Let&apos;s<br />talk.</h2>
 
-            <div className="contact-choice">
-              <div className="contact-choice__wheel">
-                <span>拖动 / 滚轮 / 方向键</span>
-                <OptionWheel
-                  items={contactIntentLabels}
-                  defaultSelected={0}
-                  onChange={(index) => setContactIntentIndex(index)}
-                  textColor="#07131a"
-                  activeColor="#f4efe3"
-                  fontSize={2.1}
-                  spacing={1.28}
-                  curve={0.9}
-                  tilt={7}
-                  blur={0.7}
-                  fade={0}
-                  minOpacity={1}
-                  smoothing={170}
-                  inset={14}
-                  soundUrl=""
-                  ariaLabel="选择联系目的"
-                />
+            <div className="contact-direct" role="group" aria-label="直接联系方式">
+              <p className="contact-direct__status">正在寻找 AI 产品 / AI 应用工程实习</p>
+              <h3>{publicContent.profile.name}</h3>
+              <p>深圳 · 可尽快到岗 · 每周 5 天</p>
+              <a className="contact-direct__email" href={`mailto:${publicContent.profile.email}`}>
+                {publicContent.profile.email}
+              </a>
+              <div className="contact-editorial__links">
+                <a className="specular-surface" data-specular href={`mailto:${publicContent.profile.email}`}>发送邮件</a>
+                <button className="specular-surface" data-specular type="button" onClick={copyEmail}>复制邮箱</button>
+                <a className="specular-surface" data-specular href={resumePath} target="_blank" rel="noopener noreferrer">查看简历</a>
+                <a className="specular-surface" data-specular href={publicContent.profile.github} target="_blank" rel="noopener noreferrer">GitHub</a>
               </div>
-              <div className="contact-choice__detail" aria-live="polite">
-                <span>{contactIntent.code}</span>
-                <h3>{contactIntent.title}</h3>
-                <p>{contactIntent.description}</p>
-                <a
-                  className="specular-surface"
-                  data-specular
-                  href={`mailto:${publicContent.profile.email}?subject=${encodeURIComponent(contactIntent.subject)}`}
-                >
-                  以“{contactIntent.label}”为主题写信 ↗
-                </a>
-              </div>
+              <p className="copy-status" role="status" aria-live="polite">{copyStatus}</p>
             </div>
 
-            <div className="contact-editorial__links" aria-label="快捷联系方式">
-              <a className="specular-surface" data-specular href={`mailto:${publicContent.profile.email}`}>{publicContent.profile.email}</a>
-              <button className="specular-surface" data-specular type="button" onClick={copyEmail}>复制邮箱</button>
-              <a className="specular-surface" data-specular href={publicContent.profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-              <a className="specular-surface" data-specular href={resumePath} target="_blank" rel="noopener noreferrer">查看简历 ↗</a>
-            </div>
-            <p className="copy-status" role="status" aria-live="polite">{copyStatus}</p>
+            <section className="contact-topics" aria-label="可选联系话题">
+              <h3>你也可以先选择想聊的话题</h3>
+              <div className="contact-choice">
+                <div className="contact-choice__wheel">
+                  <span>拖动 / 滚轮 / 方向键</span>
+                  <OptionWheel
+                    items={contactIntentLabels}
+                    defaultSelected={0}
+                    onChange={(index) => setContactIntentIndex(index)}
+                    textColor="#07131a"
+                    activeColor="#f4efe3"
+                    fontSize={2.1}
+                    spacing={1.28}
+                    curve={0.9}
+                    tilt={7}
+                    blur={0.7}
+                    fade={0}
+                    minOpacity={1}
+                    smoothing={170}
+                    inset={14}
+                    soundUrl=""
+                    ariaLabel="选择联系目的"
+                  />
+                </div>
+                <div className="contact-choice__detail" aria-live="polite">
+                  <span>{contactIntent.code}</span>
+                  <h3>{contactIntent.title}</h3>
+                  <p>{contactIntent.description}</p>
+                  <a
+                    className="specular-surface"
+                    data-specular
+                    href={`mailto:${publicContent.profile.email}?subject=${encodeURIComponent(contactIntent.subject)}`}
+                  >
+                    以“{contactIntent.label}”为主题写信 ↗
+                  </a>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </main>

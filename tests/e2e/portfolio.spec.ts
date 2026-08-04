@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-test('首屏完整呈现品牌与求职路径，且不请求 GLB', async ({ page }) => {
+test('首屏完整呈现招聘信息与求职路径，且不请求 GLB', async ({ page }) => {
   const modelRequests: string[] = []
   page.on('request', (request) => {
     if (/\.glb(?:$|\?)/i.test(request.url())) modelRequests.push(request.url())
@@ -9,18 +9,22 @@ test('首屏完整呈现品牌与求职路径，且不请求 GLB', async ({ page
 
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName(
-    'Slumber Wake Lab · 睡醒实验室',
-  )
-  await expect(
-    page.locator('#top').getByText('杨皓博 · 产品思考 × 技术实现 × 独立创作'),
-  ).toBeVisible()
-  await expect(page.getByText(/持续做作品.*新的问题、合作与创作可能/)).toBeVisible()
-  await expect(page.getByRole('link', { name: '查看项目' })).toBeVisible()
-  await expect(page.getByRole('link', { name: '切换方向' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('杨皓博')
+  await expect(page.locator('#top').getByText('SLEEPY LAB / 睡醒实验室')).toBeVisible()
+  await expect(page.locator('#top').getByText('AI 产品 × AI 应用工程')).toBeVisible()
+  await expect(page.locator('#top').getByText(/可控、可验证、能交付的 AI 产品/)).toBeVisible()
+  await expect(page.locator('#top').getByText(/2027 届本科 · 深圳/)).toBeVisible()
+  await expect(page.locator('#top').getByText(/可尽快到岗 · 每周 5 天/)).toBeVisible()
+  await expect(page.getByRole('link', { name: '查看核心项目' })).toBeVisible()
   await expect(page.getByRole('link', { name: '查看综合简历' }).first()).toBeVisible()
+  await expect(page.getByRole('link', { name: '联系我' }).first()).toBeVisible()
   await expect(page.getByRole('link', { name: '下载 PDF' }).first()).toBeVisible()
+  await expect(page.getByRole('region', { name: '核心项目证据' })).toBeVisible()
   await expect(page.locator('.stack-project')).toHaveCount(3)
+
+  if ((page.viewportSize()?.width ?? 0) <= 360) {
+    await expect(page.getByRole('link', { name: '查看核心项目' })).toBeInViewport()
+  }
 
   const layout = await page.evaluate(() => ({
     viewport: window.innerWidth,
@@ -28,6 +32,105 @@ test('首屏完整呈现品牌与求职路径，且不请求 GLB', async ({ page
   }))
   expect(layout.content).toBeLessThanOrEqual(layout.viewport)
   expect(modelRequests).toEqual([])
+})
+
+test('Phase 1A 关键视口保持可读、完整且无横向溢出', async ({ page }) => {
+  const viewports = [
+    { width: 360, height: 800 },
+    { width: 390, height: 844 },
+    { width: 1440, height: 900 },
+    { width: 1366, height: 768 },
+    { width: 1920, height: 1080 },
+    { width: 768, height: 1024 },
+  ]
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+
+    const metrics = await page.evaluate(() => {
+      const hero = document.querySelector<HTMLElement>('.hero-stage')
+      const nav = document.querySelector<HTMLElement>('.site-nav')
+      const eyebrow = document.querySelector<HTMLElement>('.hero-stage__eyebrow')
+      const statusItems = [...document.querySelectorAll<HTMLElement>('.hero-stage__status p')]
+      const secondaryLinks = [...document.querySelectorAll<HTMLElement>('.hero-secondary-links a')]
+      const capabilities = [...document.querySelectorAll<HTMLElement>('.hero-capabilities li')]
+      const primaryAction = document.querySelector<HTMLElement>('.hero-actions .button--primary')
+      const visual = document.querySelector<HTMLElement>('.hero-stage__visual')
+      const capabilityBar = document.querySelector<HTMLElement>('.hero-capabilities')
+      const menuButton = document.querySelector<HTMLElement>('.mobile-menu-button')
+      const menuLines = [...document.querySelectorAll<HTMLElement>('.hamburger-line')]
+
+      if (!hero || !nav || !eyebrow || !primaryAction || !visual || !capabilityBar) {
+        throw new Error('Phase 1A hero elements are missing')
+      }
+
+      const statusStyle = getComputedStyle(statusItems[0])
+      const statusFontSize = Number.parseFloat(statusStyle.fontSize)
+      const statusLineHeight = Number.parseFloat(statusStyle.lineHeight)
+      const menuRect = menuButton?.getBoundingClientRect()
+      const lineTops = menuLines.map((line) => line.getBoundingClientRect().top)
+
+      return {
+        viewportWidth: window.innerWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        heroHeight: hero.getBoundingClientRect().height,
+        navBottom: nav.getBoundingClientRect().bottom,
+        eyebrowTop: eyebrow.getBoundingClientRect().top,
+        primaryBottom: primaryAction.getBoundingClientRect().bottom,
+        visualTop: visual.getBoundingClientRect().top,
+        visualBottom: visual.getBoundingClientRect().bottom,
+        visualHeight: visual.getBoundingClientRect().height,
+        capabilityBottom: capabilityBar.getBoundingClientRect().bottom,
+        statusTexts: statusItems.map((item) => item.textContent?.trim()),
+        statusFontSize,
+        statusLineHeight,
+        statusWhiteSpace: statusItems.map((item) => getComputedStyle(item).whiteSpace),
+        secondaryLinkHeights: secondaryLinks.map((link) => link.getBoundingClientRect().height),
+        capabilityFontSizes: capabilities.map((item) => Number.parseFloat(getComputedStyle(item).fontSize)),
+        menuWidth: menuRect?.width ?? 0,
+        menuHeight: menuRect?.height ?? 0,
+        menuLineSeparation: lineTops.length === 2 ? Math.abs(lineTops[1] - lineTops[0]) : 0,
+      }
+    })
+
+    expect(metrics.documentWidth, `${viewport.width}×${viewport.height} 横向溢出`).toBeLessThanOrEqual(
+      metrics.viewportWidth,
+    )
+
+    if (viewport.width > 980) {
+      expect(metrics.eyebrowTop).toBeGreaterThan(metrics.navBottom + 72)
+      expect(metrics.eyebrowTop).toBeLessThan(metrics.navBottom + metrics.heroHeight * 0.22)
+      expect(metrics.capabilityBottom).toBeLessThanOrEqual(viewport.height)
+    }
+
+    if (viewport.width <= 390) {
+      expect(metrics.statusTexts).toEqual([
+        '2027 届本科 · 深圳',
+        '寻找 AI 产品 / AI 应用工程实习',
+        '可尽快到岗 · 每周 5 天 · 可持续 3 个月以上',
+      ])
+      expect(metrics.statusFontSize).toBeGreaterThanOrEqual(12)
+      expect(metrics.statusLineHeight / metrics.statusFontSize).toBeGreaterThanOrEqual(1.55)
+      expect(metrics.statusWhiteSpace).toEqual(['nowrap', 'nowrap', 'nowrap'])
+      expect(Math.min(...metrics.secondaryLinkHeights)).toBeGreaterThanOrEqual(44)
+      expect(Math.min(...metrics.capabilityFontSizes)).toBeGreaterThanOrEqual(12)
+      expect(metrics.menuWidth).toBeGreaterThanOrEqual(44)
+      expect(metrics.menuHeight).toBeGreaterThanOrEqual(44)
+      expect(metrics.menuLineSeparation).toBeGreaterThanOrEqual(7)
+      expect(metrics.primaryBottom).toBeLessThanOrEqual(viewport.height)
+      expect(metrics.visualTop).toBeGreaterThan(metrics.primaryBottom)
+      expect(metrics.visualHeight).toBeGreaterThanOrEqual(304)
+      expect(metrics.visualBottom).toBeLessThanOrEqual(viewport.height + 1)
+    }
+  }
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 360, height: 800 })
+  await page.goto('/')
+  await expect(page.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
+  await expect(page.locator('#top').getByText('寻找 AI 产品 / AI 应用工程实习', { exact: true })).toBeVisible()
+  await expect(page.getByRole('link', { name: '查看核心项目' })).toBeInViewport()
 })
 
 test('能力透镜更新叙事和项目排序', async ({ page }) => {
@@ -45,10 +148,20 @@ test('能力透镜更新叙事和项目排序', async ({ page }) => {
   await expect(page.getByRole('link', { name: '阅读案例 ↗' })).toHaveCount(3)
 })
 
+test('核心证据链接定位到首页对应的完整项目卡', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('region', { name: '核心项目证据' })
+    .getByRole('link', { name: '查看深圳 AI 求职助手' })
+    .click()
+  await expect(page).toHaveURL(/#job-assistant$/)
+  await expect(page.locator('#job-assistant')).toBeInViewport()
+  await expect(page.locator('#job-assistant').getByRole('link', { name: '阅读案例 ↗' })).toBeVisible()
+})
+
 test('彩色弧形画廊自动加载并遵守滚轮方向', async ({ page }) => {
   await page.goto('/')
+  await page.getByRole('region', { name: 'Scenes from the lab.' }).scrollIntoViewIfNeeded()
   const gallery = page.locator('.circular-gallery')
-  await gallery.scrollIntoViewIfNeeded()
   await expect(gallery).toBeVisible()
   await expect(gallery.locator('canvas')).toBeVisible()
   await expect(page.locator('.circular-gallery__status')).toContainText('FRAME')
@@ -69,10 +182,16 @@ test('首屏导航、睡醒切换和点击火花都可操作', async ({ page }) 
   if ((page.viewportSize()?.width ?? 0) <= 760) {
     const menuButton = page.locator('.mobile-menu-button')
     await expect(menuButton).toHaveAccessibleName('打开导航菜单')
-    await menuButton.click()
+    await expect(menuButton.locator('.hamburger-line')).toHaveCount(2)
+    await menuButton.press('Enter')
     await expect(menuButton).toHaveAttribute('aria-expanded', 'true')
     await expect(menuButton).toHaveAccessibleName('关闭导航菜单')
     await expect(page.locator('#mobile-primary-menu').getByRole('link', { name: '项目' })).toBeVisible()
+    await menuButton.press('Escape')
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'false')
+    await expect(menuButton).toBeFocused()
+    await menuButton.press('Space')
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'true')
     await menuButton.click()
   } else {
     const projectNav = page.locator('.pill[href="#projects"]')
@@ -188,11 +307,21 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
   }))
   expect(aboutLinkStyles[0]).toEqual(aboutLinkStyles[1])
 
-  const github = page.getByRole('link', { name: 'GitHub ↗' })
+  const directContact = page.getByRole('group', { name: '直接联系方式' })
+  const optionalTopics = page.getByRole('region', { name: '可选联系话题' })
+  await expect(directContact.getByText('正在寻找 AI 产品 / AI 应用工程实习')).toBeVisible()
+  await expect(directContact.getByRole('link', { name: '发送邮件' })).toBeVisible()
+  await expect(directContact.getByRole('link', { name: '查看简历' })).toBeVisible()
+  await expect(optionalTopics.getByText('你也可以先选择想聊的话题')).toBeVisible()
+  const directTop = await directContact.evaluate((element) => element.getBoundingClientRect().top)
+  const optionalTop = await optionalTopics.evaluate((element) => element.getBoundingClientRect().top)
+  expect(directTop).toBeLessThan(optionalTop)
+
+  const github = directContact.getByRole('link', { name: 'GitHub' })
   await expect(github).toHaveAttribute('href', 'https://github.com/uu-bb')
   await expect(github).toHaveAttribute('rel', /noopener/)
 
-  await page.getByRole('button', { name: '复制邮箱' }).click()
+  await directContact.getByRole('button', { name: '复制邮箱' }).click()
   await expect(page.getByRole('status')).toHaveText('邮箱已复制')
 })
 
@@ -240,15 +369,25 @@ test('首页和独立案例页没有阻断级无障碍问题', async ({ page }) 
   }
 })
 
-test('JavaScript 关闭时仍有简历与联系静态入口', async ({ browser }) => {
+test('JavaScript 关闭时仍有完整职业摘要、项目证据与联系入口', async ({ browser }) => {
   const page = await browser.newPage({ javaScriptEnabled: false })
   await page.goto(process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173/')
-  await expect(page.getByRole('heading', { name: 'Slumber Wake Lab' })).toBeVisible()
-  await expect(page.getByRole('link', { name: '查看综合简历' })).toHaveAttribute(
+  const staticPortfolio = page.locator('.static-portfolio:visible')
+  await expect(staticPortfolio.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
+  await expect(staticPortfolio.getByText('AI 产品 × AI 应用工程')).toBeVisible()
+  await expect(staticPortfolio.getByText(/2027 届本科 · 深圳/)).toBeVisible()
+  await expect(staticPortfolio.getByText('AI 产品设计')).toBeVisible()
+  await expect(staticPortfolio.getByText('深圳 AI 求职助手')).toBeVisible()
+  await expect(staticPortfolio.getByText('小u鱼')).toBeVisible()
+  await expect(staticPortfolio.getByText('RAG 智能知识库')).toBeVisible()
+  await expect(staticPortfolio.getByText('32/32 项测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByText('29/29 项 v1 交付基线测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByText('7/7 项 Lite 与元数据链路测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByRole('link', { name: '查看综合简历' })).toHaveAttribute(
     'href',
     '/resume/yang-haobo-ai-product-application.pdf',
   )
-  await expect(page.getByRole('link', { name: '920816086@qq.com' })).toHaveAttribute(
+  await expect(staticPortfolio.getByRole('link', { name: '920816086@qq.com' })).toHaveAttribute(
     'href',
     'mailto:920816086@qq.com',
   )

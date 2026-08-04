@@ -1,0 +1,17 @@
+{
+  "brandEyebrow": "SLEEPY LAB / 睡醒实验室",
+  "heroTagline": "把 RAG、Agent 和后端能力，做成可控、可验证、能交付的 AI 产品。",
+  "heroStatus": [
+    "2027 届本科 · 深圳",
+    "寻找 AI 产品 / AI 应用工程实习",
+    "可尽快到岗 · 每周 5 天 · 可持续 3 个月以上"
+  ],
+  "capabilities": [
+    "AI 产品设计",
+    "Agent 工作流",
+    "RAG 知识系统",
+    "FastAPI 后端服务"
+  ],
+  "contactHeadline": "正在寻找 AI 产品 / AI 应用工程实习",
+  "contactStatus": "深圳 · 可尽快到岗 · 每周 5 天"
+}

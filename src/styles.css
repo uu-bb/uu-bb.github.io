@@ -1391,11 +1391,12 @@ footer {
 
   .brand-lockup,
   .nav-resume {
-    font-size: 0.68rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
   }
 
   .brand-lockup {
-    gap: 7px;
+    gap: 6px;
   }
 
   .brand-mark {

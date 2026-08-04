@@ -109,12 +109,12 @@
 
   .mobile-menu-button {
     display: flex;
-    width: var(--pill-nav-h);
-    height: var(--pill-nav-h);
+    width: 44px;
+    height: 44px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     padding: 0;
     border: 1px solid rgba(215, 226, 234, 0.3);
     border-radius: 50%;
@@ -124,7 +124,7 @@
   }
 
   .hamburger-line {
-    width: 16px;
+    width: 18px;
     height: 2px;
     border-radius: 2px;
     background: currentColor;
@@ -133,11 +133,11 @@
   }
 
   .mobile-menu-button[aria-expanded='true'] .hamburger-line:first-child {
-    transform: translateY(3px) rotate(45deg);
+    transform: translateY(4px) rotate(45deg);
   }
 
   .mobile-menu-button[aria-expanded='true'] .hamburger-line:last-child {
-    transform: translateY(-3px) rotate(-45deg);
+    transform: translateY(-4px) rotate(-45deg);
   }
 
   .mobile-menu-popover {

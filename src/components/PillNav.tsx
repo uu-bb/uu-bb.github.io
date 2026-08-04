@@ -117,6 +117,19 @@ export function PillNav({
     }
   }, [ease, initialLoadAnimation, items, reduceMotion])
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setIsMobileMenuOpen(false)
+      hamburgerRef.current?.focus()
+    }
+
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [isMobileMenuOpen])
+
   const handleEnter = (index: number) => {
     const timeline = timelineRefs.current[index]
     if (!timeline || reduceMotion) return

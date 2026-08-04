@@ -1,17 +1,53 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
 
 describe('portfolio experience', () => {
   it('shows recruiter-critical information without interaction', () => {
     render(<App />)
-    expect(
-      screen.getByRole('heading', { name: 'Slumber Wake Lab · 睡醒实验室' }),
-    ).toBeInTheDocument()
-    expect(screen.getByText(/持续做作品/)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '查看项目' })).toBeInTheDocument()
+    expect(screen.getByText('SLEEPY LAB / 睡醒实验室')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: '杨皓博' })).toBeInTheDocument()
+    expect(screen.getByText('AI 产品 × AI 应用工程')).toBeInTheDocument()
+    expect(screen.getByText(/可控、可验证、能交付的 AI 产品/)).toBeInTheDocument()
+    expect(screen.getByText(/2027 届本科 · 深圳/)).toBeInTheDocument()
+    expect(screen.getByText(/可尽快到岗 · 每周 5 天 · 可持续 3 个月以上/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '查看核心项目' })).toHaveAttribute(
+      'href',
+      '#job-assistant',
+    )
     expect(screen.getByRole('link', { name: '查看综合简历' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '联系我' })).toHaveAttribute('href', '#contact')
     expect(screen.getByRole('link', { name: '下载 PDF' })).toBeInTheDocument()
+  })
+
+  it('renders a recruiter-readable evidence overview from Evidence records', () => {
+    render(<App />)
+
+    const evidenceRegion = screen.getByRole('region', { name: '核心项目证据' })
+    expect(within(evidenceRegion).getByText('32/32 项测试通过')).toBeInTheDocument()
+    expect(within(evidenceRegion).getByText('29/29 项 v1 交付基线测试通过')).toBeInTheDocument()
+    expect(within(evidenceRegion).getByText('7/7 项 Lite 与元数据链路测试通过')).toBeInTheDocument()
+    expect(within(evidenceRegion).getAllByText('最近核验：2026-08-01')).toHaveLength(2)
+    expect(within(evidenceRegion).getByText('最近核验：2026-07-15')).toBeInTheDocument()
+    expect(within(evidenceRegion).getByRole('link', {
+      name: '查看深圳 AI 求职助手',
+    })).toHaveAttribute('href', '#job-assistant')
+  })
+
+  it('puts direct recruiter contact before optional topic interaction', () => {
+    render(<App />)
+
+    const directContact = screen.getByRole('group', { name: '直接联系方式' })
+    const optionalTopics = screen.getByRole('region', { name: '可选联系话题' })
+
+    expect(within(directContact).getByText('正在寻找 AI 产品 / AI 应用工程实习')).toBeInTheDocument()
+    expect(within(directContact).getByRole('link', { name: '发送邮件' })).toBeInTheDocument()
+    expect(within(directContact).getByRole('button', { name: '复制邮箱' })).toBeInTheDocument()
+    expect(within(directContact).getByRole('link', { name: '查看简历' })).toBeInTheDocument()
+    expect(within(directContact).getByRole('link', { name: 'GitHub' })).toBeInTheDocument()
+    expect(
+      directContact.compareDocumentPosition(optionalTopics) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
   })
 
   it('switches the project lens while keeping three independent case links', () => {
