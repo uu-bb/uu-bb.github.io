@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect } from 'react'
-import type { EvidenceRecord, ProjectCase } from '../data/types'
+import type { EvidenceMedia, EvidenceRecord, ProjectCase } from '../data/types'
 import { publicContent } from '../data/content'
 import { assetPath } from '../utils/assets'
 import { parseRoleLens } from '../utils/focus'
 import { getProjectVisual } from '../data/projectVisuals'
 import { CircularText } from './CircularText'
 import { FadeIn } from './FadeIn'
+import { ProjectEvidenceGallery } from './ProjectEvidenceGallery'
 
 const ProjectBento = lazy(() => import('./ProjectBento').then((module) => ({
   default: module.ProjectBento,
@@ -14,6 +15,7 @@ const ProjectBento = lazy(() => import('./ProjectBento').then((module) => ({
 interface ProjectDetailPageProps {
   project: ProjectCase
   evidence: EvidenceRecord[]
+  media: EvidenceMedia[]
 }
 
 const chapterLinks = [
@@ -40,11 +42,15 @@ function NumberedList({ items }: { items: string[] }) {
   )
 }
 
-export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps) {
+export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPageProps) {
   const focus = parseRoleLens(new URLSearchParams(window.location.search).get('focus'))
   const homeUrl = focus === 'overview' ? '/#projects' : `/?focus=${focus}#projects`
   const visual = getProjectVisual(project.id)
   const { codeExample } = project.details
+
+  const rememberReturnTarget = () => {
+    window.sessionStorage.setItem('portfolio-return-focus', project.id)
+  }
 
   useEffect(() => {
     const previousTitle = document.title
@@ -58,7 +64,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
   return (
     <div className="case-page">
       <header className="case-nav">
-        <a href={homeUrl}>← 返回作品集</a>
+        <a href={homeUrl} onClick={rememberReturnTarget}>← 返回作品集</a>
         <span>SLUMBER / WAKE LAB</span>
         <a href={`mailto:${publicContent.profile.email}`}>联系我 ↗</a>
       </header>
@@ -221,6 +227,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
               </ul>
             </article>
           </div>
+          <ProjectEvidenceGallery project={project} media={media} />
           <p className="case-evidence__boundary">{project.details.boundary}</p>
         </section>
 
@@ -238,7 +245,7 @@ export function ProjectDetailPage({ project, evidence }: ProjectDetailPageProps)
             ) : (
               <p>当前没有公开仓库，以本案例中的已核验事实和脱敏代码为准。</p>
             )}
-            <a className="specular-surface" data-specular href={homeUrl}>继续浏览作品集 →</a>
+            <a className="specular-surface" data-specular href={homeUrl} onClick={rememberReturnTarget}>继续浏览作品集 →</a>
           </div>
         </section>
       </main>

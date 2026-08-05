@@ -25,6 +25,28 @@ const evidenceBaseSchema = z
   })
   .strict()
 
+const evidenceMediaSchema = z
+  .object({
+    id: z.string().regex(/^[a-z0-9-]+$/),
+    projectId: projectIdSchema,
+    type: z.enum([
+      'runtime-screenshot',
+      'concept-visual',
+      'architecture',
+      'test-evidence',
+    ]),
+    src: z.string().regex(/^evidence\/[a-z0-9/-]+\.png$/),
+    alt: z.string().min(1),
+    caption: z.string().min(1),
+    proofStatement: z.string().min(1),
+    verifiedAt: z.string().date(),
+    boundary: z.string().min(1),
+    order: z.number().int().positive(),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+  })
+  .strict()
+
 const codeExampleSchema = z
   .object({
     title: z.string().min(1),
@@ -52,6 +74,7 @@ const publicProjectSchema = z
     problem: z.string().min(1),
     keyImplementation: z.string().min(1),
     evidenceIds: z.array(z.string()).min(1),
+    evidenceMediaIds: z.array(z.string()).optional(),
     tags: z.array(z.string()).min(1),
     github: z.string().url().optional(),
     details: z
@@ -115,6 +138,7 @@ export const publicContentSchema = z
     sourceRefs: z.array(sourceRefSchema).min(1),
     lenses: lensesSchema,
     evidence: z.array(evidenceBaseSchema).min(1),
+    evidenceMedia: z.array(evidenceMediaSchema).length(9),
     projects: z.array(publicProjectSchema).min(3),
     experiments: z.array(experimentSchema),
   })
@@ -133,6 +157,7 @@ export const privateFactsSchema = z
         sourceRefs: z.array(sourceRefSchema).min(1),
         lenses: lensesSchema,
         evidence: z.array(privateEvidenceSchema).min(1),
+        evidenceMedia: z.array(evidenceMediaSchema).length(9),
         projects: z.array(publicProjectSchema).min(3),
         experiments: z.array(experimentSchema),
       })

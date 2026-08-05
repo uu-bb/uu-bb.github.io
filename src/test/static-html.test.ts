@@ -19,12 +19,13 @@ describe('static portfolio HTML', () => {
       '小u鱼',
       'RAG 智能知识库',
       '32/32 项测试通过',
-      '29/29 项 v1 交付基线测试通过',
+      '436/436 项当前 V3 自动化测试通过',
       '7/7 项 Lite 与元数据链路测试通过',
       '查看综合简历',
     ]) {
       expect(html).toContain(text)
     }
+    expect(html).not.toContain(['29', '29'].join('/'))
   })
 
   it('builds structured data from verified public fields only', () => {

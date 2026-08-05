@@ -3,8 +3,10 @@ import { expect, test } from '@playwright/test'
 
 test('首屏完整呈现招聘信息与求职路径，且不请求 GLB', async ({ page }) => {
   const modelRequests: string[] = []
+  const evidenceRequests: string[] = []
   page.on('request', (request) => {
     if (/\.glb(?:$|\?)/i.test(request.url())) modelRequests.push(request.url())
+    if (/\/evidence\/.*\.png(?:$|\?)/i.test(request.url())) evidenceRequests.push(request.url())
   })
 
   await page.goto('/')
@@ -32,6 +34,7 @@ test('首屏完整呈现招聘信息与求职路径，且不请求 GLB', async (
   }))
   expect(layout.content).toBeLessThanOrEqual(layout.viewport)
   expect(modelRequests).toEqual([])
+  expect(evidenceRequests).toEqual([])
 })
 
 test('Phase 1A 关键视口保持可读、完整且无横向溢出', async ({ page }) => {
@@ -245,6 +248,93 @@ test('三个核心项目使用可分享的独立案例页', async ({ page }) => 
   expect(layout.content).toBeLessThanOrEqual(layout.viewport)
 })
 
+test('求职助手与 RAG 按人工冻结顺序展示公开运行证据', async ({ page }) => {
+  const cases = [
+    {
+      id: 'job-assistant',
+      heading: '真实运行证据',
+      mediaIds: ['ja-analysis', 'ja-preview-confirmation', 'ja-validation-guard'],
+    },
+    {
+      id: 'rag-knowledge-base',
+      heading: '真实运行证据',
+      mediaIds: ['rag-query-with-sources', 'rag-no-match-fallback', 'rag-knowledge-status'],
+    },
+  ] as const
+
+  for (const item of cases) {
+    await page.goto(`/?project=${item.id}&focus=ai-app`)
+    const region = page.getByRole('region', { name: item.heading })
+    await region.scrollIntoViewIfNeeded()
+    await expect(region.locator('figure')).toHaveCount(3)
+    expect(await region.locator('figure').evaluateAll((figures) =>
+      figures.map((figure) => figure.getAttribute('data-evidence-id')),
+    )).toEqual(item.mediaIds)
+    for (const image of await region.locator('img').all()) {
+      await expect(image).toHaveAttribute('loading', 'lazy')
+      await expect(image).toHaveAttribute('decoding', 'async')
+      await expect(image).toHaveAttribute('width', /\d+/)
+      await expect(image).toHaveAttribute('height', /\d+/)
+    }
+  }
+
+  await page.goto('/?project=rag-knowledge-base&focus=ai-app')
+  const ragRegion = page.getByRole('region', { name: '真实运行证据' })
+  await expect(ragRegion).toContainText('Lite')
+  await expect(ragRegion).toContainText('不证明大规模业务吞吐或生产质量')
+})
+
+test('小u鱼只展示概念、架构与当前 V3 测试证据', async ({ page }) => {
+  await page.goto('/?project=xiaoyu&focus=product')
+  const region = page.getByRole('region', { name: '公开证据' })
+  await region.scrollIntoViewIfNeeded()
+
+  await expect(region).toContainText('本地双角色长期陪伴系统')
+  await expect(region.getByText('概念视觉')).toBeVisible()
+  await expect(region.getByText('系统架构')).toBeVisible()
+  await expect(region.getByText('自动化测试证据')).toBeVisible()
+  await expect(region).toContainText('不是产品运行截图')
+  await expect(region).toContainText('436/436 项当前 V3 自动化测试通过')
+  await expect(region).toContainText('DPAPI 持久化与 LLM 边界为冻结权威合同')
+  await expect(region).toContainText('不代表代码覆盖率')
+  await expect(region.locator('[data-evidence-type="runtime-screenshot"]')).toHaveCount(0)
+})
+
+test('移动端证据保持单列并且 360×800 无水平滚动', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/?project=job-assistant&focus=ai-app')
+  const region = page.getByRole('region', { name: '真实运行证据' })
+  await region.scrollIntoViewIfNeeded()
+  const boxes = await region.locator('figure').evaluateAll((figures) =>
+    figures.map((figure) => {
+      const rect = figure.getBoundingClientRect()
+      return { left: rect.left, top: rect.top, bottom: rect.bottom }
+    }),
+  )
+  expect(new Set(boxes.map((box) => Math.round(box.left))).size).toBe(1)
+  expect(boxes[1].top).toBeGreaterThanOrEqual(boxes[0].bottom)
+  expect(boxes[2].top).toBeGreaterThanOrEqual(boxes[1].bottom)
+
+  await page.setViewportSize({ width: 360, height: 800 })
+  await page.goto('/?project=xiaoyu&focus=product')
+  const layout = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }))
+  expect(layout.content).toBeLessThanOrEqual(layout.viewport)
+})
+
+test('键盘可到达证据区域，返回作品集后焦点回到原项目入口', async ({ page }) => {
+  await page.goto('/?project=job-assistant&focus=ai-app')
+  const evidenceRegion = page.getByRole('region', { name: '真实运行证据' })
+  await evidenceRegion.focus()
+  await expect(evidenceRegion).toBeFocused()
+
+  await page.getByRole('link', { name: '← 返回作品集' }).click()
+  await expect(page).toHaveURL(/#projects$/)
+  await expect(page.locator('[data-project-link="job-assistant"]')).toBeFocused()
+})
+
 test('四个项目链接都提供完整讲解结构与代表代码', async ({ page }) => {
   const cases = [
     ['job-assistant', '深圳 AI 求职助手'],
@@ -381,7 +471,8 @@ test('JavaScript 关闭时仍有完整职业摘要、项目证据与联系入口
   await expect(staticPortfolio.getByText('小u鱼')).toBeVisible()
   await expect(staticPortfolio.getByText('RAG 智能知识库')).toBeVisible()
   await expect(staticPortfolio.getByText('32/32 项测试通过')).toBeVisible()
-  await expect(staticPortfolio.getByText('29/29 项 v1 交付基线测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByText('436/436 项当前 V3 自动化测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByText(['29', '29'].join('/'))).toHaveCount(0)
   await expect(staticPortfolio.getByText('7/7 项 Lite 与元数据链路测试通过')).toBeVisible()
   await expect(staticPortfolio.getByRole('link', { name: '查看综合简历' })).toHaveAttribute(
     'href',

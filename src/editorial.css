@@ -1767,6 +1767,107 @@
   font-size: clamp(1rem, 1.5vw, 1.25rem);
 }
 
+.case-media-evidence {
+  max-width: 1220px;
+  margin-top: clamp(70px, 9vw, 120px);
+  padding-top: clamp(34px, 5vw, 58px);
+  border-top: 1px solid rgba(215, 226, 234, 0.34);
+  outline: none;
+  scroll-margin-top: 120px;
+}
+
+.case-media-evidence:focus-visible {
+  outline: 3px solid var(--editorial-blue);
+  outline-offset: 8px;
+}
+
+.case-media-evidence__heading > span,
+.case-media-evidence__category {
+  color: var(--editorial-blue);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.case-evidence .case-media-evidence__heading h3 {
+  margin: 14px 0 0;
+  font-size: clamp(2.2rem, 5vw, 5rem);
+  letter-spacing: -0.055em;
+}
+
+.case-media-evidence__heading p {
+  margin: 14px 0 0;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+
+.case-media-evidence__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 54px);
+  margin-top: clamp(40px, 7vw, 76px);
+}
+
+.case-media-evidence__item {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid rgba(215, 226, 234, 0.4);
+  background: #0d141c;
+}
+
+.case-media-evidence__image {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: clamp(10px, 2vw, 24px);
+  background: #070b10;
+}
+
+.case-media-evidence__image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(215, 226, 234, 0.14);
+  object-fit: contain;
+}
+
+.case-media-evidence figcaption {
+  padding: clamp(22px, 4vw, 38px);
+}
+
+.case-media-evidence figcaption h4 {
+  max-width: 920px;
+  margin: 18px 0 0;
+  font-size: clamp(1.25rem, 2.1vw, 2rem);
+  line-height: 1.28;
+}
+
+.case-media-evidence figcaption p {
+  max-width: 980px;
+  margin: 14px 0 0;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+  line-height: 1.72;
+}
+
+.case-media-evidence__verified {
+  font-size: 0.85rem !important;
+}
+
+.case-media-evidence__boundary {
+  padding-top: 14px;
+  border-top: 1px solid rgba(215, 226, 234, 0.18);
+}
+
+.case-media-evidence__project-boundary {
+  max-width: 1080px;
+  margin: clamp(34px, 5vw, 56px) 0 0;
+  padding: 22px 0;
+  border-top: 1px solid rgba(215, 226, 234, 0.34);
+  border-bottom: 1px solid rgba(215, 226, 234, 0.34);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+}
+
 .case-contribution {
   padding: clamp(90px, 12vw, 170px) clamp(22px, 5vw, 84px);
   color: #0c0c0c;
@@ -2294,6 +2395,19 @@
 
   .case-code pre {
     padding: 18px;
+  }
+
+  .case-media-evidence {
+    scroll-margin-top: 92px;
+  }
+
+  .case-media-evidence__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .case-media-evidence__image {
+    min-height: 0;
+    padding: 8px;
   }
 }
 

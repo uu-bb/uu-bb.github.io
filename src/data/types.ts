@@ -15,6 +15,27 @@ export interface EvidenceRecord {
   sourceRefs: string[]
 }
 
+export type EvidenceMediaType =
+  | 'runtime-screenshot'
+  | 'concept-visual'
+  | 'architecture'
+  | 'test-evidence'
+
+export interface EvidenceMedia {
+  id: string
+  projectId: string
+  type: EvidenceMediaType
+  src: string
+  alt: string
+  caption: string
+  proofStatement: string
+  verifiedAt: string
+  boundary: string
+  order: number
+  width: number
+  height: number
+}
+
 export interface ProjectCase {
   id: string
   title: string
@@ -25,6 +46,7 @@ export interface ProjectCase {
   problem: string
   keyImplementation: string
   evidenceIds: string[]
+  evidenceMediaIds?: string[]
   tags: string[]
   github?: string
   details: {
@@ -78,6 +100,7 @@ export interface PublicContent {
   sourceRefs: string[]
   lenses: Record<RoleLens, string[]>
   evidence: EvidenceRecord[]
+  evidenceMedia: EvidenceMedia[]
   projects: ProjectCase[]
   experiments: Experiment[]
 }

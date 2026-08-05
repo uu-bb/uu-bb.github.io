@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01",
+  "generatedAt": "2026-08-05",
   "profile": {
     "name": "杨皓博",
     "brand": "睡醒实验室",
@@ -22,6 +22,7 @@
     "resume-python-v20260731",
     "project-job-test-v20260801",
     "project-xiaoyu-v1-report-v20260715",
+    "project-xiaoyu-v3-test-v20260805",
     "project-rag-test-v20260801",
     "project-agent-test-v20260731"
   ],
@@ -62,14 +63,14 @@
     },
     {
       "id": "xiaoyu-tests",
-      "label": "29 项 v1 测试通过",
-      "detail": "29/29 项 v1 交付基线测试通过",
+      "label": "436 项 V3 自动化测试通过",
+      "detail": "436/436 项当前 V3 自动化测试通过",
       "framework": "pytest",
       "status": "verified",
-      "verifiedAt": "2026-07-15",
-      "boundary": "这是 Windows v1 交付基线；后续版本的扩展回归集不与该数字混用。",
+      "verifiedAt": "2026-08-05",
+      "boundary": "不是代码覆盖率，也不代表视觉验收完成、联网稳定性、全部项目验收或完整产品验收。",
       "sourceRefs": [
-        "project-xiaoyu-v1-report-v20260715"
+        "project-xiaoyu-v3-test-v20260805"
       ]
     },
     {
@@ -96,6 +97,134 @@
       ]
     }
   ],
+  "evidenceMedia": [
+    {
+      "id": "ja-analysis",
+      "projectId": "job-assistant",
+      "type": "runtime-screenshot",
+      "src": "evidence/job-assistant/job-assistant-agent-analysis.png",
+      "alt": "求职助手只读分析页，表格列出演示岗位的匹配分、平台和待确认状态。",
+      "caption": "只读 Agent 对演示岗位执行匹配分析；不代表真实招聘平台结果或真实投递。",
+      "proofStatement": "证明只读 Agent 能对演示岗位给出匹配分、平台和待确认状态。",
+      "verifiedAt": "2026-08-04",
+      "boundary": "仅证明本地演示分析流程，不证明真实账户操作、平台稳定性或投递成功。",
+      "order": 1,
+      "width": 902,
+      "height": 820
+    },
+    {
+      "id": "ja-preview-confirmation",
+      "projectId": "job-assistant",
+      "type": "runtime-screenshot",
+      "src": "evidence/job-assistant/job-assistant-preview-confirmation.png",
+      "alt": "求职助手逐岗位预览确认窗口，显示演示模式、岗位信息和人工确认控件。",
+      "caption": "逐岗位预览与人工确认流程；确认按钮为演示行为，本轮没有真实提交。",
+      "proofStatement": "证明逐岗位预览、人工确认、演示模式与只读安全边界。",
+      "verifiedAt": "2026-08-04",
+      "boundary": "不证明真实账号登录、真实招聘平台写入或真实投递完成。",
+      "order": 2,
+      "width": 1310,
+      "height": 890
+    },
+    {
+      "id": "ja-validation-guard",
+      "projectId": "job-assistant",
+      "type": "runtime-screenshot",
+      "src": "evidence/job-assistant/job-assistant-validation-guard.png",
+      "alt": "求职助手在岗位链接缺失时显示输入校验错误并阻止进入预览流程。",
+      "caption": "输入校验阻止缺少真实岗位链接的记录进入预览流程。",
+      "proofStatement": "证明岗位链接缺失时系统拒绝继续并给出明确输入要求。",
+      "verifiedAt": "2026-08-04",
+      "boundary": "这是输入验证证据，不是招聘平台请求失败或线上可用性证明。",
+      "order": 3,
+      "width": 1310,
+      "height": 890
+    },
+    {
+      "id": "rag-query-with-sources",
+      "projectId": "rag-knowledge-base",
+      "type": "runtime-screenshot",
+      "src": "evidence/rag/rag-query-with-sources.png",
+      "alt": "Lite 知识库回答区域展示命中回答、来源引用、分块编号、相关度和耗时。",
+      "caption": "脱敏测试文档上的 Lite 查询与来源引用闭环。",
+      "proofStatement": "证明 Lite 模式完成查询、回答、来源引用、分块编号和耗时展示。",
+      "verifiedAt": "2026-08-04",
+      "boundary": "不证明真实 Ollama 回答质量、完整模型链路或外部服务性能。",
+      "order": 1,
+      "width": 1440,
+      "height": 1373
+    },
+    {
+      "id": "rag-no-match-fallback",
+      "projectId": "rag-knowledge-base",
+      "type": "runtime-screenshot",
+      "src": "evidence/rag/rag-no-match-fallback.png",
+      "alt": "Lite 知识库对无关查询返回没有足够相关内容，并保持来源列表为空。",
+      "caption": "无匹配查询的诚实降级路径，不生成无来源回答。",
+      "proofStatement": "证明无相关内容时返回明确未找到状态并保持来源为空。",
+      "verifiedAt": "2026-08-04",
+      "boundary": "不证明外部模型服务的容错、恢复能力或长期稳定性。",
+      "order": 2,
+      "width": 1440,
+      "height": 1031
+    },
+    {
+      "id": "rag-knowledge-status",
+      "projectId": "rag-knowledge-base",
+      "type": "runtime-screenshot",
+      "src": "evidence/rag/rag-knowledge-status.png",
+      "alt": "Lite 知识库状态页显示一个文档、一个分块、零外部 API 和查询入口。",
+      "caption": "Lite 知识库的本地索引状态与查询入口。",
+      "proofStatement": "证明 Lite 模式的文档、分块、外部 API 数量与查询入口。",
+      "verifiedAt": "2026-08-04",
+      "boundary": "这是确定性 Lite 演示，不是完整模型检索链路。",
+      "order": 3,
+      "width": 1440,
+      "height": 1031
+    },
+    {
+      "id": "xiaoyu-concept-main",
+      "projectId": "xiaoyu",
+      "type": "concept-visual",
+      "src": "evidence/xiaoyu/xiaoyu-concept-main.png",
+      "alt": "概念插画：学生在桌前专注工作，桌面旁的虚构小u鱼形象代表低打扰陪伴。",
+      "caption": "小u鱼项目概念主图，用于表达专注、提醒与低打扰陪伴；不是产品运行截图。",
+      "proofStatement": "表达专注、提醒、锁定和低打扰陪伴的产品概念。",
+      "verifiedAt": "2026-08-05",
+      "boundary": "概念表达不证明实际界面、角色素材或运行效果；真实运行素材暂不公开。",
+      "order": 1,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "id": "xiaoyu-v3-architecture",
+      "projectId": "xiaoyu",
+      "type": "architecture",
+      "src": "evidence/architecture/xiaoyu-v3-architecture.png",
+      "alt": "小u鱼 V3 架构图，从类型化事件经过协调器、领域引擎、状态和场景租约连接到双透明 Qt 角色窗口。",
+      "caption": "小u鱼 V3 领域到 Qt 表现层的架构图；DPAPI 持久化与 LLM 边界为冻结权威合同，不属于本轮 436 项运行实现证明。",
+      "proofStatement": "说明 ContextEvent、协调器、领域引擎、策略、场景租约和 Qt 表现层的权责链。",
+      "verifiedAt": "2026-08-05",
+      "boundary": "必须与图注同时展示；不得把权威合同节点写成已完成的持久化或模型运行能力。",
+      "order": 2,
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "id": "xiaoyu-v3-tests",
+      "projectId": "xiaoyu",
+      "type": "test-evidence",
+      "src": "evidence/test-evidence/xiaoyu-v3-automated-tests.png",
+      "alt": "测试证据卡显示小u鱼 V3 的 436 项自动化测试全部通过，核验日期为 2026-08-05。",
+      "caption": "436/436 项当前 V3 自动化测试通过，最近核验于 2026-08-05。",
+      "proofStatement": "证明当前 V3 在核验日收集 436 项并全部通过。",
+      "verifiedAt": "2026-08-05",
+      "boundary": "不是代码覆盖率，也不代表美术授权、线上稳定性或完整产品验收。",
+      "order": 3,
+      "width": 1600,
+      "height": 900
+    }
+  ],
   "projects": [
     {
       "id": "job-assistant",
@@ -108,6 +237,11 @@
       "keyImplementation": "分离 browser-use 只读分析与 Playwright 确定性执行，以白名单和一次性令牌限制副作用。",
       "evidenceIds": [
         "job-tests"
+      ],
+      "evidenceMediaIds": [
+        "ja-analysis",
+        "ja-preview-confirmation",
+        "ja-validation-guard"
       ],
       "tags": [
         "FastAPI",
@@ -186,6 +320,11 @@
       "evidenceIds": [
         "xiaoyu-tests"
       ],
+      "evidenceMediaIds": [
+        "xiaoyu-concept-main",
+        "xiaoyu-v3-architecture",
+        "xiaoyu-v3-tests"
+      ],
       "tags": [
         "Python",
         "PyQt5",
@@ -244,7 +383,7 @@
             "project-xiaoyu-v1-code-v20260802"
           ]
         },
-        "boundary": "当前为本地 Windows 项目，不公开私密部署地址，也不把未来版本能力写成已完成。"
+        "boundary": "当前运行角色素材不公开；概念图不代表当前运行界面；436 项测试不代表代码覆盖率、视觉验收完成、联网稳定性已经验证或整个项目全部阶段验收完成。"
       },
       "sourceRefs": [
         "resume-product-v20260731",
@@ -262,6 +401,11 @@
       "keyImplementation": "组合 Embedding、BM25、RRF/加权融合与 Reranker，并在回答中保留来源。",
       "evidenceIds": [
         "rag-tests"
+      ],
+      "evidenceMediaIds": [
+        "rag-query-with-sources",
+        "rag-no-match-fallback",
+        "rag-knowledge-status"
       ],
       "tags": [
         "RAG",
@@ -321,7 +465,7 @@
             "repo-rag-main-v20260802"
           ]
         },
-        "boundary": "公开证据只覆盖 Lite 与元数据链路，不声称当前环境未运行的 Full 模式效果。"
+        "boundary": "三张均为 Lite 实际运行证据；不等同于完整 Full 模式效果验证；不证明大规模业务吞吐或生产质量。"
       },
       "sourceRefs": [
         "resume-ai-app-v20260731",
@@ -407,7 +551,7 @@
     {
       "id": "lightrag",
       "title": "LightRAG 中文简历-JD 增强",
-      "summary": "构建脱敏语料、四类 Prompt 与 hybrid 查询生命周期，作为 RAG 案例的开源扩展。",
+      "summary": "扩展实验：LightRAG。完成 4 项编排流程测试，验证基础调用与流程连接；真实 Ollama 检索和回答效果仍待验证。",
       "status": "completed",
       "statusLabel": "已完成",
       "tags": [

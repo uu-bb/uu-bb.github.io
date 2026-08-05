@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './styles.css'
 import './editorial.css'
 import { AnimatedText } from './components/AnimatedText'
@@ -14,7 +14,7 @@ import { ProjectDetailPage } from './components/ProjectDetailPage'
 import { ProjectShowcaseCard } from './components/ProjectShowcaseCard'
 import { RecruiterHero } from './components/RecruiterHero'
 import { SpecularGlow } from './components/SpecularGlow'
-import { evidenceById, projectById, publicContent } from './data/content'
+import { evidenceById, evidenceMediaById, projectById, publicContent } from './data/content'
 import type { RoleLens } from './data/types'
 import { assetPath } from './utils/assets'
 import { getProjectOrder, parseRoleLens } from './utils/focus'
@@ -197,6 +197,18 @@ function Portfolio() {
   const [contactIntentIndex, setContactIntentIndex] = useState(0)
   const contactIntent = contactIntents[contactIntentIndex]
   const resumePath = assetPath('resume/yang-haobo-ai-product-application.pdf')
+
+  useEffect(() => {
+    const projectId = window.sessionStorage.getItem('portfolio-return-focus')
+    if (!projectId) return
+    window.sessionStorage.removeItem('portfolio-return-focus')
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector<HTMLAnchorElement>(
+        `[data-project-link="${projectId}"]`,
+      )?.focus()
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [])
 
   const orderedProjects = useMemo(() => {
     const orderedIds = [...getProjectOrder(lens), ...coreProjectIds]
@@ -491,6 +503,9 @@ function App() {
               project={project}
               evidence={project.evidenceIds
                 .map((id) => evidenceById.get(id))
+                .filter((item) => item !== undefined)}
+              media={(project.evidenceMediaIds ?? [])
+                .map((id) => evidenceMediaById.get(id))
                 .filter((item) => item !== undefined)}
             />
           ) : (

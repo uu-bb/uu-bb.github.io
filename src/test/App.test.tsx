@@ -25,10 +25,10 @@ describe('portfolio experience', () => {
 
     const evidenceRegion = screen.getByRole('region', { name: '核心项目证据' })
     expect(within(evidenceRegion).getByText('32/32 项测试通过')).toBeInTheDocument()
-    expect(within(evidenceRegion).getByText('29/29 项 v1 交付基线测试通过')).toBeInTheDocument()
+    expect(within(evidenceRegion).getByText('436/436 项当前 V3 自动化测试通过')).toBeInTheDocument()
     expect(within(evidenceRegion).getByText('7/7 项 Lite 与元数据链路测试通过')).toBeInTheDocument()
     expect(within(evidenceRegion).getAllByText('最近核验：2026-08-01')).toHaveLength(2)
-    expect(within(evidenceRegion).getByText('最近核验：2026-07-15')).toBeInTheDocument()
+    expect(within(evidenceRegion).getByText('最近核验：2026-08-05')).toBeInTheDocument()
     expect(within(evidenceRegion).getByRole('link', {
       name: '查看深圳 AI 求职助手',
     })).toHaveAttribute('href', '#job-assistant')
@@ -123,5 +123,44 @@ describe('portfolio experience', () => {
     expect(screen.getByRole('heading', { name: '项目理解' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '面向对象' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '关键取舍与边界' })).toBeInTheDocument()
+  })
+
+  it('renders approved job evidence only on the project page and in frozen order', () => {
+    window.history.pushState({}, '', '/?project=job-assistant&focus=ai-app')
+    render(<App />)
+
+    const region = screen.getByRole('region', { name: '真实运行证据' })
+    const figures = [...region.querySelectorAll('figure')]
+    expect(figures.map((figure) => figure.dataset.evidenceId)).toEqual([
+      'ja-analysis',
+      'ja-preview-confirmation',
+      'ja-validation-guard',
+    ])
+    for (const image of region.querySelectorAll('img')) {
+      expect(image).toHaveAttribute('loading', 'lazy')
+      expect(image).toHaveAttribute('decoding', 'async')
+      expect(image).toHaveAttribute('width')
+      expect(image).toHaveAttribute('height')
+    }
+  })
+
+  it('labels xiaoyu concept, architecture and test evidence without a runtime screenshot', () => {
+    window.history.pushState({}, '', '/?project=xiaoyu&focus=product')
+    render(<App />)
+
+    const region = screen.getByRole('region', { name: '公开证据' })
+    expect(within(region).getByText('本地双角色长期陪伴系统')).toBeInTheDocument()
+    expect(within(region).getByText('概念视觉')).toBeInTheDocument()
+    expect(within(region).getByText('系统架构')).toBeInTheDocument()
+    expect(within(region).getByText('自动化测试证据')).toBeInTheDocument()
+    expect(within(region).getByText(/不是产品运行截图/)).toBeInTheDocument()
+    expect(within(region).getByText(/436\/436 项当前 V3 自动化测试通过/)).toBeInTheDocument()
+    expect(within(region).queryByText('真实运行证据')).not.toBeInTheDocument()
+  })
+
+  it('does not render evidence images on the portfolio homepage', () => {
+    window.history.pushState({}, '', '/')
+    const { container } = render(<App />)
+    expect(container.querySelector('img[src*="/evidence/"]')).not.toBeInTheDocument()
   })
 })

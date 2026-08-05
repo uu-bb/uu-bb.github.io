@@ -56,7 +56,14 @@ export function ProjectShowcaseCard({
             <span>{project.statusLabel}</span>
           </div>
           <h3>{project.title}</h3>
-          <a className="specular-surface" data-specular href={detailUrl}>阅读案例 ↗</a>
+          <a
+            className="specular-surface"
+            data-specular
+            data-project-link={project.id}
+            href={detailUrl}
+          >
+            阅读案例 ↗
+          </a>
         </header>
 
         <div className="stack-project__body">
