@@ -157,6 +157,7 @@ test('核心证据链接定位到首页对应的完整项目卡', async ({ page 
     .getByRole('link', { name: '查看深圳 AI 求职助手' })
     .click()
   await expect(page).toHaveURL(/#job-assistant$/)
+  await page.locator('#job-assistant').scrollIntoViewIfNeeded()
   await expect(page.locator('#job-assistant')).toBeInViewport()
   await expect(page.locator('#job-assistant').getByRole('link', { name: '阅读案例 ↗' })).toBeVisible()
 })
@@ -206,11 +207,175 @@ test('首屏导航、睡醒切换和点击火花都可操作', async ({ page }) 
   }
 
   const wakeToggle = page.locator('.hero-wake')
+  await expect(wakeToggle).toHaveAttribute('aria-pressed', 'false')
+  await expect(wakeToggle).toHaveText('○唤醒实验室')
+  await wakeToggle.click()
   await expect(wakeToggle).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.hero-stage')).toHaveClass(/is-wake/)
+  await expect(page.locator('.hero-stage__media--wake')).toHaveCSS('opacity', '1')
   await wakeToggle.click()
   await expect(wakeToggle).toHaveAttribute('aria-pressed', 'false')
-  await expect(page.locator('.hero-stage')).not.toHaveClass(/is-awake/)
+  await expect(page.locator('.hero-stage')).toHaveClass(/is-slumber/)
   await expect(page.locator('.hero-stage__media--sleep')).toHaveCSS('opacity', '1')
+})
+
+test('Phase 2C 桌面双态保持首屏结构、URL 与历史稳定', async ({ page }) => {
+  const wakeRequests: string[] = []
+  const wakeRequestTimes: number[] = []
+  let loadFinishedAt = 0
+  page.on('load', () => {
+    loadFinishedAt = Date.now()
+  })
+  page.on('request', (request) => {
+    if (/\/cover\/slumber-wake-transition-\d+\.webp(?:$|\?)/i.test(request.url())) {
+      wakeRequests.push(request.url())
+      wakeRequestTimes.push(Date.now())
+    }
+  })
+
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+
+  const hero = page.locator('.hero-stage')
+  const toggle = page.locator('.hero-wake')
+  const primaryAction = page.getByRole('link', { name: '查看核心项目' })
+  const initialUrl = page.url()
+  const initialHistoryLength = await page.evaluate(() => window.history.length)
+  const initialLayout = await page.evaluate(() => {
+    const heroElement = document.querySelector<HTMLElement>('.hero-stage')
+    const action = document.querySelector<HTMLElement>('.hero-actions .button--primary')
+    if (!heroElement || !action) throw new Error('Phase 2C desktop hero is incomplete')
+    return {
+      hero: heroElement.getBoundingClientRect().toJSON(),
+      action: action.getBoundingClientRect().toJSON(),
+    }
+  })
+
+  await expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+  await expect(hero.getByText('STATUS / SLUMBER')).toBeVisible()
+  await expect(hero.getByText('实验室待机中')).toBeVisible()
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  await expect(toggle).toHaveAccessibleName('唤醒睡醒实验室')
+  await expect(primaryAction).toBeVisible()
+  await expect(page.locator('.hero-stage__media--sleep img')).toHaveAttribute('fetchpriority', 'high')
+
+  await toggle.click()
+  await expect(hero).toHaveAttribute('data-lab-state', 'wake')
+  await expect(hero).toHaveAttribute('data-wake-image-ready', 'true')
+  await expect(hero.getByText('STATUS / WAKE')).toBeVisible()
+  await expect(hero.getByText('实验室已开启', { exact: true })).toBeVisible()
+  await expect(toggle).toHaveAccessibleName('让睡醒实验室进入待机状态')
+  await expect(toggle).toHaveText('●让实验室入睡')
+  await expect(page.locator('.hero-lab-announcement')).toHaveText('睡醒实验室已开启')
+  await expect(page.locator('.hero-stage__media--wake img')).toHaveAttribute('fetchpriority', 'low')
+  await expect(page.locator('.hero-stage__media--wake')).toHaveCSS('opacity', '1')
+  expect(new Set(wakeRequests).size).toBe(1)
+  expect(wakeRequestTimes[0]).toBeGreaterThanOrEqual(loadFinishedAt)
+
+  const wakeLayout = await page.evaluate(() => {
+    const heroElement = document.querySelector<HTMLElement>('.hero-stage')
+    const action = document.querySelector<HTMLElement>('.hero-actions .button--primary')
+    if (!heroElement || !action) throw new Error('Phase 2C wake hero is incomplete')
+    return {
+      hero: heroElement.getBoundingClientRect().toJSON(),
+      action: action.getBoundingClientRect().toJSON(),
+    }
+  })
+
+  expect(Math.abs(wakeLayout.hero.height - initialLayout.hero.height)).toBeLessThanOrEqual(0.5)
+  expect(Math.abs(wakeLayout.action.x - initialLayout.action.x)).toBeLessThanOrEqual(0.5)
+  expect(Math.abs(wakeLayout.action.y - initialLayout.action.y)).toBeLessThanOrEqual(0.5)
+  expect(page.url()).toBe(initialUrl)
+  expect(await page.evaluate(() => window.history.length)).toBe(initialHistoryLength)
+  await expect(page.getByRole('link', { name: '查看综合简历' }).first()).toBeVisible()
+  await expect(page.getByRole('link', { name: '联系我' }).first()).toBeVisible()
+
+  await toggle.click()
+  await expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+  await expect(page.locator('.hero-lab-announcement')).toHaveText('睡醒实验室已进入待机状态')
+  expect(page.url()).toBe(initialUrl)
+  expect(await page.evaluate(() => window.history.length)).toBe(initialHistoryLength)
+
+  await page.reload()
+  await expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+  await expect(page.getByRole('button', { name: '唤醒睡醒实验室' })).toHaveAttribute('aria-pressed', 'false')
+})
+
+test('Phase 2C 移动双态保持信息优先顺序且无横向滚动', async ({ page }) => {
+  for (const viewport of [
+    { width: 360, height: 800 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+
+    const hero = page.locator('.hero-stage')
+    const toggle = page.locator('.hero-wake')
+    const slumberLayout = await page.evaluate(() => {
+      const heading = document.querySelector<HTMLElement>('#hero-name')
+      const primary = document.querySelector<HTMLElement>('.hero-actions .button--primary')
+      const secondary = document.querySelector<HTMLElement>('.hero-secondary-links')
+      const visual = document.querySelector<HTMLElement>('.hero-stage__visual')
+      const control = document.querySelector<HTMLElement>('.hero-lab-control')
+      if (!heading || !primary || !secondary || !visual || !control) {
+        throw new Error('Phase 2C mobile hero is incomplete')
+      }
+      return {
+        headingBottom: heading.getBoundingClientRect().bottom,
+        primaryTop: primary.getBoundingClientRect().top,
+        primaryBottom: primary.getBoundingClientRect().bottom,
+        secondaryTop: secondary.getBoundingClientRect().top,
+        secondaryBottom: secondary.getBoundingClientRect().bottom,
+        visualTop: visual.getBoundingClientRect().top,
+        visualHeight: visual.getBoundingClientRect().height,
+        controlTop: control.getBoundingClientRect().top,
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+      }
+    })
+
+    expect(slumberLayout.headingBottom).toBeLessThan(slumberLayout.primaryTop)
+    expect(slumberLayout.primaryBottom).toBeLessThanOrEqual(slumberLayout.secondaryTop)
+    expect(slumberLayout.secondaryBottom).toBeLessThanOrEqual(slumberLayout.visualTop)
+    expect(slumberLayout.controlTop).toBeGreaterThan(slumberLayout.visualTop + slumberLayout.visualHeight * 0.65)
+    expect(slumberLayout.documentWidth).toBeLessThanOrEqual(slumberLayout.viewportWidth)
+
+    const heroBox = await hero.boundingBox()
+    await toggle.click()
+    await expect(hero).toHaveAttribute('data-lab-state', 'wake')
+    await expect(hero).toHaveAttribute('data-wake-image-ready', 'true')
+    const wakeBox = await hero.boundingBox()
+    expect(wakeBox?.height).toBeCloseTo(heroBox?.height ?? 0, 0)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width)
+
+    await toggle.click()
+    await expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+  }
+})
+
+test('Phase 2C 支持 Enter、Space 与减弱动效', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+
+  const hero = page.locator('.hero-stage')
+  const toggle = page.locator('.hero-wake')
+  const orbit = page.locator('.hero-orbit .circular-text')
+  const initialTransform = await orbit.evaluate((element) => getComputedStyle(element).transform)
+
+  await toggle.focus()
+  await toggle.press('Enter')
+  await expect(hero).toHaveAttribute('data-lab-state', 'wake')
+  await expect(page.locator('.hero-lab-announcement')).toHaveText('睡醒实验室已开启')
+  await page.waitForTimeout(160)
+  expect(await orbit.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform)
+  expect(await page.locator('.hero-stage__media').first().evaluate((element) => (
+    Number.parseFloat(getComputedStyle(element).transitionDuration) * 1000
+  ))).toBeLessThanOrEqual(100)
+
+  await toggle.press('Space')
+  await expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+  await expect(toggle).toBeFocused()
+  await expect(page.locator('.hero-lab-announcement')).toHaveText('睡醒实验室已进入待机状态')
 })
 
 test('核心项目采用独立微场景且不叠加解释性图注', async ({ page }) => {

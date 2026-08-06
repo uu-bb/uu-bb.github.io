@@ -10,20 +10,52 @@ interface RecruiterHeroProps {
   resumePath: string
 }
 
+export type LabState = 'slumber' | 'wake'
+
 export function RecruiterHero({ resumePath }: RecruiterHeroProps) {
-  const [awake, setAwake] = useState(true)
+  const [labState, setLabState] = useState<LabState>('slumber')
   const [heroReady, setHeroReady] = useState(false)
+  const [wakeImageRequested, setWakeImageRequested] = useState(false)
+  const [wakeImageReady, setWakeImageReady] = useState(false)
+  const [labAnnouncement, setLabAnnouncement] = useState('')
+  const isWake = labState === 'wake'
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setHeroReady(true))
-    return () => window.cancelAnimationFrame(frame)
+    let preloadTimer = 0
+
+    const requestWakeImage = () => {
+      preloadTimer = window.setTimeout(() => setWakeImageRequested(true), 1200)
+    }
+
+    if (document.readyState === 'complete') requestWakeImage()
+    else window.addEventListener('load', requestWakeImage, { once: true })
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(preloadTimer)
+      window.removeEventListener('load', requestWakeImage)
+    }
   }, [])
+
+  const toggleLabState = () => {
+    const nextState: LabState = isWake ? 'slumber' : 'wake'
+    if (nextState === 'wake') setWakeImageRequested(true)
+    setLabState(nextState)
+    setLabAnnouncement(
+      nextState === 'wake'
+        ? '睡醒实验室已开启'
+        : '睡醒实验室已进入待机状态',
+    )
+  }
 
   return (
     <section
-      className={`hero-stage${awake ? ' is-awake' : ''}${heroReady ? ' is-ready' : ''}`}
+      className={`hero-stage is-${labState}${heroReady ? ' is-ready' : ''}${wakeImageReady ? ' is-wake-image-ready' : ''}`}
       id="top"
       aria-labelledby="hero-name"
+      data-lab-state={labState}
+      data-wake-image-ready={wakeImageReady}
     >
       <div className="hero-stage__copy">
         <p className="hero-stage__eyebrow">{siteCopy.brandEyebrow}</p>
@@ -61,7 +93,10 @@ export function RecruiterHero({ resumePath }: RecruiterHeroProps) {
 
       <div className="hero-stage__visual">
         <Magnet className="hero-stage__magnet" padding={180} strength={26}>
-          <picture className="hero-stage__media hero-stage__media--sleep">
+          <picture
+            className="hero-stage__media hero-stage__media--sleep"
+            aria-hidden={isWake && wakeImageReady}
+          >
             <source
               type="image/webp"
               srcSet={`${assetPath('cover/slumber-sleep-768.webp')} 768w, ${assetPath('cover/slumber-sleep-1280.webp')} 1280w, ${assetPath('cover/slumber-sleep-1672.webp')} 1672w`}
@@ -72,25 +107,34 @@ export function RecruiterHero({ resumePath }: RecruiterHeroProps) {
               alt="角色戴着睡帽在深色卧室的床上安静入睡"
               width="1672"
               height="941"
-            />
-          </picture>
-          <picture className="hero-stage__media hero-stage__media--awake">
-            <source
-              type="image/webp"
-              srcSet={`${assetPath('cover/slumber-wake-transition-768.webp')} 768w, ${assetPath('cover/slumber-wake-transition-1280.webp')} 1280w, ${assetPath('cover/slumber-wake-transition-1672.webp')} 1672w`}
-              sizes="(max-width: 767px) 100vw, 45vw"
-            />
-            <img
-              src={assetPath('cover/slumber-wake-transition-1672.webp')}
-              alt="角色从昏暗睡眠空间伸懒腰走向明亮创作工作台"
-              width="1672"
-              height="941"
+              decoding="async"
               fetchPriority="high"
             />
           </picture>
+          {wakeImageRequested && (
+            <picture
+              className="hero-stage__media hero-stage__media--wake"
+              aria-hidden={!isWake || !wakeImageReady}
+            >
+              <source
+                type="image/webp"
+                srcSet={`${assetPath('cover/slumber-wake-transition-768.webp')} 768w, ${assetPath('cover/slumber-wake-transition-1280.webp')} 1280w, ${assetPath('cover/slumber-wake-transition-1672.webp')} 1672w`}
+                sizes="(max-width: 767px) 100vw, 45vw"
+              />
+              <img
+                src={assetPath('cover/slumber-wake-transition-1672.webp')}
+                alt="角色从昏暗睡眠空间伸懒腰走向明亮创作工作台"
+                width="1672"
+                height="941"
+                decoding="async"
+                fetchPriority="low"
+                onLoad={() => setWakeImageReady(true)}
+              />
+            </picture>
+          )}
         </Magnet>
         <SideRays
-          className={`hero-stage__rays${awake ? ' is-awake' : ''}`}
+          className={`hero-stage__rays${isWake ? ' is-wake' : ''}`}
           speed={0.18}
           rayColor1="#f6d69a"
           rayColor2="#79aeca"
@@ -105,18 +149,39 @@ export function RecruiterHero({ resumePath }: RecruiterHeroProps) {
         />
         <div className="hero-stage__shade" aria-hidden="true" />
         <Magnet className="hero-orbit" padding={80} strength={6}>
-          <CircularText text="SLUMBER*WAKE*LAB*" spinDuration={20} onHover="speedUp" />
+          <CircularText
+            text="SLUMBER*WAKE*LAB*"
+            spinDuration={isWake ? 28 : 240}
+            onHover={isWake ? 'speedUp' : 'pause'}
+          />
           <strong aria-hidden="true">S/W</strong>
         </Magnet>
-        <button
-          className="hero-wake"
-          type="button"
-          aria-pressed={awake}
-          onClick={() => setAwake((value) => !value)}
-        >
-          <span aria-hidden="true">{awake ? '●' : '○'}</span>
-          {awake ? '让实验室入睡' : '叫醒实验室'}
-        </button>
+        <div className="hero-lab-control">
+          <div className="hero-lab-status" aria-hidden="true">
+            <span className="hero-lab-status__dot" />
+            <span>
+              <strong>STATUS / {isWake ? 'WAKE' : 'SLUMBER'}</strong>
+              <small>{isWake ? '实验室已开启' : '实验室待机中'}</small>
+            </span>
+          </div>
+          <button
+            className="hero-wake"
+            type="button"
+            aria-pressed={isWake}
+            aria-label={isWake ? '让睡醒实验室进入待机状态' : '唤醒睡醒实验室'}
+            onClick={toggleLabState}
+          >
+            <span aria-hidden="true">{isWake ? '●' : '○'}</span>
+            {isWake ? '让实验室入睡' : '唤醒实验室'}
+          </button>
+          <span
+            className="hero-lab-announcement"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {labAnnouncement}
+          </span>
+        </div>
       </div>
 
       <ul className="hero-capabilities" aria-label="核心能力">

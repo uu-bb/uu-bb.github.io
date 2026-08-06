@@ -20,6 +20,55 @@ describe('portfolio experience', () => {
     expect(screen.getByRole('link', { name: '下载 PDF' })).toBeInTheDocument()
   })
 
+  it('starts in slumber and toggles the lab without changing navigation or project facts', () => {
+    window.history.replaceState({}, '', '/')
+    const initialUrl = window.location.href
+    const initialHistoryLength = window.history.length
+    const { container } = render(<App />)
+    const hero = container.querySelector<HTMLElement>('.hero-stage')
+    const heroRegion = within(hero as HTMLElement)
+    const labToggle = heroRegion.getByRole('button', { name: '唤醒睡醒实验室' })
+    const announcement = container.querySelector('.hero-lab-announcement')
+
+    expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+    expect(hero).toHaveClass('is-slumber')
+    expect(heroRegion.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
+    expect(heroRegion.getByText('AI 产品 × AI 应用工程')).toBeVisible()
+    expect(heroRegion.getByText('STATUS / SLUMBER')).toBeInTheDocument()
+    expect(heroRegion.getByText('实验室待机中')).toBeInTheDocument()
+    expect(labToggle).toHaveAttribute('aria-pressed', 'false')
+    expect(labToggle).toHaveTextContent('唤醒实验室')
+    expect(container.querySelector('.hero-stage__media--wake')).not.toBeInTheDocument()
+
+    fireEvent.click(labToggle)
+
+    expect(hero).toHaveAttribute('data-lab-state', 'wake')
+    expect(hero).toHaveClass('is-wake')
+    expect(container.querySelector('.hero-stage__media--wake')).toBeInTheDocument()
+    expect(labToggle).toHaveAttribute('aria-pressed', 'true')
+    expect(labToggle).toHaveAccessibleName('让睡醒实验室进入待机状态')
+    expect(labToggle).toHaveTextContent('让实验室入睡')
+    expect(heroRegion.getByText('STATUS / WAKE')).toBeInTheDocument()
+    expect(heroRegion.getByText('实验室已开启')).toBeInTheDocument()
+    expect(announcement).toHaveAttribute('aria-live', 'polite')
+    expect(announcement).toHaveTextContent('睡醒实验室已开启')
+    expect(window.location.href).toBe(initialUrl)
+    expect(window.history.length).toBe(initialHistoryLength)
+
+    fireEvent.click(labToggle)
+
+    expect(hero).toHaveAttribute('data-lab-state', 'slumber')
+    expect(labToggle).toHaveAttribute('aria-pressed', 'false')
+    expect(labToggle).toHaveAccessibleName('唤醒睡醒实验室')
+    expect(announcement).toHaveTextContent('睡醒实验室已进入待机状态')
+    expect(screen.getByText('436/436 项当前 V3 自动化测试通过')).toBeInTheDocument()
+    expect(screen.getByText(
+      '扩展实验：LightRAG。完成 4 项编排流程测试，验证基础调用与流程连接；真实 Ollama 检索和回答效果仍待验证。',
+    )).toBeInTheDocument()
+    expect(window.location.href).toBe(initialUrl)
+    expect(window.history.length).toBe(initialHistoryLength)
+  })
+
   it('renders a recruiter-readable evidence overview from Evidence records', () => {
     render(<App />)
 
