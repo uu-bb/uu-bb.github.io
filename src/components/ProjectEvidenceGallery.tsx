@@ -8,6 +8,19 @@ const categoryLabels: Record<EvidenceMediaType, string> = {
   'test-evidence': '自动化测试证据',
 }
 
+const ragEvidenceTitles: Record<string, string> = {
+  'rag-query-with-sources': '证据 01 · 查询与来源',
+  'rag-no-match-fallback': '证据 02 · 无匹配降级',
+  'rag-knowledge-status': '证据 03 · 索引状态',
+}
+
+function getOriginalImageLabel(project: ProjectCase, item: EvidenceMedia): string {
+  const subject = project.id === 'xiaoyu'
+    ? categoryLabels[item.type]
+    : item.proofStatement.replace(/^证明/, '').replace(/[。；]$/, '')
+  return `查看“${subject}”原图`
+}
+
 interface ProjectEvidenceGalleryProps {
   project: ProjectCase
   media: EvidenceMedia[]
@@ -43,6 +56,11 @@ export function ProjectEvidenceGallery({
             data-evidence-type={item.type}
             key={item.id}
           >
+            {project.id === 'rag-knowledge-base' ? (
+              <p className="case-media-evidence__marker">
+                {ragEvidenceTitles[item.id]}
+              </p>
+            ) : null}
             <div className="case-media-evidence__image">
               <img
                 src={assetPath(item.src)}
@@ -65,6 +83,16 @@ export function ProjectEvidenceGallery({
                 最近核验于 <time dateTime={item.verifiedAt}>{item.verifiedAt}</time>
               </p>
               <p className="case-media-evidence__boundary">{item.boundary}</p>
+              <a
+                className="case-media-evidence__original specular-surface"
+                data-specular
+                href={assetPath(item.src)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={getOriginalImageLabel(project, item)}
+              >
+                查看原图 ↗
+              </a>
             </figcaption>
           </figure>
         ))}

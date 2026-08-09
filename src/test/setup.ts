@@ -2,7 +2,16 @@ import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach } from 'vitest'
 
-afterEach(() => cleanup())
+afterEach(() => {
+  cleanup()
+  window.history.replaceState({}, '', '/')
+  window.sessionStorage.removeItem('portfolio-return-focus')
+})
+
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: () => undefined,
+})
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

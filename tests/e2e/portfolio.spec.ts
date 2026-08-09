@@ -147,8 +147,258 @@ test('能力透镜更新叙事和项目排序', async ({ page }) => {
     name: '先把用户、场景和边界讲清楚，再决定 AI 应该出现在哪里。',
   })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Problem Framing' })).toBeVisible()
-  await expect(page.locator('.stack-project h3').first()).toHaveText('小u鱼 Windows 智能桌宠')
+  await expect(page.locator('.stack-project h3').first()).toHaveText('小u鱼｜本地双角色长期陪伴系统')
   await expect(page.getByRole('link', { name: '阅读案例 ↗' })).toHaveCount(3)
+})
+
+test('Unit 8 CSS 保护 Hero 并适配透镜、贡献与证据区域', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/#focus')
+
+  const hero = page.locator('.hero-stage')
+  const heroToggle = page.getByRole('button', { name: '唤醒睡醒实验室' })
+  const slumberHeight = (await hero.boundingBox())?.height ?? 0
+  await expect(hero).toHaveClass(/is-slumber/)
+
+  await heroToggle.click()
+  await expect(hero).toHaveClass(/is-wake/)
+  await expect(hero).toHaveAttribute('data-wake-image-ready', 'true')
+  expect(Math.abs(((await hero.boundingBox())?.height ?? 0) - slumberHeight)).toBeLessThanOrEqual(1)
+
+  const lensStatus = page.getByRole('status', { name: '当前求职视角' })
+  await expect(lensStatus).toContainText('当前视角：综合')
+  await page.getByRole('button', { name: /AI 应用/ }).click()
+  await expect(lensStatus).toContainText('当前视角：AI 应用')
+  expect(await page.locator('.lens-story').evaluate((element) => (
+    getComputedStyle(element).animationName
+  ))).toBe('none')
+
+  const isMobile = (page.viewportSize()?.width ?? 0) <= 767
+  const lensColumnCount = await lensStatus.evaluate((element) => (
+    getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length
+  ))
+  expect(lensColumnCount).toBe(isMobile ? 1 : 2)
+
+  await page.goto('/?project=rag-knowledge-base&focus=ai-app#contribution')
+  const contribution = page.locator('#contribution')
+  await contribution.scrollIntoViewIfNeeded()
+  const contributionMetrics = await contribution.evaluate((element) => ({
+    background: getComputedStyle(element).backgroundColor,
+    columns: getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length,
+    documentWidth: document.documentElement.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+  }))
+  expect(contributionMetrics.background).toBe('rgb(215, 226, 234)')
+  expect(contributionMetrics.columns).toBe(isMobile ? 1 : 2)
+  expect(contributionMetrics.documentWidth).toBeLessThanOrEqual(contributionMetrics.viewportWidth)
+  await expect(contribution.getByRole('heading', { name: '哪些是我亲手完成的？' })).toBeVisible()
+
+  const evidence = page.getByRole('region', { name: '真实运行证据' })
+  await expect(evidence.locator('.case-media-evidence__marker')).toHaveCount(3)
+  await expect(evidence.locator('.case-media-evidence__original')).toHaveCount(3)
+  expect(await evidence.locator('.case-media-evidence__original').first().evaluate((element) => (
+    element.getBoundingClientRect().height
+  ))).toBeGreaterThanOrEqual(44)
+})
+
+test('focus 合法值、非法回退与刷新保持透镜且不影响 Hero 状态', async ({ page }) => {
+  const cases = [
+    ['product', /AI 产品/],
+    ['ai-app', /AI 应用/],
+    ['python', /Python 后端/],
+  ] as const
+
+  for (const [focus, accessibleName] of cases) {
+    await page.goto(`/?focus=${focus}#focus`)
+    const historyLength = await page.evaluate(() => window.history.length)
+
+    await expect(page.getByRole('button', { name: accessibleName })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await expect(page.locator('.hero-stage')).toHaveAttribute('data-lab-state', 'slumber')
+    expect(await page.evaluate(() => {
+      const url = new URL(window.location.href)
+      return {
+        pathname: url.pathname,
+        parameterCount: [...url.searchParams.keys()].length,
+      }
+    })).toEqual({ pathname: '/', parameterCount: 1 })
+
+    await page.reload()
+    await expect(page.getByRole('button', { name: accessibleName })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await expect(page.locator('.hero-stage')).toHaveAttribute('data-lab-state', 'slumber')
+    expect(await page.evaluate(() => window.history.length)).toBe(historyLength)
+  }
+
+  await page.goto('/?focus=unsupported#focus')
+  const invalidHistoryLength = await page.evaluate(() => window.history.length)
+  await expect(page).toHaveURL(/\?focus=overview#focus$/)
+  await expect(page.getByRole('button', { name: /综合/ })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(page.locator('.hero-stage')).toHaveAttribute('data-lab-state', 'slumber')
+
+  await page.reload()
+  await expect(page.getByRole('button', { name: /综合/ })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(page).toHaveURL(/\?focus=overview#focus$/)
+  expect(await page.evaluate(() => window.history.length)).toBe(invalidHistoryLength)
+})
+
+test('Unit 7 RoleLens history 去重并在前进后退时恢复，Hero 始终独立', async ({ page }) => {
+  await page.goto('/?focus=overview#focus')
+  const initialHistoryLength = await page.evaluate(() => window.history.length)
+  const productLens = page.getByRole('button', { name: /AI 产品/ })
+  const aiAppLens = page.getByRole('button', { name: /AI 应用/ })
+
+  await productLens.click()
+  await expect(page).toHaveURL(/\?focus=product#projects$/)
+  expect(await page.evaluate(() => window.history.length)).toBe(initialHistoryLength + 1)
+
+  await productLens.click()
+  expect(await page.evaluate(() => window.history.length)).toBe(initialHistoryLength + 1)
+
+  await aiAppLens.click()
+  await expect(page).toHaveURL(/\?focus=ai-app#projects$/)
+  expect(await page.evaluate(() => window.history.length)).toBe(initialHistoryLength + 2)
+
+  await page.goBack()
+  await expect(page).toHaveURL(/\?focus=product#projects$/)
+  await expect(productLens).toHaveAttribute('aria-pressed', 'true')
+
+  await page.goBack()
+  await expect(page).toHaveURL(/\?focus=overview#focus$/)
+  await expect(page.getByRole('button', { name: /综合/ })).toHaveAttribute('aria-pressed', 'true')
+
+  await page.goForward()
+  await expect(page).toHaveURL(/\?focus=product#projects$/)
+  await expect(productLens).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.hero-stage')).toHaveAttribute('data-lab-state', 'slumber')
+  expect(await page.evaluate(() => ({
+    url: window.location.href,
+    state: window.history.state,
+  }))).not.toMatchObject({
+    url: expect.stringMatching(/(?:wake|slumber)/),
+  })
+  expect(await page.evaluate(() => Object.keys(window.history.state ?? {}))).not.toEqual(
+    expect.arrayContaining(['heroState', 'labState']),
+  )
+})
+
+test('Unit 7 项目路由在刷新、前进后退、关闭与 hashchange 后恢复焦点', async ({ page }) => {
+  await page.goto('/?focus=ai-app#job-assistant')
+  const jobHeading = page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })
+  await expect(jobHeading).toBeFocused()
+
+  await page.reload()
+  await expect(jobHeading).toBeFocused()
+
+  await page.getByRole('link', { name: '← 返回作品集' }).click()
+  await expect(page).toHaveURL(/\?focus=ai-app#projects$/)
+  await expect(page.locator('.stack-project [data-project-link="job-assistant"]')).toBeFocused()
+
+  await page.goBack()
+  await expect(page).toHaveURL(/\?focus=ai-app#job-assistant$/)
+  await expect(jobHeading).toBeFocused()
+
+  await page.goForward()
+  await expect(page).toHaveURL(/\?focus=ai-app#projects$/)
+  await expect(page.locator('.stack-project [data-project-link="job-assistant"]')).toBeFocused()
+
+  await page.goBack()
+  await page.evaluate(() => {
+    window.location.hash = 'xiaoyu'
+  })
+  await expect(page).toHaveURL(/\?focus=ai-app#xiaoyu$/)
+  await expect(page.getByRole('heading', {
+    level: 1,
+    name: '小u鱼｜本地双角色长期陪伴系统',
+  })).toBeFocused()
+
+  await page.goto('/?project=job-assistant&focus=product#xiaoyu')
+  await expect(page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })).toBeFocused()
+
+  await page.goto('/?project=job-assistant&focus=wake#job-assistant')
+  await expect(page).toHaveURL(/\?project=job-assistant&focus=overview#job-assistant$/)
+  await expect(page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })).toBeFocused()
+  expect(await page.evaluate(() => Object.keys(window.history.state ?? {}))).not.toEqual(
+    expect.arrayContaining(['heroState', 'labState']),
+  )
+
+  await page.goto('/?project=agent-toolkit&focus=ai-app#agent-toolkit')
+  await expect(page.getByRole('heading', {
+    level: 1,
+    name: 'Agent Service Toolkit 岗位匹配 Agent',
+  })).toBeFocused()
+  await page.getByRole('link', { name: '← 返回作品集' }).click()
+  const agentOpener = page.getByRole('link', { name: '进入项目讲解 ↗' })
+  await expect(agentOpener).toHaveAttribute(
+    'href',
+    '/?project=agent-toolkit&focus=ai-app#agent-toolkit',
+  )
+  await expect(agentOpener).toBeFocused()
+})
+
+test('项目卡 href 与项目深链在复制、刷新和移动端保持稳定', async ({ page }) => {
+  await page.goto('/')
+
+  const cardLinks = page.getByRole('link', { name: '阅读案例 ↗' })
+  await expect(cardLinks).toHaveCount(3)
+  await expect(cardLinks.nth(0)).toHaveAttribute(
+    'href',
+    '/?project=job-assistant&focus=overview#job-assistant',
+  )
+  await expect(cardLinks.nth(1)).toHaveAttribute(
+    'href',
+    '/?project=xiaoyu&focus=overview#xiaoyu',
+  )
+  await expect(cardLinks.nth(2)).toHaveAttribute(
+    'href',
+    '/?project=rag-knowledge-base&focus=overview#rag-knowledge-base',
+  )
+
+  await page.locator('.stack-project [data-project-link="job-assistant"]').click()
+  await expect(page).toHaveURL(/\?project=job-assistant&focus=overview#job-assistant$/)
+  await expect(page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })).toBeVisible()
+
+  const copiedUrl = page.url()
+  await page.reload()
+  await expect(page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })).toBeVisible()
+  expect(page.url()).toBe(copiedUrl)
+
+  await page.goto('/?focus=product#focus')
+  await expect(page.locator('.hero-stage')).toHaveAttribute('data-lab-state', 'slumber')
+  await page.locator('.stack-project [data-project-link="xiaoyu"]').click()
+  await expect(page).toHaveURL(/\?project=xiaoyu&focus=product#xiaoyu$/)
+  await expect(page.getByRole('heading', {
+    level: 1,
+    name: '小u鱼｜本地双角色长期陪伴系统',
+  })).toBeVisible()
+
+  const hashOnlyDeepLinks = [
+    ['/?focus=overview#job-assistant', '深圳 AI 求职助手'],
+    ['/?focus=ai-app#job-assistant', '深圳 AI 求职助手'],
+    ['/?focus=product#xiaoyu', '小u鱼｜本地双角色长期陪伴系统'],
+    ['/?focus=python#agent-toolkit', 'Agent Service Toolkit 岗位匹配 Agent'],
+  ] as const
+  for (const [href, heading] of hashOnlyDeepLinks) {
+    await page.goto(href)
+    await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible()
+  }
+
+  await page.goto('/?focus=product#not-a-project')
+  await expect(page.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
+  await expect(page.locator('.hero-stage')).toHaveAttribute('data-lab-state', 'slumber')
+
+  await page.goto('/#job-assistant')
+  await expect(page.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
 })
 
 test('核心证据链接定位到首页对应的完整项目卡', async ({ page }) => {
@@ -391,7 +641,7 @@ test('核心项目采用独立微场景且不叠加解释性图注', async ({ pa
   await expect(page.locator('figcaption').filter({ hasText: '左：' })).toHaveCount(0)
 })
 
-test('三个核心项目使用可分享的独立案例页', async ({ page }) => {
+test('三个核心项目使用可分享且贡献优先的独立案例页', async ({ page }) => {
   await page.goto('/?project=job-assistant&focus=ai-app')
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('深圳 AI 求职助手')
@@ -411,6 +661,98 @@ test('三个核心项目使用可分享的独立案例页', async ({ page }) => 
     content: document.documentElement.scrollWidth,
   }))
   expect(layout.content).toBeLessThanOrEqual(layout.viewport)
+
+  const cases = [
+    ['job-assistant', '深圳 AI 求职助手'],
+    ['rag-knowledge-base', 'RAG 智能知识库问答系统'],
+    ['xiaoyu', '小u鱼｜本地双角色长期陪伴系统'],
+  ] as const
+  const expectedToc = [
+    '01 理解',
+    '02 贡献',
+    '03 对象',
+    '04 流程',
+    '05 架构',
+    '06 代码',
+    '07 证据',
+    '08 取舍',
+  ]
+
+  for (const [id, title] of cases) {
+    await page.goto(`/?project=${id}&focus=overview`)
+    await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible()
+    const toc = page.getByRole('navigation', { name: '项目讲解目录' })
+    await expect(toc.getByRole('link')).toHaveText(expectedToc)
+    await expect(page.locator('.project-bento')).toBeAttached()
+
+    const order = await page.evaluate(() => {
+      const ids = [
+        'understanding',
+        'contribution',
+        'audience',
+        'flow',
+        'architecture',
+        'code',
+        'evidence',
+        'decisions',
+      ]
+      const sections = ids.map((sectionId) => document.getElementById(sectionId))
+      const missing = ids.filter((_, index) => sections[index] === null)
+      const ordered = sections.every((section, index) => (
+        index === sections.length - 1
+          || Boolean(section?.compareDocumentPosition(sections[index + 1]!)
+            & Node.DOCUMENT_POSITION_FOLLOWING)
+      ))
+      const contribution = document.getElementById('contribution')
+      const projectMap = document.querySelector('.project-bento')
+      return {
+        missing,
+        ordered,
+        contributionBeforeProjectMap: Boolean(
+          contribution?.compareDocumentPosition(projectMap!)
+            & Node.DOCUMENT_POSITION_FOLLOWING,
+        ),
+      }
+    })
+
+    expect(order.missing).toEqual([])
+    expect(order.ordered).toBeTruthy()
+    expect(order.contributionBeforeProjectMap).toBeTruthy()
+    await expect(page.locator('#contribution').getByRole('heading', {
+      name: '哪些是我亲手完成的？',
+    })).toBeVisible()
+    await expect(page.locator('#evidence')).toBeAttached()
+  }
+})
+
+test('document.title 在首页、项目刷新和历史前进后退后保持一致', async ({ page }) => {
+  const homepageTitle = '杨皓博｜AI 产品与应用工程作品集 · 睡醒实验室'
+  const cases = [
+    ['job-assistant', '深圳 AI 求职助手｜Slumber Wake Lab'],
+    ['rag-knowledge-base', 'RAG 智能知识库问答系统｜Slumber Wake Lab'],
+    ['xiaoyu', '小u鱼｜本地双角色长期陪伴系统｜Slumber Wake Lab'],
+  ] as const
+
+  await page.goto('/')
+  await expect(page).toHaveTitle(homepageTitle)
+
+  for (const [projectId, title] of cases) {
+    await page.goto(`/?project=${projectId}&focus=overview`)
+    await expect(page).toHaveTitle(title)
+    await page.reload()
+    await expect(page).toHaveTitle(title)
+  }
+
+  await page.goto('/')
+  await expect(page).toHaveTitle(homepageTitle)
+  await page.locator('.stack-project [data-project-link="job-assistant"]').click()
+  await expect(page).toHaveTitle(cases[0][1])
+
+  await page.goBack()
+  await expect(page).toHaveTitle(homepageTitle)
+
+  await page.goForward()
+  await expect(page).toHaveTitle(cases[0][1])
 })
 
 test('求职助手与 RAG 按人工冻结顺序展示公开运行证据', async ({ page }) => {
@@ -497,13 +839,13 @@ test('键盘可到达证据区域，返回作品集后焦点回到原项目入�
 
   await page.getByRole('link', { name: '← 返回作品集' }).click()
   await expect(page).toHaveURL(/#projects$/)
-  await expect(page.locator('[data-project-link="job-assistant"]')).toBeFocused()
+  await expect(page.locator('.stack-project [data-project-link="job-assistant"]')).toBeFocused()
 })
 
 test('四个项目链接都提供完整讲解结构与代表代码', async ({ page }) => {
   const cases = [
     ['job-assistant', '深圳 AI 求职助手'],
-    ['xiaoyu', '小u鱼 Windows 智能桌宠'],
+    ['xiaoyu', '小u鱼｜本地双角色长期陪伴系统'],
     ['rag-knowledge-base', 'RAG 智能知识库问答系统'],
     ['agent-toolkit', 'Agent Service Toolkit 岗位匹配 Agent'],
   ] as const
@@ -577,7 +919,7 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
   await expect(github).toHaveAttribute('rel', /noopener/)
 
   await directContact.getByRole('button', { name: '复制邮箱' }).click()
-  await expect(page.getByRole('status')).toHaveText('邮箱已复制')
+  await expect(page.locator('.copy-status')).toHaveText('邮箱已复制')
 })
 
 test('3D 导览台把能力选择连接到真实项目与证据', async ({ page }) => {
@@ -590,7 +932,7 @@ test('3D 导览台把能力选择连接到真实项目与证据', async ({ page 
   await expect(page.locator('.lab-guide__project')).toContainText('7 项测试通过 · unittest')
   await expect(page.getByRole('link', { name: '进入项目讲解 ↗' })).toHaveAttribute(
     'href',
-    '/?project=rag-knowledge-base&focus=ai-app',
+    '/?project=rag-knowledge-base&focus=ai-app#rag-knowledge-base',
   )
 })
 

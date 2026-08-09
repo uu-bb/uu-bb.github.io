@@ -17,7 +17,9 @@ import { SpecularGlow } from './components/SpecularGlow'
 import { evidenceById, evidenceMediaById, projectById, publicContent } from './data/content'
 import type { RoleLens } from './data/types'
 import { assetPath } from './utils/assets'
-import { getProjectOrder, parseRoleLens } from './utils/focus'
+import { getProjectOrder, isRoleLens, parseRoleLens } from './utils/focus'
+import { homepageDocumentTitle } from './utils/pageTitle'
+import { readRequestedProjectId } from './utils/projectDeepLink'
 
 const coreProjectIds = ['job-assistant', 'xiaoyu', 'rag-knowledge-base']
 
@@ -199,15 +201,31 @@ function Portfolio() {
   const resumePath = assetPath('resume/yang-haobo-ai-product-application.pdf')
 
   useEffect(() => {
-    const projectId = window.sessionStorage.getItem('portfolio-return-focus')
+    document.title = homepageDocumentTitle
+  }, [])
+
+  useEffect(() => {
+    const historyState = window.history.state as { portfolioReturnFocus?: unknown } | null
+    const storedProjectId = window.sessionStorage.getItem('portfolio-return-focus')
+    const projectId = typeof historyState?.portfolioReturnFocus === 'string'
+      ? historyState.portfolioReturnFocus
+      : storedProjectId
     if (!projectId) return
-    window.sessionStorage.removeItem('portfolio-return-focus')
+    if (storedProjectId) window.sessionStorage.removeItem('portfolio-return-focus')
     const frame = window.requestAnimationFrame(() => {
       document.querySelector<HTMLAnchorElement>(
         `[data-project-link="${projectId}"]`,
       )?.focus()
     })
     return () => window.cancelAnimationFrame(frame)
+  }, [])
+
+  useEffect(() => {
+    const syncLensFromUrl = () => {
+      setLens(parseRoleLens(new URLSearchParams(window.location.search).get('focus')))
+    }
+    window.addEventListener('popstate', syncLensFromUrl)
+    return () => window.removeEventListener('popstate', syncLensFromUrl)
   }, [])
 
   const orderedProjects = useMemo(() => {
@@ -228,7 +246,7 @@ function Portfolio() {
     if (nextLens === 'overview') url.searchParams.delete('focus')
     else url.searchParams.set('focus', nextLens)
     url.hash = 'projects'
-    window.history.pushState({}, '', url)
+    if (url.href !== window.location.href) window.history.pushState({}, '', url)
   }
 
   const copyEmail = async () => {
@@ -319,13 +337,23 @@ function Portfolio() {
               </button>
             ))}
           </div>
+          <div
+            className="lens-current-state"
+            role="status"
+            aria-label="当前求职视角"
+            aria-live="polite"
+            aria-atomic="true"
+            key={`lens-state-${lens}`}
+          >
+            <span>当前视角：<strong>{lensMeta[lens].label}</strong></span>
+            <p>{lensMeta[lens].note}</p>
+          </div>
           <div className="lens-story" key={lens} aria-live="polite">
             <div>
               <span>VIEWPOINT / {lensMeta[lens].label}</span>
               <h3>{lensMeta[lens].headline}</h3>
             </div>
             <div>
-              <p>{lensMeta[lens].note}</p>
               <ul aria-label={`${lensMeta[lens].label}视角关注点`}>
                 {lensMeta[lens].focusTopics.map((topic) => <li key={topic}>{topic}</li>)}
               </ul>
@@ -489,7 +517,49 @@ function Portfolio() {
 }
 
 function App() {
-  const requestedProjectId = new URLSearchParams(window.location.search).get('project')
+  const readProjectFromUrl = () => readRequestedProjectId(
+    new URL(window.location.href),
+    (projectId) => projectById.has(projectId),
+  )
+  const [requestedProjectId, setRequestedProjectId] = useState(readProjectFromUrl)
+
+  useEffect(() => {
+    const syncRouteFromUrl = () => {
+      let url = new URL(window.location.href)
+      const requestedFocus = url.searchParams.get('focus')
+      if (requestedFocus !== null && !isRoleLens(requestedFocus)) {
+        url = new URL(url)
+        url.searchParams.set('focus', 'overview')
+        window.history.replaceState(window.history.state, '', url)
+      }
+      setRequestedProjectId(readRequestedProjectId(
+        url,
+        (projectId) => projectById.has(projectId),
+      ))
+    }
+
+    syncRouteFromUrl()
+    window.addEventListener('popstate', syncRouteFromUrl)
+    window.addEventListener('hashchange', syncRouteFromUrl)
+    return () => {
+      window.removeEventListener('popstate', syncRouteFromUrl)
+      window.removeEventListener('hashchange', syncRouteFromUrl)
+    }
+  }, [])
+
+  const closeProject = (projectId: string, homeUrl: string) => {
+    const nextState = {
+      ...(window.history.state && typeof window.history.state === 'object'
+        ? window.history.state
+        : {}),
+      portfolioReturnFocus: projectId,
+    }
+    const url = new URL(homeUrl, window.location.origin)
+    if (url.href === window.location.href) window.history.replaceState(nextState, '', url)
+    else window.history.pushState(nextState, '', url)
+    setRequestedProjectId(null)
+  }
+
   const project = requestedProjectId
     ? projectById.get(requestedProjectId)
     : undefined
@@ -507,6 +577,7 @@ function App() {
               media={(project.evidenceMediaIds ?? [])
                 .map((id) => evidenceMediaById.get(id))
                 .filter((item) => item !== undefined)}
+              onClose={closeProject}
             />
           ) : (
             <Portfolio />

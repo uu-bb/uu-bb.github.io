@@ -77,8 +77,12 @@ describe('public content contract', () => {
     ])
     expect(mediaIds).not.toContain('ja-04')
 
+    const forbiddenMediaPath = new RegExp(
+      `(?:${['release', 'candidate', 'assets'].join('-')}|${['private', 'only'].join('_')}|[A-Za-z]:[\\\\/])`,
+    )
     for (const item of media) {
       expect(item.src).toMatch(/^evidence\//)
+      expect(item.src).not.toMatch(forbiddenMediaPath)
       expect(item.alt).not.toHaveLength(0)
       expect(item.caption).not.toHaveLength(0)
       expect(item.proofStatement).not.toHaveLength(0)
@@ -111,14 +115,25 @@ describe('public content contract', () => {
     expect(xiaoyuEvidence?.boundary).toContain('不是代码覆盖率')
   })
 
+  it('uses the approved xiaoyu positioning as its public title without test claims', () => {
+    const xiaoyu = publicContent.projects.find((item) => item.id === 'xiaoyu')
+
+    expect(xiaoyu?.title).toBe('小u鱼｜本地双角色长期陪伴系统')
+    expect(xiaoyu?.title).not.toContain('Windows 智能桌宠')
+    expect(xiaoyu?.title).not.toMatch(/(?:29|436)\/\d+/)
+  })
+
   it('uses the only approved LightRAG copy and excludes audit-only fields', () => {
     const approvedCopy = '扩展实验：LightRAG。完成 4 项编排流程测试，验证基础调用与流程连接；真实 Ollama 检索和回答效果仍待验证。'
     const lightRag = publicContent.experiments.find((item) => item.id === 'lightrag')
     const serialized = JSON.stringify(publicContent)
+    const auditOnlyFields = new RegExp(
+      `(?:humanApproved|readyForPhase2B|sourceCategory|${['private', 'only'].join('_')})`,
+    )
 
     expect(lightRag?.summary).toBe(approvedCopy)
     expect(serialized).not.toContain(['29', '29'].join('/'))
-    expect(serialized).not.toMatch(/(?:humanApproved|readyForPhase2B|sourceCategory|private_only)/)
+    expect(serialized).not.toMatch(auditOnlyFields)
     expect(serialized).not.toMatch(/(?:^|["'\s])[A-Za-z]:[\\/]/)
   })
 

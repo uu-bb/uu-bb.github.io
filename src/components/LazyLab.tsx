@@ -11,6 +11,7 @@ import {
 import { evidenceById, projectById } from '../data/content'
 import type { RoleLens } from '../data/types'
 import { assetPath } from '../utils/assets'
+import { createProjectDeepLink } from '../utils/projectDeepLink'
 
 const ThreeScene = lazy(() => import('./ThreeScene'))
 
@@ -45,6 +46,15 @@ const labGuides: Array<{
     viewpoint: '从接口、状态、人工确认与测试证据审视真实交付。',
   },
 ]
+
+function getInitialGuideIndex() {
+  const historyState = window.history.state as { portfolioReturnFocus?: unknown } | null
+  const projectId = typeof historyState?.portfolioReturnFocus === 'string'
+    ? historyState.portfolioReturnFocus
+    : window.sessionStorage.getItem('portfolio-return-focus')
+  const index = labGuides.findIndex((guide) => guide.projectId === projectId)
+  return index >= 0 ? index : 0
+}
 
 class SceneBoundary extends Component<
   { fallback: ReactNode; children: ReactNode },
@@ -82,7 +92,7 @@ export function LazyLab() {
   const sectionRef = useRef<HTMLElement>(null)
   const [enabled, setEnabled] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [selectedGuideIndex, setSelectedGuideIndex] = useState(0)
+  const [selectedGuideIndex, setSelectedGuideIndex] = useState(getInitialGuideIndex)
   const selectedGuide = labGuides[selectedGuideIndex]
   const selectedProject = projectById.get(selectedGuide.projectId)
   const selectedEvidence = selectedProject?.evidenceIds
@@ -204,7 +214,8 @@ export function LazyLab() {
                 <a
                   className="specular-surface"
                   data-specular
-                  href={`/?project=${selectedProject.id}&focus=${selectedGuide.focus}`}
+                  data-project-link={selectedProject.id}
+                  href={createProjectDeepLink(selectedProject.id, selectedGuide.focus)}
                 >
                   进入项目讲解 ↗
                 </a>

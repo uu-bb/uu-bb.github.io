@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import type { EvidenceRecord, ProjectCase, RoleLens } from '../data/types'
 import { getProjectVisual } from '../data/projectVisuals'
 import { assetPath } from '../utils/assets'
+import { createProjectDeepLink } from '../utils/projectDeepLink'
 
 interface ProjectShowcaseCardProps {
   project: ProjectCase
@@ -34,7 +35,7 @@ export function ProjectShowcaseCard({
   })
   const targetScale = 1 - (total - 1 - index) * 0.035
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
-  const detailUrl = `/?project=${encodeURIComponent(project.id)}&focus=${lens}`
+  const detailUrl = createProjectDeepLink(project.id, lens)
   const visual = getProjectVisual(project.id)
 
   return (

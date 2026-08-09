@@ -190,6 +190,10 @@ const userHomePattern = new RegExp(
 const internalLabelsPattern = new RegExp(
   `${['内', '部', '母', '库'].join('')}|${['仅', '用', '于', '岗', '位', '定', '制'].join('')}`,
 )
+const privateOnlyPattern = new RegExp(['private', 'only'].join('_'), 'i')
+const releaseCandidateAssetsPattern = new RegExp(['release', 'candidate', 'assets'].join('-'), 'i')
+const xwechatFilesPattern = new RegExp(['xwechat', 'files'].join('_'), 'i')
+const masterLabelPattern = new RegExp(`\\b${['Mas', 'ter'].join('')}\\b`)
 
 const textRules = [
   ['ABSOLUTE_PATH', /(?:^|[\s"'`(])(?:[A-Za-z]:[\\/])/],
@@ -212,6 +216,10 @@ const textRules = [
   ],
   ['INTERNAL_LABEL', internalLabelsPattern],
   ['INTERNAL_CITATION', new RegExp(forbiddenToken, 'i')],
+  [['PRIVATE', 'ONLY'].join('_'), privateOnlyPattern],
+  ['RELEASE_CANDIDATE_ASSETS', releaseCandidateAssetsPattern],
+  [['XWECHAT', 'FILES'].join('_'), xwechatFilesPattern],
+  ['MASTER_LABEL', masterLabelPattern],
 ]
 
 const forbiddenFilePatterns = [
