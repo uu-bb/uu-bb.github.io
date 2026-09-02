@@ -7,7 +7,7 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; connect-src 'self' blob:; font-src 'self' data:; frame-src 'none'; img-src 'self' data: blob:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests"
+      content="default-src 'self'; base-uri 'self'; connect-src 'self' blob:; font-src 'self' data:; frame-src 'none'; img-src 'self' data: blob:; object-src 'none'; script-src 'self' 'sha256-lldIAWHB/Rxz0v3YC4610fpBFGp5fZwyESeaDk5b2cs='; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests"
     />
     <meta
       name="description"
@@ -15,7 +15,7 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:title" content="Slumber Wake Lab｜杨皓博作品集" />
+    <meta property="og:title" content="杨皓博 · AI 产品与应用工程作品集" />
     <meta
       property="og:description"
       content="用可控、可验证的方式，把 RAG、Agent 和后端能力做成能交付的产品。"
@@ -25,7 +25,7 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Slumber Wake Lab｜杨皓博作品集" />
+    <meta name="twitter:title" content="杨皓博 · AI 产品与应用工程作品集" />
     <meta
       name="twitter:description"
       content="AI 产品与应用工程作品集：RAG、Agent、FastAPI 与产品落地。"
@@ -57,36 +57,112 @@
       media="(min-width: 1400px)"
       fetchpriority="high"
     />
-    <title>Slumber Wake Lab｜杨皓博 · AI 产品与应用工程作品集</title>
-    <script type="module" crossorigin src="/assets/index-DmEZ9lbL.js"></script>
+    <style>
+      .static-portfolio { max-width: 1080px; margin: 0 auto; padding: clamp(32px, 7vw, 88px); font-family: system-ui, sans-serif; color: #171815; background: #f3ede2; }
+      .static-portfolio__eyebrow { font-family: ui-monospace, monospace; font-weight: 800; letter-spacing: .08em; }
+      .static-portfolio h1 { margin: 18px 0 6px; font-size: clamp(3.2rem, 9vw, 7rem); line-height: .9; }
+      .static-portfolio__role { font-size: clamp(1.35rem, 3vw, 2.25rem); font-weight: 800; }
+      .static-portfolio section { margin-top: 48px; }
+      .static-portfolio ul { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; list-style: none; }
+      .static-portfolio li { padding: 8px 12px; border: 1px solid currentcolor; }
+      .static-portfolio__projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+      .static-portfolio article { padding: 20px; border: 1px solid currentcolor; }
+      .static-portfolio footer { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 48px; padding-top: 24px; border-top: 1px solid currentcolor; }
+      .static-portfolio footer p { width: 100%; font-weight: 800; }
+    </style>
+    <title>杨皓博｜AI 产品与应用工程作品集 · 睡醒实验室</title>
+    <script type="module" crossorigin src="/assets/index-DYIDg8v1.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-B5yqYJvp.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-DJSQAs3p.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-TMp1JEZX.css">
   </head>
   <body>
     <div id="root">
-      <main class="fatal-fallback">
-        <p>睡醒实验室 · 杨皓博</p>
-        <h1>Slumber Wake Lab</h1>
-        <p>页面脚本暂时没有完成加载，你仍然可以查看简历或直接联系我。</p>
-        <p>
-          <a href="/resume/yang-haobo-ai-product-application.pdf">查看综合简历</a>
-          · <a href="mailto:920816086@qq.com">920816086@qq.com</a>
-          · <a href="https://github.com/uu-bb">GitHub</a>
-        </p>
-      </main>
+      <main class="static-portfolio">
+    <header>
+      <p class="static-portfolio__eyebrow">SLEEPY LAB / 睡醒实验室</p>
+      <h1>杨皓博</h1>
+      <p class="static-portfolio__role">AI 产品 × AI 应用工程</p>
+      <p>把 RAG、Agent 和后端能力，做成可控、可验证、能交付的 AI 产品。</p>
+      <p>2027 届本科 · 深圳 · 寻找 AI 产品 / AI 应用工程实习 · 可尽快到岗 · 每周 5 天 · 可持续 3 个月以上</p>
+    </header>
+    <section aria-labelledby="static-capabilities-title">
+      <h2 id="static-capabilities-title">核心能力</h2>
+      <ul><li>AI 产品设计</li><li>Agent 工作流</li><li>RAG 知识系统</li><li>FastAPI 后端服务</li></ul>
+    </section>
+    <section aria-labelledby="static-projects-title">
+      <h2 id="static-projects-title">核心项目与证据</h2>
+      <div class="static-portfolio__projects"><article>
+      <h3>深圳 AI 求职助手</h3>
+      <p>把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。</p>
+      <p><strong>32/32 项测试通过</strong></p>
+      <p>pytest · 2026-08-01</p>
+      <a href="/?project=job-assistant&amp;focus=overview">查看对应项目</a>
+    </article><article>
+      <h3>小u鱼 Windows 智能桌宠</h3>
+      <p>为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。</p>
+      <p><strong>436/436 项当前 V3 自动化测试通过</strong></p>
+      <p>pytest · 2026-08-05</p>
+      <a href="/?project=xiaoyu&amp;focus=overview">查看对应项目</a>
+    </article><article>
+      <h3>RAG 智能知识库问答系统</h3>
+      <p>让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。</p>
+      <p><strong>7/7 项 Lite 与元数据链路测试通过</strong></p>
+      <p>unittest · 2026-08-01</p>
+      <a href="/?project=rag-knowledge-base&amp;focus=overview">查看对应项目</a>
+    </article></div>
+    </section>
+    <footer>
+      <p>正在寻找 AI 产品 / AI 应用工程实习</p>
+      <a href="/resume/yang-haobo-ai-product-application.pdf">查看综合简历</a>
+      <a href="mailto:920816086@qq.com">920816086@qq.com</a>
+      <a href="https://github.com/uu-bb">GitHub</a>
+    </footer>
+  </main>
     </div>
     <noscript>
       <style>#root { display: none; }</style>
-      <main style="max-width: 760px; margin: 10vh auto; padding: 24px; font-family: system-ui, sans-serif; color: #171815; background: #f3ede2">
-        <p>睡醒实验室 · 杨皓博</p>
-        <h1>Slumber Wake Lab</h1>
-        <p>当前浏览器没有启用 JavaScript，你仍然可以查看简历或直接联系我。</p>
-        <p>
-          <a href="/resume/yang-haobo-ai-product-application.pdf">查看综合简历</a>
-          · <a href="mailto:920816086@qq.com">920816086@qq.com</a>
-          · <a href="https://github.com/uu-bb">GitHub</a>
-        </p>
-      </main>
+      <main class="static-portfolio">
+    <header>
+      <p class="static-portfolio__eyebrow">SLEEPY LAB / 睡醒实验室</p>
+      <h1>杨皓博</h1>
+      <p class="static-portfolio__role">AI 产品 × AI 应用工程</p>
+      <p>把 RAG、Agent 和后端能力，做成可控、可验证、能交付的 AI 产品。</p>
+      <p>2027 届本科 · 深圳 · 寻找 AI 产品 / AI 应用工程实习 · 可尽快到岗 · 每周 5 天 · 可持续 3 个月以上</p>
+    </header>
+    <section aria-labelledby="static-capabilities-title">
+      <h2 id="static-capabilities-title">核心能力</h2>
+      <ul><li>AI 产品设计</li><li>Agent 工作流</li><li>RAG 知识系统</li><li>FastAPI 后端服务</li></ul>
+    </section>
+    <section aria-labelledby="static-projects-title">
+      <h2 id="static-projects-title">核心项目与证据</h2>
+      <div class="static-portfolio__projects"><article>
+      <h3>深圳 AI 求职助手</h3>
+      <p>把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。</p>
+      <p><strong>32/32 项测试通过</strong></p>
+      <p>pytest · 2026-08-01</p>
+      <a href="/?project=job-assistant&amp;focus=overview">查看对应项目</a>
+    </article><article>
+      <h3>小u鱼 Windows 智能桌宠</h3>
+      <p>为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。</p>
+      <p><strong>436/436 项当前 V3 自动化测试通过</strong></p>
+      <p>pytest · 2026-08-05</p>
+      <a href="/?project=xiaoyu&amp;focus=overview">查看对应项目</a>
+    </article><article>
+      <h3>RAG 智能知识库问答系统</h3>
+      <p>让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。</p>
+      <p><strong>7/7 项 Lite 与元数据链路测试通过</strong></p>
+      <p>unittest · 2026-08-01</p>
+      <a href="/?project=rag-knowledge-base&amp;focus=overview">查看对应项目</a>
+    </article></div>
+    </section>
+    <footer>
+      <p>正在寻找 AI 产品 / AI 应用工程实习</p>
+      <a href="/resume/yang-haobo-ai-product-application.pdf">查看综合简历</a>
+      <a href="mailto:920816086@qq.com">920816086@qq.com</a>
+      <a href="https://github.com/uu-bb">GitHub</a>
+    </footer>
+  </main>
     </noscript>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://uu-bb.github.io/#person","name":"杨皓博","url":"https://uu-bb.github.io/","jobTitle":"AI 产品 × AI 应用工程","sameAs":["https://github.com/uu-bb"],"knowsAbout":["AI 产品设计","Agent 工作流","RAG 知识系统","FastAPI 后端服务"]},{"@type":"WebSite","@id":"https://uu-bb.github.io/#website","url":"https://uu-bb.github.io/","name":"杨皓博 · AI 产品 × AI 应用工程作品集","inLanguage":"zh-CN","author":{"@id":"https://uu-bb.github.io/#person"}},{"@type":"ItemList","@id":"https://uu-bb.github.io/#core-projects","name":"核心项目","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"CreativeWork","name":"深圳 AI 求职助手","description":"把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。","url":"https://uu-bb.github.io/?project=job-assistant","creator":{"@id":"https://uu-bb.github.io/#person"}}},{"@type":"ListItem","position":2,"item":{"@type":"CreativeWork","name":"小u鱼 Windows 智能桌宠","description":"为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。","url":"https://uu-bb.github.io/?project=xiaoyu","creator":{"@id":"https://uu-bb.github.io/#person"}}},{"@type":"ListItem","position":3,"item":{"@type":"CreativeWork","name":"RAG 智能知识库问答系统","description":"让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。","url":"https://uu-bb.github.io/?project=rag-knowledge-base","creator":{"@id":"https://uu-bb.github.io/#person"}}}]}]}</script>
   </body>
 </html>
