@@ -13,11 +13,6 @@ const galleryItems: CircularGalleryItem[] = [
     alt: '岗位资料经过整理、判断、排序和人工确认形成可追踪工作流',
   },
   {
-    image: assetPath('editorial/xiaoyu-scene.webp'),
-    text: '小u鱼 / 低打扰陪伴与可控动作',
-    alt: '小u鱼桌宠围绕专注、计时、提醒和锁定提供低打扰陪伴',
-  },
-  {
     image: assetPath('editorial/rag-knowledge-scene.webp'),
     text: 'RAG 知识库 / 来源、检索与带引用回答',
     alt: '本地文档进入混合检索链路后生成带引用来源的回答',

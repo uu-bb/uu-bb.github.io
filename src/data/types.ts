@@ -1,4 +1,4 @@
-export type RoleLens = 'overview' | 'product' | 'ai-app' | 'python'
+export type RoleLens = 'overview' | 'presales' | 'support' | 'ai-app'
 
 export type ProjectStatus = 'completed' | 'iterating' | 'prototype' | 'archived'
 
@@ -85,6 +85,24 @@ export interface Experiment {
   sourceRefs: string[]
 }
 
+export interface Education {
+  school: string
+  major: string
+  degree: string
+  period: string
+  courses: string[]
+}
+
+export interface Internship {
+  id: string
+  company: string
+  role: string
+  period: string
+  order: number
+  highlights: string[]
+  sourceRefs: string[]
+}
+
 export interface PublicContent {
   generatedAt: string
   profile: {
@@ -97,6 +115,8 @@ export interface PublicContent {
     github: string
     skills: string[]
   }
+  education: Education
+  internships: Internship[]
   sourceRefs: string[]
   lenses: Record<RoleLens, string[]>
   evidence: EvidenceRecord[]

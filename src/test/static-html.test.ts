@@ -9,23 +9,39 @@ describe('static portfolio HTML', () => {
 
     for (const text of [
       '杨皓博',
-      'AI 产品 × AI 应用工程',
+      'AI 解决方案 × 售前技术支持',
       '2027 届本科 · 深圳',
-      'AI 产品设计',
-      'Agent 工作流',
-      'RAG 知识系统',
-      'FastAPI 后端服务',
+      '需求分析与方案设计',
+      '客户沟通与问题闭环',
+      'AI 应用交付（RAG · Agent）',
+      'Python 与 FastAPI 工程',
+      '实习经历',
+      '蓝色光标-思恩客',
+      '深圳猞猁保科技有限公司',
+      '教育背景',
+      '电子科技大学中山学院',
       '深圳 AI 求职助手',
-      '小u鱼',
+      'CareerPilot',
       'RAG 智能知识库',
-      '32/32 项测试通过',
-      '436/436 项当前 V3 自动化测试通过',
-      '7/7 项 Lite 与元数据链路测试通过',
-      '查看综合简历',
+      '查看简历',
     ]) {
       expect(html).toContain(text)
     }
-    expect(html).not.toContain(['29', '29'].join('/'))
+  })
+
+  it('keeps the static fallback free of test counts and retired projects', () => {
+    const html = renderStaticPortfolio(publicContent)
+
+    for (const text of [
+      '32/32',
+      '436/436',
+      '7/7',
+      '10 项专项测试',
+      '小u鱼',
+      'AI 产品与应用工程',
+    ]) {
+      expect(html).not.toContain(text)
+    }
   })
 
   it('builds structured data from verified public fields only', () => {

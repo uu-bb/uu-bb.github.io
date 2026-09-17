@@ -11,17 +11,17 @@ interface ProjectCardProps {
 }
 
 const lensFocus: Record<RoleLens, string> = {
-  overview: '产品判断 × 工程交付',
-  product: '场景、MVP、验收与边界',
+  overview: '需求 × 方案 × 交付',
+  presales: '客户、方案、演示与边界',
+  support: '排查、交付与问题闭环',
   'ai-app': 'RAG、Agent 与工作流闭环',
-  python: '接口、状态与自动化可靠性',
 }
 
 const tagPriority: Record<RoleLens, string[]> = {
   overview: [],
-  product: ['产品', 'Agent'],
+  presales: ['FastAPI', 'RAG', 'Agent'],
+  support: ['FastAPI', 'SQLite', 'Playwright'],
   'ai-app': ['RAG', 'Agent', 'LangGraph', 'FastAPI'],
-  python: ['Python', 'FastAPI', 'SQLite', 'Playwright'],
 }
 
 export function ProjectCard({

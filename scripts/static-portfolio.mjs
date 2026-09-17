@@ -1,8 +1,8 @@
 import siteCopy from '../src/data/siteCopy.json' with { type: 'json' }
 
-const coreProjectIds = ['job-assistant', 'xiaoyu', 'rag-knowledge-base']
+const coreProjectIds = ['job-assistant', 'careerpilot', 'rag-knowledge-base']
 const siteUrl = 'https://uu-bb.github.io/'
-const resumePath = '/resume/yang-haobo-ai-product-application.pdf'
+const resumePath = '/resume/yang-haobo-resume.pdf'
 
 function escapeHtml(value) {
   return String(value)
@@ -30,19 +30,29 @@ export function renderStaticPortfolio(content) {
     .join('')
   const projectCards = projects.map((project) => {
     const evidence = getEvidence(content, project)
-    const evidenceMeta = [evidence?.framework, evidence?.verifiedAt]
-      .filter(Boolean)
-      .map(escapeHtml)
-      .join(' · ')
 
     return `<article>
       <h3>${escapeHtml(project.title)}</h3>
       <p>${escapeHtml(project.problem)}</p>
       ${evidence ? `<p><strong>${escapeHtml(evidence.detail)}</strong></p>` : ''}
-      ${evidenceMeta ? `<p>${evidenceMeta}</p>` : ''}
+      ${evidence?.verifiedAt ? `<p>最近核验于 ${escapeHtml(evidence.verifiedAt)}</p>` : ''}
       <a href="/?project=${encodeURIComponent(project.id)}&amp;focus=overview">查看对应项目</a>
     </article>`
   }).join('')
+
+  const internshipCards = [...content.internships]
+    .sort((a, b) => a.order - b.order)
+    .map((internship) => `<article>
+      <h3>${escapeHtml(internship.company)}</h3>
+      <p>${escapeHtml(internship.role)} · ${escapeHtml(internship.period)}</p>
+      <ul>${internship.highlights.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>
+    </article>`)
+    .join('')
+
+  const { education } = content
+  const educationCourses = education.courses
+    .map((course) => `<li>${escapeHtml(course)}</li>`)
+    .join('')
 
   return `<main class="static-portfolio">
     <header>
@@ -52,6 +62,14 @@ export function renderStaticPortfolio(content) {
       <p>${escapeHtml(siteCopy.heroTagline)}</p>
       <p>${escapeHtml(siteCopy.heroStatus.join(' · '))}</p>
     </header>
+    <section aria-labelledby="static-experience-title">
+      <h2 id="static-experience-title">实习经历</h2>
+      <div class="static-portfolio__experience">${internshipCards}</div>
+      <h3>教育背景</h3>
+      <p>${escapeHtml(education.school)} ｜ ${escapeHtml(education.major)} ｜ ${escapeHtml(education.degree)}</p>
+      <p>${escapeHtml(education.period)}</p>
+      <ul>${educationCourses}</ul>
+    </section>
     <section aria-labelledby="static-capabilities-title">
       <h2 id="static-capabilities-title">核心能力</h2>
       <ul>${capabilities}</ul>
@@ -62,7 +80,7 @@ export function renderStaticPortfolio(content) {
     </section>
     <footer>
       <p>${escapeHtml(siteCopy.contactHeadline)}</p>
-      <a href="${resumePath}">查看综合简历</a>
+      <a href="${resumePath}">查看简历</a>
       <a href="mailto:${escapeHtml(content.profile.email)}">${escapeHtml(content.profile.email)}</a>
       <a href="${escapeHtml(content.profile.github)}">GitHub</a>
     </footer>

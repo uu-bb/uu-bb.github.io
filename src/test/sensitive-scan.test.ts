@@ -20,6 +20,25 @@ describe('sensitive information scanner', () => {
     expect(findings).toEqual([])
   })
 
+  it('blocks portfolio audit markers from public release surfaces', () => {
+    const samples = [
+      ['private', 'only'].join('_'),
+      ['release', 'candidate', 'assets'].join('-'),
+      ['xwechat', 'files'].join('_'),
+      ['Mas', 'ter'].join(''),
+    ]
+    const rules = samples.flatMap((sample) =>
+      scanPublicValue(sample).map((item: { rule: string }) => item.rule),
+    )
+
+    expect(rules).toEqual(expect.arrayContaining([
+      ['PRIVATE', 'ONLY'].join('_'),
+      'RELEASE_CANDIDATE_ASSETS',
+      ['XWECHAT', 'FILES'].join('_'),
+      'MASTER_LABEL',
+    ]))
+  })
+
   it('blocks common credential formats without storing real credentials', () => {
     const samples = [
       ['sk', 'proj', 'abcdefghijklmnopqrstuvwxyz123456'].join('-'),

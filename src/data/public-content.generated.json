@@ -1,48 +1,93 @@
 {
-  "generatedAt": "2026-08-05",
+  "generatedAt": "2026-09-17",
   "profile": {
     "name": "杨皓博",
     "brand": "睡醒实验室",
-    "role": "AI 产品 × AI 应用工程",
-    "tagline": "把 RAG、Agent 和后端能力做成可控、可验证、能交付的产品。",
-    "statusLine": "2027 届本科 · 深圳 · 寻找 AI 产品 / AI 应用工程实习 · 可尽快到岗 · 每周 5 天 · 可持续 3 个月以上",
+    "role": "AI 解决方案 × 售前技术支持",
+    "tagline": "把客户需求整理成可交付、可验证的方案，并保持客户、方案与研发三方同一事实口径。",
+    "statusLine": "2027 届本科 · 深圳 · 求职 AI 解决方案 / 售前技术支持（秋招正式岗）· 可尽快到岗 · 支持出差",
     "email": "920816086@qq.com",
     "github": "https://github.com/uu-bb",
     "skills": [
-      "RAG",
-      "Agent",
-      "FastAPI",
-      "产品落地"
+      "需求分析与方案设计",
+      "客户沟通与问题闭环",
+      "AI 应用交付（RAG · Agent）",
+      "Python 与 FastAPI 工程"
     ]
   },
+  "education": {
+    "school": "电子科技大学中山学院",
+    "major": "人工智能",
+    "degree": "本科",
+    "period": "2023.09 – 2027.06",
+    "courses": [
+      "机器学习",
+      "深度学习",
+      "Python 程序设计",
+      "数据结构与算法",
+      "数据库原理",
+      "计算机视觉"
+    ]
+  },
+  "internships": [
+    {
+      "id": "bluefocus-snk",
+      "company": "蓝色光标-思恩客",
+      "role": "AI 开发实习生",
+      "period": "2026.04 – 至今",
+      "order": 1,
+      "highlights": [
+        "独立开发 SNK 招聘协作管理系统，需求由业务方提出并逐轮验收。",
+        "完成飞书平台数据接入，自动拉取并同步真实岗位与人才数据。",
+        "数据可见范围按职级与负责区域划分，避免越权查看。",
+        "实现招聘总览、筛选与明细模块，协同完善人工判重与内部记录，在自动处理与人工确认之间划定边界。",
+        "完成 SNK 新人介绍互动展示与离线分享材料，跟进交互、兼容性与使用反馈。"
+      ],
+      "sourceRefs": [
+        "resume-presales-v20260916"
+      ]
+    },
+    {
+      "id": "lynxbao-presales",
+      "company": "深圳猞猁保科技有限公司",
+      "role": "售前技术支持",
+      "period": "2026.01 – 2026.04",
+      "order": 2,
+      "highlights": [
+        "参与客户需求沟通，记录业务场景、关注点与待确认事项，把口头信息整理为可跟进的需求内容。",
+        "根据沟通结论完成方案整理与文档编写，持续维护方案说明、问题记录与沟通材料，保证客户与内部信息口径一致。",
+        "参与问题排查，整理现象、复现信息与处理结果，为技术定位与客户沟通提供可核对的依据。",
+        "跟进客户与内部反馈，更新方案与处理进度，推动问题闭环，形成从需求到交付的完整跟进链路。"
+      ],
+      "sourceRefs": [
+        "resume-presales-v20260916"
+      ]
+    }
+  ],
   "sourceRefs": [
-    "resume-profile-v20260731",
-    "resume-product-v20260731",
-    "resume-ai-app-v20260731",
-    "resume-python-v20260731",
-    "project-job-test-v20260801",
-    "project-xiaoyu-v1-report-v20260715",
-    "project-xiaoyu-v3-test-v20260805",
-    "project-rag-test-v20260801",
-    "project-agent-test-v20260731"
+    "resume-presales-v20260916",
+    "project-job-outcome-v20260801",
+    "project-rag-outcome-v20260801",
+    "project-agent-outcome-v20260731",
+    "project-careerpilot-v20260917"
   ],
   "lenses": {
     "overview": [
       "job-assistant",
-      "xiaoyu",
+      "careerpilot",
       "rag-knowledge-base"
     ],
-    "product": [
-      "xiaoyu",
+    "presales": [
+      "careerpilot",
       "job-assistant",
       "rag-knowledge-base"
+    ],
+    "support": [
+      "rag-knowledge-base",
+      "job-assistant",
+      "careerpilot"
     ],
     "ai-app": [
-      "job-assistant",
-      "rag-knowledge-base",
-      "agent-toolkit"
-    ],
-    "python": [
       "job-assistant",
       "rag-knowledge-base",
       "agent-toolkit"
@@ -51,49 +96,45 @@
   "evidence": [
     {
       "id": "job-tests",
-      "label": "32 项测试通过",
-      "detail": "32/32 项测试通过",
-      "framework": "pytest",
+      "label": "岗位发现到人工确认全流程贯通",
+      "detail": "岗位发现 → JD 解析 → 证据匹配 → 人工确认，四段链路可完整走通",
       "status": "verified",
       "verifiedAt": "2026-08-01",
-      "boundary": "测试覆盖评分、链接安全、令牌重放、状态写入与异常路径，不等同于真实投递结果。",
+      "boundary": "演示环境使用示例岗位数据；不等同于真实投递结果，也不代表招聘平台的线上可用性。",
       "sourceRefs": [
-        "project-job-test-v20260801"
-      ]
-    },
-    {
-      "id": "xiaoyu-tests",
-      "label": "436 项 V3 自动化测试通过",
-      "detail": "436/436 项当前 V3 自动化测试通过",
-      "framework": "pytest",
-      "status": "verified",
-      "verifiedAt": "2026-08-05",
-      "boundary": "不是代码覆盖率，也不代表视觉验收完成、联网稳定性、全部项目验收或完整产品验收。",
-      "sourceRefs": [
-        "project-xiaoyu-v3-test-v20260805"
+        "project-job-outcome-v20260801"
       ]
     },
     {
       "id": "rag-tests",
-      "label": "7 项测试通过",
-      "detail": "7/7 项 Lite 与元数据链路测试通过",
-      "framework": "unittest",
+      "label": "检索到来源引用全链路可演示",
+      "detail": "Lite 查询 → 来源引用 → 无匹配降级，三段结果均可复现",
       "status": "verified",
       "verifiedAt": "2026-08-01",
-      "boundary": "测试覆盖 Lite 检索、来源保护和 SQLite 元数据，不声明未运行的完整模型效果。",
+      "boundary": "证据来自 Lite 模式实跑；不等同于完整模型链路的效果验证，也不声明生产环境的吞吐与质量。",
       "sourceRefs": [
-        "project-rag-test-v20260801"
+        "project-rag-outcome-v20260801"
       ]
     },
     {
       "id": "agent-toolkit-tests",
-      "label": "10 项专项测试",
-      "detail": "10 项专项测试覆盖评分与输入边界",
-      "framework": "pytest",
+      "label": "岗位匹配报告可稳定输出",
+      "detail": "命中项、差距项、简历建议与面试追问统一为固定结构输出",
       "status": "verified",
       "verifiedAt": "2026-07-31",
+      "boundary": "基于开源框架二次开发，只描述新增的匹配与报告能力；上游框架能力不计入个人原创。",
       "sourceRefs": [
-        "project-agent-test-v20260731"
+        "project-agent-outcome-v20260731"
+      ]
+    },
+    {
+      "id": "careerpilot-outcome",
+      "label": "画像确认到差距分析流程已实现",
+      "detail": "职业画像逐项确认 → 知识库匹配 → 规则推荐 → 能力差距分析，四段流程可完整演示",
+      "status": "verified",
+      "boundary": "只描述已实现的流程与边界；不声明推荐结果的准确率，也不声明对实际职业决策的效果。",
+      "sourceRefs": [
+        "project-careerpilot-v20260917"
       ]
     }
   ],
@@ -181,48 +222,6 @@
       "order": 3,
       "width": 1440,
       "height": 1031
-    },
-    {
-      "id": "xiaoyu-concept-main",
-      "projectId": "xiaoyu",
-      "type": "concept-visual",
-      "src": "evidence/xiaoyu/xiaoyu-concept-main.png",
-      "alt": "概念插画：学生在桌前专注工作，桌面旁的虚构小u鱼形象代表低打扰陪伴。",
-      "caption": "小u鱼项目概念主图，用于表达专注、提醒与低打扰陪伴；不是产品运行截图。",
-      "proofStatement": "表达专注、提醒、锁定和低打扰陪伴的产品概念。",
-      "verifiedAt": "2026-08-05",
-      "boundary": "概念表达不证明实际界面、角色素材或运行效果；真实运行素材暂不公开。",
-      "order": 1,
-      "width": 1280,
-      "height": 853
-    },
-    {
-      "id": "xiaoyu-v3-architecture",
-      "projectId": "xiaoyu",
-      "type": "architecture",
-      "src": "evidence/architecture/xiaoyu-v3-architecture.png",
-      "alt": "小u鱼 V3 架构图，从类型化事件经过协调器、领域引擎、状态和场景租约连接到双透明 Qt 角色窗口。",
-      "caption": "小u鱼 V3 领域到 Qt 表现层的架构图；DPAPI 持久化与 LLM 边界为冻结权威合同，不属于本轮 436 项运行实现证明。",
-      "proofStatement": "说明 ContextEvent、协调器、领域引擎、策略、场景租约和 Qt 表现层的权责链。",
-      "verifiedAt": "2026-08-05",
-      "boundary": "必须与图注同时展示；不得把权威合同节点写成已完成的持久化或模型运行能力。",
-      "order": 2,
-      "width": 1600,
-      "height": 900
-    },
-    {
-      "id": "xiaoyu-v3-tests",
-      "projectId": "xiaoyu",
-      "type": "test-evidence",
-      "src": "evidence/test-evidence/xiaoyu-v3-automated-tests.png",
-      "alt": "测试证据卡显示小u鱼 V3 的 436 项自动化测试全部通过，核验日期为 2026-08-05。",
-      "caption": "436/436 项当前 V3 自动化测试通过，最近核验于 2026-08-05。",
-      "proofStatement": "证明当前 V3 在核验日收集 436 项并全部通过。",
-      "verifiedAt": "2026-08-05",
-      "boundary": "不是代码覆盖率，也不代表美术授权、线上稳定性或完整产品验收。",
-      "order": 3,
-      "width": 1600,
-      "height": 900
     }
   ],
   "projects": [
@@ -287,7 +286,7 @@
         ],
         "contribution": [
           "独立完成产品流程、数据结构、前后端接口与执行边界设计。",
-          "编写评分、链接安全、令牌重放、状态写入和异常路径测试。"
+          "覆盖评分、链接安全、令牌重放与状态写入等关键路径，异常场景均有明确处理。"
         ],
         "codeExample": {
           "title": "只有明确成功，才把外部操作算作完成",
@@ -304,90 +303,84 @@
         "boundary": "公开成果不声明未经验证的真实投递结果，外部操作始终保留人工确认。"
       },
       "sourceRefs": [
-        "resume-ai-app-v20260731",
-        "project-job-test-v20260801"
+        "project-job-outcome-v20260801"
       ]
     },
     {
-      "id": "xiaoyu",
-      "title": "小u鱼 Windows 智能桌宠",
-      "shortTitle": "小u鱼",
-      "role": "个人项目 · 产品设计与 MVP 实现",
+      "id": "careerpilot",
+      "title": "CareerPilot AI 职业探索与成长规划助手",
+      "shortTitle": "CareerPilot",
+      "role": "个人项目 · 产品设计与后端实现",
       "status": "iterating",
       "statusLabel": "持续迭代",
-      "problem": "为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。",
-      "keyImplementation": "将人格安全、时间、偏好记忆、最近上下文和 JSON 动作契约拆成可控层。",
+      "problem": "把「我适合什么岗位、差在哪里」拆成可确认的画像、可追溯的推荐和可执行的差距分析。",
+      "keyImplementation": "职业画像、知识库、规则推荐与差距分析串成连续流程；AI 只做候选提取与解释，关键结论由确定性规则与用户确认决定。",
       "evidenceIds": [
-        "xiaoyu-tests"
-      ],
-      "evidenceMediaIds": [
-        "xiaoyu-concept-main",
-        "xiaoyu-v3-architecture",
-        "xiaoyu-v3-tests"
+        "careerpilot-outcome"
       ],
       "tags": [
-        "Python",
-        "PyQt5",
-        "Ollama",
-        "产品设计"
+        "FastAPI",
+        "PostgreSQL",
+        "Docker",
+        "结构化输出"
       ],
+      "github": "https://github.com/uu-bb",
       "details": {
-        "problem": "桌面陪伴需要有存在感，但提醒、语音和聊天不能打断用户，也不能越权操作系统。",
+        "problem": "职业规划类工具容易把推测包装成结论，用户既看不出推荐依据，也无法判断差距分析是否可信。",
         "audience": [
-          "长时间在 Windows 电脑前学习或工作的学生与年轻创作者。",
-          "想要轻量陪伴、提醒和专注节奏，但不需要复杂系统控制的人。"
+          "需要系统梳理职业方向、但不愿被黑箱结论牵着走的在校生与初入职场者。",
+          "希望先确认职业画像，再逐项查看推荐依据与能力差距的使用者。"
         ],
         "userFlow": [
-          "用户通过桌宠气泡发起聊天、提醒或番茄钟请求。",
-          "本地模型按固定 JSON 契约返回回复、情绪和可选动作。",
-          "应用校验动作类型、时间范围与文本长度，再决定是否执行。",
-          "最近上下文、显式偏好和提醒被限量保存，用于下一次会话。"
+          "用户填写经历与偏好，系统生成职业画像草稿，并请用户逐项确认。",
+          "确认后的画像进入知识库，匹配候选岗位与岗位能力要求。",
+          "规则层计算能力差距并给出排序，AI 负责提取候选与补充解释。",
+          "用户逐条查看依据，可回退修改画像并重新计算。"
         ],
         "features": [
-          "本地聊天、TTS、提醒、番茄钟与八种视觉状态。",
-          "显式偏好记忆、最近上下文和 Windows 本地加密存储。",
-          "三档 DPI 与离线 Windows 打包交付。"
+          "职业画像生成与逐项人工确认。",
+          "知识库检索、规则推荐与能力差距分析。",
+          "推荐依据展示与画像回退重算。"
         ],
         "architecture": [
-          "PyQt5 桌面壳｜承载角色状态、气泡交互与计时器。",
-          "Ollama 本地模型｜按严格 JSON 契约生成回复、情绪和动作建议。",
-          "动作校验层｜限制动作类型、提醒时间和番茄钟时长。",
-          "有界状态存储｜只保留有限上下文、显式偏好和提醒，并使用本地加密。"
+          "FastAPI 服务｜对外提供画像、推荐与差距分析接口。",
+          "PostgreSQL｜保存画像、岗位知识与计算依据。",
+          "规则推荐层｜按确定性规则完成匹配与差距排序。",
+          "AI 辅助层｜只负责候选提取与解释文案，不直接给出结论。"
         ],
         "tradeoffs": [
-          "只保留聊天、提醒、番茄钟、TTS 和八种视觉状态。",
-          "明确不执行系统命令，偏好与提醒使用 Windows DPAPI 加密。"
+          "把「一键出结论」让位于「逐项确认依据」。",
+          "AI 输出限定在候选与解释层，关键结论始终由规则与用户确认控制。"
         ],
         "implementation": [
-          "Python、PyQt5、Ollama qwen3:8b 与 PyInstaller 完成 Windows v1。",
-          "覆盖三档 DPI、提醒与番茄钟端到端验收。"
+          "FastAPI + PostgreSQL 完成后端，Docker 统一运行边界。",
+          "画像确认 → 浏览 → 推荐 → 差距分析的连续流程与状态管理。"
         ],
         "failurePaths": [
-          "模型返回未知动作、无效时间或越界番茄钟时长时降级为空动作。",
-          "疑似密码、验证码、密钥或会话凭据的文本不会进入偏好记忆。",
-          "状态文件损坏时隔离异常文件并回到空状态。"
+          "画像信息不足时明确提示需要补充，不生成无依据的推荐。",
+          "知识库未命中时返回空结果并说明原因，不用推测内容填补。"
         ],
         "contribution": [
-          "独立定义桌宠 MVP、人格边界、交互状态和本地数据策略。",
-          "完成 PyQt5 应用、模型契约、动作校验、存储与 Windows 打包测试。"
+          "独立完成职业画像、知识库、规则推荐与差距分析的产品流程与后端实现。",
+          "划分 AI 辅助层与确定性规则层，并设计画像回退重算机制。"
         ],
         "codeExample": {
-          "title": "模型可以建议动作，但不能绕过产品规则",
+          "title": "先确认证据，再给出差距",
           "language": "python",
-          "code": "def parse_action(payload, now):\n    action_type = parse_type(payload.get(\"type\"))\n\n    if action_type == \"set_reminder\":\n        trigger_at = parse_datetime(payload.get(\"trigger_at\"))\n        latest = now + timedelta(days=365)\n        if trigger_at is None or not now < trigger_at <= latest:\n            return no_action()\n        return reminder(trigger_at, clean_label(payload.get(\"label\")))\n\n    if action_type == \"start_pomodoro\":\n        minutes = payload.get(\"minutes\")\n        if isinstance(minutes, bool) or not isinstance(minutes, int):\n            return no_action()\n        if not 1 <= minutes <= 120:\n            return no_action()\n        return pomodoro(minutes)\n\n    if action_type == \"stop_timer\":\n        return stop_timer()\n\n    return no_action()",
-          "input": "模型输出的动作对象和当前时间。",
-          "judgment": "只接受白名单动作；提醒必须在未来一年内，番茄钟必须是 1–120 分钟整数。",
-          "output": "合法动作对象，或无副作用的空动作。",
-          "rationale": "把模型输出视为不可信建议，所有会改变状态的动作都由确定性代码二次校验。",
+          "code": "def build_gap_report(profile, requirements):\n    confirmed = [e for e in profile.evidence if e.confirmed]\n\n    covered, missing = [], []\n    for requirement in requirements:\n        hits = match_evidence(confirmed, requirement)\n        target = covered if hits else missing\n        target.append(GapItem(requirement=requirement, evidence=hits))\n\n    ranked = sorted(missing, key=lambda item: -item.requirement.weight)\n\n    return GapReport(\n        profile_id=profile.id,\n        covered=covered,\n        missing=ranked,\n        reasons={item.requirement.id: explain(item) for item in ranked},\n    )",
+          "input": "一份经用户逐项确认的职业画像，以及一组岗位能力要求。",
+          "judgment": "只用用户确认过的经历做匹配；未命中的要求直接进入差距列表，不用推测内容填充。",
+          "output": "包含命中项、按权重排序的差距项，以及每条差距的解释依据的报告。",
+          "rationale": "职业建议最容易失真在「把推测写成事实」；因此先锁定用户确认过的证据，再让规则层决定差距，AI 只负责措辞。",
           "sourceRefs": [
-            "project-xiaoyu-v1-code-v20260802"
+            "project-careerpilot-v20260917"
           ]
         },
-        "boundary": "当前运行角色素材不公开；概念图不代表当前运行界面；436 项测试不代表代码覆盖率、视觉验收完成、联网稳定性已经验证或整个项目全部阶段验收完成。"
+        "boundary": "项目仍在迭代中。公开内容只描述已实现的流程与边界，不声明推荐结果的准确率，也不声明对实际职业决策的效果。"
       },
       "sourceRefs": [
-        "resume-product-v20260731",
-        "project-xiaoyu-v1-report-v20260715"
+        "resume-presales-v20260916",
+        "project-careerpilot-v20260917"
       ]
     },
     {
@@ -451,7 +444,7 @@
         ],
         "contribution": [
           "独立完成文档处理、混合检索、融合、重排、接口和演示链路。",
-          "设计 Lite/Full 边界，并为来源保护和元数据链路编写测试。"
+          "设计 Lite/Full 边界，保证来源保护与元数据链路可复现。"
         ],
         "codeExample": {
           "title": "用排序名次融合两种不可直接比较的分数",
@@ -468,8 +461,7 @@
         "boundary": "三张均为 Lite 实际运行证据；不等同于完整 Full 模式效果验证；不证明大规模业务吞吐或生产质量。"
       },
       "sourceRefs": [
-        "resume-ai-app-v20260731",
-        "project-rag-test-v20260801"
+        "project-rag-outcome-v20260801"
       ]
     },
     {
@@ -517,7 +509,7 @@
           "优先使用确定性规则组织输入和结果，再把模型能力限定在建议层。"
         ],
         "implementation": [
-          "接入 Agent 注册表、服务契约和专项输入边界测试。"
+          "接入 Agent 注册表与服务契约，并处理输入边界。"
         ],
         "failurePaths": [
           "输入为空时仍返回稳定报告结构，不虚构岗位证据。",
@@ -525,7 +517,7 @@
         ],
         "contribution": [
           "在现有开源框架上新增岗位匹配 Agent、确定性评分与报告结构。",
-          "完成注册表、服务契约和输入边界专项测试；上游框架能力不计入个人原创。"
+          "完成注册表、服务契约与输入边界校验；上游框架能力不计入个人原创。"
         ],
         "codeExample": {
           "title": "先分开证据和缺口，再生成建议",
@@ -542,8 +534,7 @@
         "boundary": "这是开源二次开发，公开说明新增范围，不把上游能力算作个人原创。"
       },
       "sourceRefs": [
-        "resume-ai-app-v20260731",
-        "project-agent-test-v20260731"
+        "project-agent-outcome-v20260731"
       ]
     }
   ],
@@ -551,7 +542,7 @@
     {
       "id": "lightrag",
       "title": "LightRAG 中文简历-JD 增强",
-      "summary": "扩展实验：LightRAG。完成 4 项编排流程测试，验证基础调用与流程连接；真实 Ollama 检索和回答效果仍待验证。",
+      "summary": "扩展实验：LightRAG。离线编排链路已接通，基础调用与流程连接验证完成；真实 Ollama 检索与回答效果仍待验证。",
       "status": "completed",
       "statusLabel": "已完成",
       "tags": [

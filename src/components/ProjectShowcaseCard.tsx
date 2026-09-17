@@ -13,10 +13,10 @@ interface ProjectShowcaseCardProps {
 }
 
 const lensLabels: Record<RoleLens, string> = {
-  overview: '产品判断 × 工程交付',
-  product: '场景 × 范围 × 验收',
+  overview: '需求 × 方案 × 交付',
+  presales: '客户 × 方案 × 演示',
+  support: '排查 × 交付 × 闭环',
   'ai-app': 'RAG × Agent × 工作流',
-  python: '接口 × 状态 × 可靠性',
 }
 
 export function ProjectShowcaseCard({
@@ -34,7 +34,7 @@ export function ProjectShowcaseCard({
   })
   const targetScale = 1 - (total - 1 - index) * 0.035
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
-  const detailUrl = `/?project=${encodeURIComponent(project.id)}&focus=${lens}`
+  const detailUrl = `/?project=${encodeURIComponent(project.id)}&focus=${lens}#${encodeURIComponent(project.id)}`
   const visual = getProjectVisual(project.id)
 
   return (
@@ -90,14 +90,21 @@ export function ProjectShowcaseCard({
             </div>
           </div>
 
-          <figure className="stack-project__visual">
-            <img
-              src={assetPath(visual.src)}
-              alt={visual.alt}
-              width="1280"
-              height="853"
-              loading="lazy"
-            />
+          <figure className={`stack-project__visual${visual ? '' : ' stack-project__visual--empty'}`}>
+            {visual ? (
+              <img
+                src={assetPath(visual.src)}
+                alt={visual.alt}
+                width="1280"
+                height="853"
+                loading="lazy"
+              />
+            ) : (
+              <div className="stack-project__visual-placeholder">
+                <span>NO PUBLIC SCREENSHOT</span>
+                <p>该项目暂无可公开的运行截图，以功能流程与边界说明为准。</p>
+              </div>
+            )}
           </figure>
         </div>
       </motion.article>

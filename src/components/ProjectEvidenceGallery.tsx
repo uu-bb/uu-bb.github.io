@@ -8,6 +8,17 @@ const categoryLabels: Record<EvidenceMediaType, string> = {
   'test-evidence': '自动化测试证据',
 }
 
+const ragEvidenceTitles: Record<string, string> = {
+  'rag-query-with-sources': '证据 01 · 查询与来源',
+  'rag-no-match-fallback': '证据 02 · 无匹配降级',
+  'rag-knowledge-status': '证据 03 · 索引状态',
+}
+
+function getOriginalImageLabel(item: EvidenceMedia): string {
+  const subject = item.proofStatement.replace(/^证明/, '').replace(/[。；]$/, '')
+  return `查看“${subject}”原图`
+}
+
 interface ProjectEvidenceGalleryProps {
   project: ProjectCase
   media: EvidenceMedia[]
@@ -32,7 +43,6 @@ export function ProjectEvidenceGallery({
       <header className="case-media-evidence__heading">
         <span>PUBLIC PROOF / APPROVED MEDIA</span>
         <h3 id={headingId}>{heading}</h3>
-        {project.id === 'xiaoyu' ? <p>本地双角色长期陪伴系统</p> : null}
       </header>
 
       <div className="case-media-evidence__grid">
@@ -43,6 +53,11 @@ export function ProjectEvidenceGallery({
             data-evidence-type={item.type}
             key={item.id}
           >
+            {project.id === 'rag-knowledge-base' ? (
+              <p className="case-media-evidence__marker">
+                {ragEvidenceTitles[item.id]}
+              </p>
+            ) : null}
             <div className="case-media-evidence__image">
               <img
                 src={assetPath(item.src)}
@@ -65,6 +80,16 @@ export function ProjectEvidenceGallery({
                 最近核验于 <time dateTime={item.verifiedAt}>{item.verifiedAt}</time>
               </p>
               <p className="case-media-evidence__boundary">{item.boundary}</p>
+              <a
+                className="case-media-evidence__original specular-surface"
+                data-specular
+                href={assetPath(item.src)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={getOriginalImageLabel(item)}
+              >
+                查看原图 ↗
+              </a>
             </figcaption>
           </figure>
         ))}

@@ -21,33 +21,15 @@ describe('public content contract', () => {
     }
   })
 
-  it('publishes exactly the nine human-approved media records in frozen order', () => {
-    const content = publicContent as typeof publicContent & {
-      evidenceMedia: Array<{
-        id: string
-        projectId: string
-        type: string
-        src: string
-        alt: string
-        caption: string
-        proofStatement: string
-        verifiedAt: string
-        boundary: string
-        order: number
-        width: number
-        height: number
-      }>
-    }
-    const media = content.evidenceMedia
+  it('publishes exactly the six approved media records in frozen order', () => {
+    const media = publicContent.evidenceMedia
     const mediaIds = media.map((item) => item.id)
     const projectMediaIds = (projectId: string) => {
-      const project = publicContent.projects.find((item) => item.id === projectId) as
-        | (typeof publicContent.projects[number] & { evidenceMediaIds: string[] })
-        | undefined
+      const project = publicContent.projects.find((item) => item.id === projectId)
       return project?.evidenceMediaIds
     }
 
-    expect(media).toHaveLength(9)
+    expect(media).toHaveLength(6)
     expect(new Set(mediaIds).size).toBe(media.length)
     expect(mediaIds).toEqual([
       'ja-analysis',
@@ -56,9 +38,6 @@ describe('public content contract', () => {
       'rag-query-with-sources',
       'rag-no-match-fallback',
       'rag-knowledge-status',
-      'xiaoyu-concept-main',
-      'xiaoyu-v3-architecture',
-      'xiaoyu-v3-tests',
     ])
     expect(projectMediaIds('job-assistant')).toEqual([
       'ja-analysis',
@@ -70,15 +49,14 @@ describe('public content contract', () => {
       'rag-no-match-fallback',
       'rag-knowledge-status',
     ])
-    expect(projectMediaIds('xiaoyu')).toEqual([
-      'xiaoyu-concept-main',
-      'xiaoyu-v3-architecture',
-      'xiaoyu-v3-tests',
-    ])
     expect(mediaIds).not.toContain('ja-04')
 
+    const forbiddenMediaPath = new RegExp(
+      `(?:${['release', 'candidate', 'assets'].join('-')}|${['private', 'only'].join('_')}|[A-Za-z]:[\\\\/])`,
+    )
     for (const item of media) {
       expect(item.src).toMatch(/^evidence\//)
+      expect(item.src).not.toMatch(forbiddenMediaPath)
       expect(item.alt).not.toHaveLength(0)
       expect(item.caption).not.toHaveLength(0)
       expect(item.proofStatement).not.toHaveLength(0)
@@ -89,36 +67,72 @@ describe('public content contract', () => {
     }
   })
 
-  it('keeps the xiaoyu media and current test claim inside the approved boundary', () => {
-    const content = publicContent as typeof publicContent & {
-      evidenceMedia: Array<{ projectId: string; type: string }>
-    }
-    const xiaoyuMedia = content.evidenceMedia.filter((item) => item.projectId === 'xiaoyu')
-    const xiaoyuEvidence = publicContent.evidence.find((item) => item.id === 'xiaoyu-tests')
+  it('states outcomes instead of test counts', () => {
+    const serialized = JSON.stringify(publicContent)
 
-    expect(xiaoyuMedia.map((item) => item.type)).toEqual([
-      'concept-visual',
-      'architecture',
-      'test-evidence',
-    ])
-    expect(xiaoyuMedia.some((item) => item.type === 'runtime-screenshot')).toBe(false)
-    expect(xiaoyuEvidence).toMatchObject({
-      label: '436 项 V3 自动化测试通过',
-      detail: '436/436 项当前 V3 自动化测试通过',
-      framework: 'pytest',
-      verifiedAt: '2026-08-05',
-    })
-    expect(xiaoyuEvidence?.boundary).toContain('不是代码覆盖率')
+    for (const retired of [
+      '32/32',
+      '436/436',
+      '7/7',
+      '10 项专项测试',
+      '项测试通过',
+      '自动化测试通过',
+    ]) {
+      expect(serialized).not.toContain(retired)
+    }
+    expect(serialized).not.toContain('"framework"')
+
+    for (const evidence of publicContent.evidence) {
+      expect(evidence.label).not.toMatch(/\d+\s*\/\s*\d+/)
+      expect(evidence.boundary).not.toHaveLength(0)
+    }
   })
 
-  it('uses the only approved LightRAG copy and excludes audit-only fields', () => {
-    const approvedCopy = '扩展实验：LightRAG。完成 4 项编排流程测试，验证基础调用与流程连接；真实 Ollama 检索和回答效果仍待验证。'
+  it('retires the xiaoyu project and its media completely', () => {
+    const serialized = JSON.stringify(publicContent)
+
+    expect(publicContent.projects.some((project) => project.id === 'xiaoyu')).toBe(false)
+    expect(publicContent.evidenceMedia.some((item) => item.projectId === 'xiaoyu')).toBe(false)
+    for (const evidence of publicContent.evidence) {
+      expect(evidence.id).not.toContain('xiaoyu')
+    }
+    expect(serialized).not.toContain('xiaoyu')
+    expect(serialized).not.toContain('小u鱼')
+  })
+
+  it('publishes the internship and education records from the presales resume', () => {
+    expect(publicContent.internships).toHaveLength(2)
+    expect(publicContent.internships.map((item) => item.company)).toEqual([
+      '蓝色光标-思恩客',
+      '深圳猞猁保科技有限公司',
+    ])
+    for (const internship of publicContent.internships) {
+      expect(internship.highlights.length).toBeGreaterThan(0)
+      expect(internship.period).not.toHaveLength(0)
+      expect(internship.sourceRefs).toEqual(
+        expect.arrayContaining([expect.stringMatching(/^[a-z0-9-]+-v\d{8}$/)]),
+      )
+    }
+    expect(publicContent.education).toMatchObject({
+      school: '电子科技大学中山学院',
+      major: '人工智能',
+      degree: '本科',
+    })
+    expect(publicContent.education.courses.length).toBeGreaterThan(0)
+  })
+
+  it('uses the approved LightRAG copy and excludes audit-only fields', () => {
+    const approvedCopy =
+      '扩展实验：LightRAG。离线编排链路已接通，基础调用与流程连接验证完成；真实 Ollama 检索与回答效果仍待验证。'
     const lightRag = publicContent.experiments.find((item) => item.id === 'lightrag')
     const serialized = JSON.stringify(publicContent)
+    const auditOnlyFields = new RegExp(
+      `(?:humanApproved|readyForPhase2B|sourceCategory|${['private', 'only'].join('_')})`,
+    )
 
     expect(lightRag?.summary).toBe(approvedCopy)
     expect(serialized).not.toContain(['29', '29'].join('/'))
-    expect(serialized).not.toMatch(/(?:humanApproved|readyForPhase2B|sourceCategory|private_only)/)
+    expect(serialized).not.toMatch(auditOnlyFields)
     expect(serialized).not.toMatch(/(?:^|["'\s])[A-Za-z]:[\\/]/)
   })
 

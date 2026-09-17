@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import type { EvidenceMedia, EvidenceRecord, ProjectCase } from '../data/types'
 import { publicContent } from '../data/content'
 import { assetPath } from '../utils/assets'
@@ -21,12 +21,12 @@ interface ProjectDetailPageProps {
 const chapterLinks = [
   ['understanding', '理解'],
   ['audience', '对象'],
+  ['contribution', '贡献'],
   ['flow', '流程'],
   ['architecture', '架构'],
-  ['decisions', '取舍'],
   ['code', '代码'],
+  ['decisions', '取舍'],
   ['evidence', '证据'],
-  ['contribution', '贡献'],
 ] as const
 
 function NumberedList({ items }: { items: string[] }) {
@@ -47,24 +47,54 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
   const homeUrl = focus === 'overview' ? '/#projects' : `/?focus=${focus}#projects`
   const visual = getProjectVisual(project.id)
   const { codeExample } = project.details
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const openedFromHashOnly = !new URLSearchParams(window.location.search).has('project')
 
-  const rememberReturnTarget = () => {
+  const closeProject = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
     window.sessionStorage.setItem('portfolio-return-focus', project.id)
+    const state = {
+      ...(window.history.state ?? {}),
+      portfolioReturnFocus: project.id,
+    }
+    window.history.pushState(state, '', homeUrl)
+    window.dispatchEvent(new PopStateEvent('popstate', { state }))
   }
 
   useEffect(() => {
     const previousTitle = document.title
+    let cancelled = false
+    let firstFrame = 0
+    let secondFrame = 0
     document.title = `${project.title}｜Slumber Wake Lab`
-    window.scrollTo({ top: 0, behavior: 'auto' })
+
+    const positionProjectTitle = async () => {
+      await document.fonts?.ready
+      await new Promise<void>((resolve) => {
+        firstFrame = window.requestAnimationFrame(() => {
+          secondFrame = window.requestAnimationFrame(() => resolve())
+        })
+      })
+      if (cancelled) return
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
+      titleRef.current?.focus({ preventScroll: true })
+    }
+
+    void positionProjectTitle()
     return () => {
+      cancelled = true
+      window.cancelAnimationFrame(firstFrame)
+      window.cancelAnimationFrame(secondFrame)
       document.title = previousTitle
     }
-  }, [project.title])
+  }, [project.id, project.title])
 
   return (
     <div className="case-page">
       <header className="case-nav">
-        <a href={homeUrl} onClick={rememberReturnTarget}>← 返回作品集</a>
+        <a href={homeUrl} onClick={closeProject}>← 返回作品集</a>
         <span>SLUMBER / WAKE LAB</span>
         <a href={`mailto:${publicContent.profile.email}`}>联系我 ↗</a>
       </header>
@@ -73,7 +103,14 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
         <span>CASE GUIDE</span>
         <div>
           {chapterLinks.map(([id, label], index) => (
-            <a className="specular-surface" data-specular href={`#${id}`} key={id}>
+            <a
+              className="specular-surface"
+              data-specular
+              href={openedFromHashOnly
+                ? `/?project=${encodeURIComponent(project.id)}&focus=${focus}#${id}`
+                : `#${id}`}
+              key={id}
+            >
               {String(index + 1).padStart(2, '0')} {label}
             </a>
           ))}
@@ -85,7 +122,7 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
           <div className="case-hero__index">CASE / {project.id.toUpperCase()}</div>
           <FadeIn className="case-hero__title" y={48}>
             <p>{project.role}</p>
-            <h1>{project.title}</h1>
+            <h1 ref={titleRef} tabIndex={-1}>{project.title}</h1>
           </FadeIn>
           <div className="case-hero__status">
             <span>{project.statusLabel}</span>
@@ -108,9 +145,11 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
           </FadeIn>
         </section>
 
-        <figure className="case-artwork">
-          <img src={assetPath(visual.src)} alt={visual.alt} width="1280" height="853" />
-        </figure>
+        {visual ? (
+          <figure className="case-artwork">
+            <img src={assetPath(visual.src)} alt={visual.alt} width="1280" height="853" />
+          </figure>
+        ) : null}
 
         <Suspense fallback={<section className="project-bento" aria-label="正在加载项目讲解地图" />}>
           <ProjectBento project={project} />
@@ -124,9 +163,27 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
           <NumberedList items={project.details.audience} />
         </section>
 
+        <section className="case-contribution case-chapter" id="contribution">
+          <header className="case-section-heading">
+            <span>03 / MY CONTRIBUTION</span>
+            <h2>哪些是我亲手完成的？</h2>
+          </header>
+          <NumberedList items={project.details.contribution} />
+          <div className="case-contribution__actions">
+            {project.github ? (
+              <a className="specular-surface" data-specular href={project.github} target="_blank" rel="noopener noreferrer">
+                查看 GitHub ↗
+              </a>
+            ) : (
+              <p>当前没有公开仓库，以本案例中的已核验事实和脱敏代码为准。</p>
+            )}
+            <a className="specular-surface" data-specular href={homeUrl} onClick={closeProject}>继续浏览作品集 →</a>
+          </div>
+        </section>
+
         <section className="case-flow case-chapter" id="flow">
           <header className="case-section-heading">
-            <span>03 / USER FLOW &amp; FUNCTIONS</span>
+            <span>04 / USER FLOW &amp; FUNCTIONS</span>
             <h2>用户怎样完成一次任务？</h2>
           </header>
           <div className="case-flow__track" aria-label="项目用户流程">
@@ -146,7 +203,7 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
 
         <section className="case-architecture case-chapter" id="architecture">
           <header className="case-section-heading">
-            <span>04 / ARCHITECTURE</span>
+            <span>05 / ARCHITECTURE</span>
             <h2>系统怎样分工？</h2>
           </header>
           <div className="case-architecture__diagram" aria-label="项目架构与数据流">
@@ -161,19 +218,6 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
             <h3>落地清单</h3>
             <NumberedList items={project.details.implementation} />
           </div>
-        </section>
-
-        <section className="case-decisions case-chapter" id="decisions">
-          <FadeIn className="case-column" y={36}>
-            <span>05 / KEY TRADE-OFFS</span>
-            <h2>做什么，也明确不做什么。</h2>
-            <NumberedList items={project.details.tradeoffs} />
-          </FadeIn>
-          <FadeIn className="case-column case-column--blue" y={36} delay={0.12}>
-            <span>WHY IT MATTERS</span>
-            <h2>取舍决定了产品的可信边界。</h2>
-            <p className="case-decision-note">{project.details.boundary}</p>
-          </FadeIn>
         </section>
 
         <section className="case-code case-chapter" id="code">
@@ -202,9 +246,22 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
           </aside>
         </section>
 
+        <section className="case-decisions case-chapter" id="decisions">
+          <FadeIn className="case-column" y={36}>
+            <span>07 / KEY TRADE-OFFS</span>
+            <h2>做什么，也明确不做什么。</h2>
+            <NumberedList items={project.details.tradeoffs} />
+          </FadeIn>
+          <FadeIn className="case-column case-column--blue" y={36} delay={0.12}>
+            <span>WHY IT MATTERS</span>
+            <h2>取舍决定了产品的可信边界。</h2>
+            <p className="case-decision-note">{project.details.boundary}</p>
+          </FadeIn>
+        </section>
+
         <section className="case-evidence case-chapter" id="evidence">
           <header className="case-section-heading">
-            <span>07 / EVIDENCE, FAILURE &amp; BOUNDARY</span>
+            <span>08 / EVIDENCE, FAILURE &amp; BOUNDARY</span>
             <h2>证据、失败路径和边界一起讲。</h2>
           </header>
           <div className="case-evidence__grid">
@@ -231,23 +288,6 @@ export function ProjectDetailPage({ project, evidence, media }: ProjectDetailPag
           <p className="case-evidence__boundary">{project.details.boundary}</p>
         </section>
 
-        <section className="case-contribution case-chapter" id="contribution">
-          <header className="case-section-heading">
-            <span>08 / MY CONTRIBUTION</span>
-            <h2>哪些是我亲手完成的？</h2>
-          </header>
-          <NumberedList items={project.details.contribution} />
-          <div className="case-contribution__actions">
-            {project.github ? (
-              <a className="specular-surface" data-specular href={project.github} target="_blank" rel="noopener noreferrer">
-                查看 GitHub ↗
-              </a>
-            ) : (
-              <p>当前没有公开仓库，以本案例中的已核验事实和脱敏代码为准。</p>
-            )}
-            <a className="specular-surface" data-specular href={homeUrl} onClick={rememberReturnTarget}>继续浏览作品集 →</a>
-          </div>
-        </section>
       </main>
     </div>
   )

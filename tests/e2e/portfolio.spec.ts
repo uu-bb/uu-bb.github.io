@@ -13,8 +13,8 @@ test('首屏完整呈现招聘信息与求职路径，且不请求 GLB', async (
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('杨皓博')
   await expect(page.locator('#top').getByText('SLEEPY LAB / 睡醒实验室')).toBeVisible()
-  await expect(page.locator('#top').getByText('AI 产品 × AI 应用工程')).toBeVisible()
-  await expect(page.locator('#top').getByText(/可控、可验证、能交付的 AI 产品/)).toBeVisible()
+  await expect(page.locator('#top').getByText('AI 解决方案 × 售前技术支持')).toBeVisible()
+  await expect(page.locator('#top').getByText(/可交付、可验证的方案/)).toBeVisible()
   await expect(page.locator('#top').getByText(/2027 届本科 · 深圳/)).toBeVisible()
   await expect(page.locator('#top').getByText(/可尽快到岗 · 每周 5 天/)).toBeVisible()
   await expect(page.getByRole('link', { name: '查看核心项目' })).toBeVisible()
@@ -110,8 +110,8 @@ test('Phase 1A 关键视口保持可读、完整且无横向溢出', async ({ pa
     if (viewport.width <= 390) {
       expect(metrics.statusTexts).toEqual([
         '2027 届本科 · 深圳',
-        '寻找 AI 产品 / AI 应用工程实习',
-        '可尽快到岗 · 每周 5 天 · 可持续 3 个月以上',
+        '求职 AI 解决方案 / 售前技术支持（秋招正式岗）',
+        '可尽快到岗 · 支持出差',
       ])
       expect(metrics.statusFontSize).toBeGreaterThanOrEqual(12)
       expect(metrics.statusLineHeight / metrics.statusFontSize).toBeGreaterThanOrEqual(1.55)
@@ -132,23 +132,140 @@ test('Phase 1A 关键视口保持可读、完整且无横向溢出', async ({ pa
   await page.setViewportSize({ width: 360, height: 800 })
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
-  await expect(page.locator('#top').getByText('寻找 AI 产品 / AI 应用工程实习', { exact: true })).toBeVisible()
+  await expect(page.locator('#top').getByText('求职 AI 解决方案 / 售前技术支持（秋招正式岗）', { exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: '查看核心项目' })).toBeInViewport()
 })
 
 test('能力透镜更新叙事和项目排序', async ({ page }) => {
   await page.goto('/#focus')
 
-  const productLens = page.getByRole('button', { name: /AI 产品/ })
-  await productLens.click()
-  await expect(productLens).toHaveAttribute('aria-pressed', 'true')
-  await expect(page).toHaveURL(/\?focus=product#projects$/)
+  const presalesLens = page.locator('.lens-switcher').getByRole('button', { name: /售前与方案/ })
+  await presalesLens.click()
+  await expect(presalesLens).toHaveAttribute('aria-pressed', 'true')
+  await expect(page).toHaveURL(/\?focus=presales#projects$/)
   await expect(page.getByRole('heading', {
-    name: '先把用户、场景和边界讲清楚，再决定 AI 应该出现在哪里。',
+    name: '先听懂客户在担心什么，再把能力翻译成他能验收的方案。',
   })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Problem Framing' })).toBeVisible()
-  await expect(page.locator('.stack-project h3').first()).toHaveText('小u鱼 Windows 智能桌宠')
+  await expect(page.getByRole('heading', { name: 'Customer Discovery' })).toBeVisible()
+  await expect(page.locator('.stack-project h3').first()).toHaveText('CareerPilot AI 职业探索与成长规划助手')
   await expect(page.getByRole('link', { name: '阅读案例 ↗' })).toHaveCount(3)
+})
+
+test('能力透镜状态、无效参数与浏览器历史保持一致', async ({ page }) => {
+  await page.goto('/?focus=overview#focus')
+
+  const status = page.locator('.lens-current-state')
+  const overviewLens = page.getByRole('button', { name: /综合/ })
+  const presalesLens = page.locator('.lens-switcher').getByRole('button', { name: /售前与方案/ })
+  const aiAppLens = page.getByRole('button', { name: /AI 应用/ })
+
+  await expect(overviewLens).toHaveAttribute('aria-pressed', 'true')
+  await expect(status).toContainText('当前视角：综合')
+  await expect(status).toContainText('把客户需求、方案表达和实现能力放在同一条叙事里。')
+
+  await presalesLens.click()
+  await expect(page).toHaveURL(/\?focus=presales#projects$/)
+  await expect(status).toContainText('当前视角：售前与方案')
+  await aiAppLens.click()
+  await expect(page).toHaveURL(/\?focus=ai-app#projects$/)
+
+  await page.goBack()
+  await expect(presalesLens).toHaveAttribute('aria-pressed', 'true')
+  await expect(status).toContainText('当前视角：售前与方案')
+  await page.goForward()
+  await expect(aiAppLens).toHaveAttribute('aria-pressed', 'true')
+  await expect(status).toContainText('当前视角：AI 应用')
+
+  await page.goto('/?focus=unsupported#focus')
+  await expect(overviewLens).toHaveAttribute('aria-pressed', 'true')
+  await expect(page).toHaveURL(/\?focus=overview#focus$/)
+})
+
+test('focus 与 hash 深链接支持刷新、关闭、前进后退和标题聚焦', async ({ page }) => {
+  await page.goto('/?focus=ai-app#job-assistant')
+
+  const title = page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })
+  await expect(title).toBeVisible()
+  await expect(title).toBeFocused()
+
+  await page.reload()
+  await expect(title).toBeFocused()
+
+  await page.getByRole('link', { name: '← 返回作品集' }).click()
+  await expect(page).toHaveURL(/\?focus=ai-app#projects$/)
+  await expect(page.locator('[data-project-link="job-assistant"]')).toBeFocused()
+
+  await page.goBack()
+  await expect(title).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(title).toBeVisible()
+  await page.goForward()
+  await expect(page.locator('[data-project-link="job-assistant"]')).toBeFocused()
+
+  await page.evaluate(() => {
+    window.location.hash = 'careerpilot'
+  })
+  await expect(page.getByRole('heading', { level: 1, name: 'CareerPilot AI 职业探索与成长规划助手' })).toBeFocused()
+
+  await page.goto('/?focus=product#not-a-project')
+  await expect(page.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
+
+  await page.goto('/?project=job-assistant&focus=unsupported#job-assistant')
+  await expect(page.getByRole('heading', { level: 1, name: '深圳 AI 求职助手' })).toBeFocused()
+  await expect(page).toHaveURL(/\?project=job-assistant&focus=overview#job-assistant$/)
+})
+
+test('证据原图入口安全、可访问且不会预加载', async ({ page, context }) => {
+  const evidenceRequests: string[] = []
+  page.on('request', (request) => {
+    if (/\/evidence\/.*\.png(?:$|\?)/i.test(request.url())) evidenceRequests.push(request.url())
+  })
+
+  await page.goto('/?project=rag-knowledge-base&focus=ai-app')
+  expect(evidenceRequests).toEqual([])
+
+  const region = page.getByRole('region', { name: '真实运行证据' })
+  await region.scrollIntoViewIfNeeded()
+  await expect(region.locator('.case-media-evidence__marker')).toHaveText([
+    '证据 01 · 查询与来源',
+    '证据 02 · 无匹配降级',
+    '证据 03 · 索引状态',
+  ])
+  await expect.poll(() => evidenceRequests.length).toBe(3)
+
+  const originalLink = region.getByRole('link', { name: /查看“.+”原图/ }).first()
+  await expect(originalLink).toHaveAttribute('href', /^\/evidence\/rag\/.+\.png$/)
+  await expect(originalLink).toHaveAttribute('target', '_blank')
+  await expect(originalLink).toHaveAttribute('rel', 'noopener noreferrer')
+  expect(await originalLink.evaluate((link) => link.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
+
+  const requestsBeforeOpen = evidenceRequests.length
+  const popupPromise = context.waitForEvent('page')
+  await originalLink.click()
+  const popup = await popupPromise
+  await popup.waitForLoadState('load')
+  expect(popup.url()).toMatch(/\/evidence\/rag\/.+\.png$/)
+  expect(evidenceRequests.length).toBe(requestsBeforeOpen)
+  await popup.close()
+})
+
+test('减少动态效果时深链接使用即时定位', async ({ page }) => {
+  await page.addInitScript(() => {
+    const trackedWindow = window as typeof window & { phase3aScrollBehaviors: ScrollBehavior[] }
+    const originalScrollTo = window.scrollTo.bind(window)
+    trackedWindow.phase3aScrollBehaviors = []
+    window.scrollTo = ((options: ScrollToOptions) => {
+      trackedWindow.phase3aScrollBehaviors.push(options.behavior ?? 'auto')
+      originalScrollTo(options)
+    }) as typeof window.scrollTo
+  })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/?focus=presales#careerpilot')
+
+  await expect(page.getByRole('heading', { level: 1, name: 'CareerPilot AI 职业探索与成长规划助手' })).toBeFocused()
+  expect(await page.evaluate(() => (
+    window as typeof window & { phase3aScrollBehaviors: ScrollBehavior[] }
+  ).phase3aScrollBehaviors)).toContain('auto')
 })
 
 test('核心证据链接定位到首页对应的完整项目卡', async ({ page }) => {
@@ -230,7 +347,7 @@ test('三个核心项目使用可分享的独立案例页', async ({ page }) => 
   await page.goto('/?project=job-assistant&focus=ai-app')
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('深圳 AI 求职助手')
-  await expect(page.getByText('32/32 项测试通过')).toBeVisible()
+  await expect(page.getByText('岗位发现到人工确认全流程贯通')).toBeVisible()
   await expect(page.getByText(/最近核验于 2026-08-01/)).toBeVisible()
   await expect(page.getByRole('link', { name: '查看 GitHub ↗' })).toHaveAttribute(
     'rel',
@@ -284,20 +401,15 @@ test('求职助手与 RAG 按人工冻结顺序展示公开运行证据', async 
   await expect(ragRegion).toContainText('不证明大规模业务吞吐或生产质量')
 })
 
-test('小u鱼只展示概念、架构与当前 V3 测试证据', async ({ page }) => {
-  await page.goto('/?project=xiaoyu&focus=product')
-  const region = page.getByRole('region', { name: '公开证据' })
-  await region.scrollIntoViewIfNeeded()
+test('CareerPilot 没有公开截图时不渲染证据区', async ({ page }) => {
+  await page.goto('/?project=careerpilot&focus=presales')
 
-  await expect(region).toContainText('本地双角色长期陪伴系统')
-  await expect(region.getByText('概念视觉')).toBeVisible()
-  await expect(region.getByText('系统架构')).toBeVisible()
-  await expect(region.getByText('自动化测试证据')).toBeVisible()
-  await expect(region).toContainText('不是产品运行截图')
-  await expect(region).toContainText('436/436 项当前 V3 自动化测试通过')
-  await expect(region).toContainText('DPAPI 持久化与 LLM 边界为冻结权威合同')
-  await expect(region).toContainText('不代表代码覆盖率')
-  await expect(region.locator('[data-evidence-type="runtime-screenshot"]')).toHaveCount(0)
+  await expect(page.getByRole('heading', { level: 1 }))
+    .toHaveText('CareerPilot AI 职业探索与成长规划助手')
+  await expect(page.getByRole('region', { name: '公开证据' })).toHaveCount(0)
+  await expect(page.getByRole('region', { name: '真实运行证据' })).toHaveCount(0)
+  await expect(page.locator('.case-artwork')).toHaveCount(0)
+  await expect(page.getByText('先确认证据，再给出差距')).toBeVisible()
 })
 
 test('移动端证据保持单列并且 360×800 无水平滚动', async ({ page }) => {
@@ -316,7 +428,7 @@ test('移动端证据保持单列并且 360×800 无水平滚动', async ({ page
   expect(boxes[2].top).toBeGreaterThanOrEqual(boxes[1].bottom)
 
   await page.setViewportSize({ width: 360, height: 800 })
-  await page.goto('/?project=xiaoyu&focus=product')
+  await page.goto('/?project=careerpilot&focus=presales')
   const layout = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
     content: document.documentElement.scrollWidth,
@@ -338,7 +450,7 @@ test('键盘可到达证据区域，返回作品集后焦点回到原项目入�
 test('四个项目链接都提供完整讲解结构与代表代码', async ({ page }) => {
   const cases = [
     ['job-assistant', '深圳 AI 求职助手'],
-    ['xiaoyu', '小u鱼 Windows 智能桌宠'],
+    ['careerpilot', 'CareerPilot AI 职业探索与成长规划助手'],
     ['rag-knowledge-base', 'RAG 智能知识库问答系统'],
     ['agent-toolkit', 'Agent Service Toolkit 岗位匹配 Agent'],
   ] as const
@@ -370,7 +482,7 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
   await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   await page.goto('/#contact')
 
-  const resume = await request.get('/resume/yang-haobo-ai-product-application.pdf')
+  const resume = await request.get('/resume/yang-haobo-resume.pdf')
   expect(resume.ok()).toBeTruthy()
   expect(resume.headers()['content-type']).toContain('application/pdf')
 
@@ -399,7 +511,7 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
 
   const directContact = page.getByRole('group', { name: '直接联系方式' })
   const optionalTopics = page.getByRole('region', { name: '可选联系话题' })
-  await expect(directContact.getByText('正在寻找 AI 产品 / AI 应用工程实习')).toBeVisible()
+  await expect(directContact.getByText('正在寻找 AI 解决方案 / 售前技术支持岗位')).toBeVisible()
   await expect(directContact.getByRole('link', { name: '发送邮件' })).toBeVisible()
   await expect(directContact.getByRole('link', { name: '查看简历' })).toBeVisible()
   await expect(optionalTopics.getByText('你也可以先选择想聊的话题')).toBeVisible()
@@ -412,7 +524,7 @@ test('简历、邮箱复制和 GitHub 入口有效', async ({ page, request, con
   await expect(github).toHaveAttribute('rel', /noopener/)
 
   await directContact.getByRole('button', { name: '复制邮箱' }).click()
-  await expect(page.getByRole('status')).toHaveText('邮箱已复制')
+  await expect(directContact.getByRole('status')).toHaveText('邮箱已复制')
 })
 
 test('3D 导览台把能力选择连接到真实项目与证据', async ({ page }) => {
@@ -464,19 +576,19 @@ test('JavaScript 关闭时仍有完整职业摘要、项目证据与联系入口
   await page.goto(process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173/')
   const staticPortfolio = page.locator('.static-portfolio:visible')
   await expect(staticPortfolio.getByRole('heading', { level: 1, name: '杨皓博' })).toBeVisible()
-  await expect(staticPortfolio.getByText('AI 产品 × AI 应用工程')).toBeVisible()
+  await expect(staticPortfolio.getByText('AI 解决方案 × 售前技术支持')).toBeVisible()
   await expect(staticPortfolio.getByText(/2027 届本科 · 深圳/)).toBeVisible()
-  await expect(staticPortfolio.getByText('AI 产品设计')).toBeVisible()
+  await expect(staticPortfolio.getByText('需求分析与方案设计')).toBeVisible()
   await expect(staticPortfolio.getByText('深圳 AI 求职助手')).toBeVisible()
-  await expect(staticPortfolio.getByText('小u鱼')).toBeVisible()
+  await expect(staticPortfolio.getByText('CareerPilot')).toBeVisible()
   await expect(staticPortfolio.getByText('RAG 智能知识库')).toBeVisible()
-  await expect(staticPortfolio.getByText('32/32 项测试通过')).toBeVisible()
-  await expect(staticPortfolio.getByText('436/436 项当前 V3 自动化测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByText('岗位发现到人工确认全流程贯通')).toBeVisible()
+  await expect(staticPortfolio.getByText('职业画像逐项确认 → 知识库匹配 → 规则推荐 → 能力差距分析，四段流程可完整演示')).toBeVisible()
   await expect(staticPortfolio.getByText(['29', '29'].join('/'))).toHaveCount(0)
-  await expect(staticPortfolio.getByText('7/7 项 Lite 与元数据链路测试通过')).toBeVisible()
+  await expect(staticPortfolio.getByText('Lite 查询 → 来源引用 → 无匹配降级，三段结果均可复现')).toBeVisible()
   await expect(staticPortfolio.getByRole('link', { name: '查看综合简历' })).toHaveAttribute(
     'href',
-    '/resume/yang-haobo-ai-product-application.pdf',
+    '/resume/yang-haobo-resume.pdf',
   )
   await expect(staticPortfolio.getByRole('link', { name: '920816086@qq.com' })).toHaveAttribute(
     'href',

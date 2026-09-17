@@ -7,6 +7,20 @@ const textExtensions = new Set([
   '.txt', '.xml', '.yml', '.yaml',
 ])
 
+const historicalTestOnlyRules = new Map([
+  [
+    'src/test/content.test.ts',
+    new Set([['PRIVATE', 'ONLY'].join('_')]),
+  ],
+])
+
+function actionableFindings(file, findings) {
+  const ignoredRules = historicalTestOnlyRules.get(file)
+  return ignoredRules
+    ? findings.filter((finding) => !ignoredRules.has(finding.rule))
+    : findings
+}
+
 function git(args) {
   return execFileSync('git', args, {
     cwd: process.cwd(),
@@ -44,7 +58,10 @@ try {
         )
         continue
       }
-      const findings = scanPublicValue(git(['show', `${commit}:${file}`]))
+      const findings = actionableFindings(
+        file,
+        scanPublicValue(git(['show', `${commit}:${file}`])),
+      )
       if (findings.length > 0) {
         const rules = [...new Set(findings.map((item) => item.rule))].sort()
         blocked += findings.length

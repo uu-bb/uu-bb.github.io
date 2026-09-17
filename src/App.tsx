@@ -5,6 +5,7 @@ import { AnimatedText } from './components/AnimatedText'
 import { ClickSpark } from './components/ClickSpark'
 import { EvidenceOverview } from './components/EvidenceOverview'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { ExperienceSection } from './components/ExperienceSection'
 import { FadeIn } from './components/FadeIn'
 import { LazyLab } from './components/LazyLab'
 import { MarqueeSection } from './components/MarqueeSection'
@@ -15,11 +16,12 @@ import { ProjectShowcaseCard } from './components/ProjectShowcaseCard'
 import { RecruiterHero } from './components/RecruiterHero'
 import { SpecularGlow } from './components/SpecularGlow'
 import { evidenceById, evidenceMediaById, projectById, publicContent } from './data/content'
+import siteCopy from './data/siteCopy.json'
 import type { RoleLens } from './data/types'
 import { assetPath } from './utils/assets'
-import { getProjectOrder, parseRoleLens } from './utils/focus'
+import { getProjectOrder, isRoleLens, parseRoleLens } from './utils/focus'
 
-const coreProjectIds = ['job-assistant', 'xiaoyu', 'rag-knowledge-base']
+const coreProjectIds = ['job-assistant', 'careerpilot', 'rag-knowledge-base']
 
 interface CapabilityItem {
   title: string
@@ -37,49 +39,73 @@ interface LensDefinition {
 const lensMeta: Record<RoleLens, LensDefinition> = {
   overview: {
     label: '综合',
-    note: '把产品判断、AI 能力和工程交付放在同一条叙事里。',
-    headline: '从一个真实问题出发，把判断、实现、验证和交付连起来。',
-    focusTopics: ['问题是否值得做', 'AI 能力如何受控', '工程是否可验证', '结果能否继续交付'],
+    note: '把客户需求、方案表达和实现能力放在同一条叙事里。',
+    headline: '从客户提到的一个真实问题出发，把需求、方案和实现连起来。',
+    focusTopics: ['需求是否讲清楚', '方案是否可交付', '实现能否演示', '问题能否闭环'],
     capabilities: [
       {
-        title: 'RAG Systems',
-        description: '把检索、融合、重排、来源和降级路径组织成可解释的知识链路。',
+        title: 'Requirement Framing',
+        description: '把客户口头的业务场景、关注点与待确认事项，整理成可跟进、可核对的需求内容。',
       },
       {
-        title: 'Agent Workflows',
-        description: '用白名单、状态机、人工确认和结构化契约控制 Agent 的副作用。',
+        title: 'Solution Writing',
+        description: '把沟通结论写成方案说明、问题记录与汇报材料，保证客户与内部同一口径。',
       },
       {
-        title: 'FastAPI Backend',
-        description: '围绕真实业务状态设计接口、校验、持久化和自动化测试。',
+        title: 'AI Delivery',
+        description: '用 RAG、Agent 与结构化输出，把方案落成可演示、可验收的系统。',
       },
       {
-        title: 'Product Delivery',
-        description: '从问题定义、MVP 取舍到验收证据，持续把想法收敛成可交付版本。',
+        title: 'Problem Closure',
+        description: '从现象、复现信息到处理结果逐项记录，推动问题走到闭环，而不是止于一次回复。',
       },
     ],
   },
-  product: {
-    label: 'AI 产品',
-    note: '优先阅读场景拆解、范围取舍、验收标准与安全边界。',
-    headline: '先把用户、场景和边界讲清楚，再决定 AI 应该出现在哪里。',
-    focusTopics: ['用户与场景', 'MVP 范围', '安全边界', '验收证据'],
+  presales: {
+    label: '售前与方案',
+    note: '优先阅读需求梳理、方案表达、演示准备与沟通口径。',
+    headline: '先听懂客户在担心什么，再把能力翻译成他能验收的方案。',
+    focusTopics: ['客户与场景', '需求梳理', '方案与文档', '演示与答疑'],
     capabilities: [
       {
-        title: 'Problem Framing',
-        description: '把模糊诉求拆成具体用户、触发场景、任务路径和可验证问题。',
+        title: 'Customer Discovery',
+        description: '记录业务场景、关注点与待确认事项，把口头信息变成可跟进的问题清单。',
       },
       {
-        title: 'MVP & Scope',
-        description: '区分首版必须完成、后续增强和明确不做，控制产品承诺与实现成本。',
+        title: 'Solution Documentation',
+        description: '持续维护方案说明、问题记录与沟通材料，让客户与内部信息口径保持一致。',
       },
       {
-        title: 'Safe Interaction',
-        description: '用人工确认、权限白名单、失败降级和清晰反馈守住高风险动作边界。',
+        title: 'Demo & Answering',
+        description: '准备可演示的 POC 与技术说明，正面回应客户对能力范围和边界的追问。',
       },
       {
-        title: 'Acceptance Evidence',
-        description: '把功能完成转换成可复查的测试、状态、日期和已知限制。',
+        title: 'Talking Points',
+        description: '把技术能力翻译成客户能判断的价值表述，不夸大尚未验证的能力。',
+      },
+    ],
+  },
+  support: {
+    label: '技术支持与交付',
+    note: '优先阅读问题排查、现场沟通、交付流程与文档沉淀。',
+    headline: '把问题从现象追到根因，再把结论沉淀成下次能直接复用的材料。',
+    focusTopics: ['问题复现', '排查与定位', '进度与闭环', '文档沉淀'],
+    capabilities: [
+      {
+        title: 'Issue Reproduction',
+        description: '整理现象、复现步骤与处理结果，为技术定位和客户沟通提供可核对的依据。',
+      },
+      {
+        title: 'Troubleshooting',
+        description: '参与问题排查并记录判断过程，让定位结论可以被复核，而不只是口头结论。',
+      },
+      {
+        title: 'Delivery Tracking',
+        description: '跟进客户与内部反馈，更新方案与处理进度，推动问题真正走到闭环。',
+      },
+      {
+        title: 'Knowledge Handover',
+        description: '把每次排查与交付经验沉淀成文档，降低同类问题的重复沟通成本。',
       },
     ],
   },
@@ -87,7 +113,7 @@ const lensMeta: Record<RoleLens, LensDefinition> = {
     label: 'AI 应用',
     note: '优先阅读 RAG、Agent、结构化输出和完整工作流。',
     headline: '让模型负责不确定性，让规则、结构和证据负责可控性。',
-    focusTopics: ['检索与来源', 'Agent 契约', '结构化输出', '降级与评估'],
+    focusTopics: ['检索与来源', 'Agent 契约', '结构化输出', '降级路径'],
     capabilities: [
       {
         title: 'Retrieval Chain',
@@ -102,32 +128,8 @@ const lensMeta: Record<RoleLens, LensDefinition> = {
         description: '用明确 Schema、输入校验和错误回退减少模型输出进入系统后的不确定性。',
       },
       {
-        title: 'Evaluation Loop',
-        description: '用测试、失败路径和核验日期说明系统在什么条件下可信、何时需要人工接管。',
-      },
-    ],
-  },
-  python: {
-    label: 'Python 后端',
-    note: '优先阅读接口、状态模型、输入校验与自动化可靠性。',
-    headline: '把一次 Demo 变成可维护的接口、状态和确定性执行链路。',
-    focusTopics: ['API 契约', '状态与持久化', '输入校验', '自动化测试'],
-    capabilities: [
-      {
-        title: 'API Contracts',
-        description: '围绕业务动作设计请求、响应、错误和权限边界，而不是只暴露模型调用。',
-      },
-      {
-        title: 'State & Storage',
-        description: '用清晰状态模型和持久化记录保证任务可追踪、可恢复、可人工核对。',
-      },
-      {
-        title: 'Deterministic Automation',
-        description: '把浏览器与系统操作收敛为确定性步骤，并限制外部副作用。',
-      },
-      {
-        title: 'Testable Delivery',
-        description: '用单元测试、接口测试和关键路径验证支撑版本交付与后续迭代。',
+        title: 'Failure Paths',
+        description: '把无匹配、输入缺失和越权动作都设计成明确降级，而不是静默失败。',
       },
     ],
   },
@@ -135,17 +137,17 @@ const lensMeta: Record<RoleLens, LensDefinition> = {
 
 const contactIntents = [
   {
-    label: '实习机会',
-    code: '01 / INTERNSHIP',
-    title: '一起聊聊合适的实习岗位。',
-    description: '如果你正在寻找愿意理解问题、也能把方案做出来的实习生，可以把岗位、团队和期待告诉我。',
-    subject: '实习机会｜来自 Slumber Wake Lab',
+    label: '秋招岗位',
+    code: '01 / CAMPUS HIRING',
+    title: '一起聊聊合适的校招岗位。',
+    description: '如果你正在找愿意理解客户问题、也能把方案写到能落地的应届生，可以把岗位、团队和期待告诉我。',
+    subject: '秋招岗位｜来自 Slumber Wake Lab',
   },
   {
     label: '项目合作',
     code: '02 / COLLABORATION',
     title: '把一个还模糊的想法聊清楚。',
-    description: '欢迎讨论 AI 产品原型、RAG、Agent 工作流或 Python 应用的合作可能。',
+    description: '欢迎讨论 AI 方案落地、RAG、Agent 工作流或 Python 应用的合作可能。',
     subject: '项目合作｜来自 Slumber Wake Lab',
   },
   {
@@ -168,6 +170,7 @@ const contactIntentLabels = contactIntents.map((intent) => intent.label)
 
 const navigationItems = [
   { label: '关于', href: '#about' },
+  { label: '经历', href: '#experience' },
   { label: '能力', href: '#focus' },
   { label: '项目', href: '#projects' },
   { label: '联系', href: '#contact' },
@@ -196,10 +199,30 @@ function Portfolio() {
   const [copyStatus, setCopyStatus] = useState('')
   const [contactIntentIndex, setContactIntentIndex] = useState(0)
   const contactIntent = contactIntents[contactIntentIndex]
-  const resumePath = assetPath('resume/yang-haobo-ai-product-application.pdf')
+  const resumePath = assetPath('resume/yang-haobo-resume.pdf')
 
   useEffect(() => {
-    const projectId = window.sessionStorage.getItem('portfolio-return-focus')
+    const syncLensFromUrl = () => {
+      const url = new URL(window.location.href)
+      const requestedLens = url.searchParams.get('focus')
+      const nextLens = parseRoleLens(requestedLens)
+
+      if (requestedLens !== null && !isRoleLens(requestedLens)) {
+        url.searchParams.set('focus', 'overview')
+        window.history.replaceState(window.history.state, '', url)
+      }
+      setLens(nextLens)
+    }
+
+    syncLensFromUrl()
+    window.addEventListener('popstate', syncLensFromUrl)
+    return () => window.removeEventListener('popstate', syncLensFromUrl)
+  }, [])
+
+  useEffect(() => {
+    const state = window.history.state as { portfolioReturnFocus?: string } | null
+    const projectId = state?.portfolioReturnFocus
+      ?? window.sessionStorage.getItem('portfolio-return-focus')
     if (!projectId) return
     window.sessionStorage.removeItem('portfolio-return-focus')
     const frame = window.requestAnimationFrame(() => {
@@ -228,7 +251,9 @@ function Portfolio() {
     if (nextLens === 'overview') url.searchParams.delete('focus')
     else url.searchParams.set('focus', nextLens)
     url.hash = 'projects'
-    window.history.pushState({}, '', url)
+    if (url.href !== window.location.href) {
+      window.history.pushState({}, '', url)
+    }
   }
 
   const copyEmail = async () => {
@@ -277,7 +302,7 @@ function Portfolio() {
           </FadeIn>
           <AnimatedText
             className="about-editorial__text"
-            text={`我是${publicContent.profile.name}。我把产品判断、AI 应用和 Python 工程放在同一条工作流里，关注 ${publicContent.profile.skills.join('、')}，也在意每一次实现的测试证据、安全边界与真实交付。`}
+            text={`我是${publicContent.profile.name}。两段实习一段做客户需求沟通与方案闭环，一段按业务方需求开发 AI 业务系统；关注 ${publicContent.profile.skills.join('、')}，也在意每一条结论有没有依据、每一个能力有没有边界。`}
           />
           <FadeIn className="about-editorial__action" y={24}>
             <div className="about-contact-card">
@@ -319,13 +344,22 @@ function Portfolio() {
               </button>
             ))}
           </div>
+          <div
+            className="lens-current-state"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            key={`lens-state-${lens}`}
+          >
+            <span>当前视角：<strong>{lensMeta[lens].label}</strong></span>
+            <p>{lensMeta[lens].note}</p>
+          </div>
           <div className="lens-story" key={lens} aria-live="polite">
             <div>
               <span>VIEWPOINT / {lensMeta[lens].label}</span>
               <h3>{lensMeta[lens].headline}</h3>
             </div>
             <div>
-              <p>{lensMeta[lens].note}</p>
               <ul aria-label={`${lensMeta[lens].label}视角关注点`}>
                 {lensMeta[lens].focusTopics.map((topic) => <li key={topic}>{topic}</li>)}
               </ul>
@@ -342,6 +376,8 @@ function Portfolio() {
             ))}
           </div>
         </section>
+
+        <ExperienceSection />
 
         <section className="projects-editorial" id="projects" aria-labelledby="projects-title">
           <div className="projects-editorial__heading">
@@ -422,9 +458,9 @@ function Portfolio() {
             <h2 id="contact-title">Let&apos;s<br />talk.</h2>
 
             <div className="contact-direct" role="group" aria-label="直接联系方式">
-              <p className="contact-direct__status">正在寻找 AI 产品 / AI 应用工程实习</p>
+              <p className="contact-direct__status">{siteCopy.contactHeadline}</p>
               <h3>{publicContent.profile.name}</h3>
-              <p>深圳 · 可尽快到岗 · 每周 5 天</p>
+              <p>{siteCopy.contactStatus}</p>
               <a className="contact-direct__email" href={`mailto:${publicContent.profile.email}`}>
                 {publicContent.profile.email}
               </a>
@@ -481,7 +517,7 @@ function Portfolio() {
 
       <footer className="editorial-footer">
         <span>SLUMBER WAKE LAB / ISSUE 01</span>
-        <span>事实可追溯 · 边界可说明 · 产品可交付</span>
+        <span>事实可追溯 · 边界可说明 · 方案可交付</span>
         <a href="#top">返回顶部 ↑</a>
       </footer>
     </div>
@@ -489,7 +525,42 @@ function Portfolio() {
 }
 
 function App() {
-  const requestedProjectId = new URLSearchParams(window.location.search).get('project')
+  const readRequestedProjectId = () => {
+    const url = new URL(window.location.href)
+    const queryProjectId = url.searchParams.get('project')
+    if (queryProjectId && projectById.has(queryProjectId)) return queryProjectId
+
+    let hashProjectId = ''
+    try {
+      hashProjectId = decodeURIComponent(url.hash.replace(/^#/, ''))
+    } catch {
+      return null
+    }
+    return url.searchParams.has('focus') && projectById.has(hashProjectId)
+      ? hashProjectId
+      : null
+  }
+  const [requestedProjectId, setRequestedProjectId] = useState(readRequestedProjectId)
+
+  useEffect(() => {
+    const syncProjectFromUrl = () => {
+      const url = new URL(window.location.href)
+      const requestedLens = url.searchParams.get('focus')
+      if (requestedLens !== null && !isRoleLens(requestedLens)) {
+        url.searchParams.set('focus', 'overview')
+        window.history.replaceState(window.history.state, '', url)
+      }
+      setRequestedProjectId(readRequestedProjectId())
+    }
+    syncProjectFromUrl()
+    window.addEventListener('popstate', syncProjectFromUrl)
+    window.addEventListener('hashchange', syncProjectFromUrl)
+    return () => {
+      window.removeEventListener('popstate', syncProjectFromUrl)
+      window.removeEventListener('hashchange', syncProjectFromUrl)
+    }
+  }, [])
+
   const project = requestedProjectId
     ? projectById.get(requestedProjectId)
     : undefined

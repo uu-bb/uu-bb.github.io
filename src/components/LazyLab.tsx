@@ -21,10 +21,10 @@ const labGuides: Array<{
   viewpoint: string
 }> = [
   {
-    label: '产品判断',
-    projectId: 'xiaoyu',
-    focus: 'product',
-    viewpoint: '从使用场景、MVP 取舍和安全边界理解一个陪伴产品。',
+    label: '售前与方案',
+    projectId: 'careerpilot',
+    focus: 'presales',
+    viewpoint: '从需求澄清、依据确认到差距分析，看一条可核对的方案链路。',
   },
   {
     label: 'RAG 系统',
@@ -39,10 +39,10 @@ const labGuides: Array<{
     viewpoint: '观察确定性规则、结构化输出和模型建议层如何分工。',
   },
   {
-    label: '后端交付',
+    label: '技术支持与交付',
     projectId: 'job-assistant',
-    focus: 'python',
-    viewpoint: '从接口、状态、人工确认与测试证据审视真实交付。',
+    focus: 'support',
+    viewpoint: '从接口、状态、人工确认与异常处理审视一次真实交付。',
   },
 ]
 
@@ -190,11 +190,8 @@ export function LazyLab() {
                   </div>
                   {selectedEvidence ? (
                     <div>
-                      <dt>核验证据</dt>
-                      <dd>
-                        {selectedEvidence.label}
-                        {selectedEvidence.framework ? ` · ${selectedEvidence.framework}` : ''}
-                      </dd>
+                      <dt>公开成果</dt>
+                      <dd>{selectedEvidence.label}</dd>
                     </div>
                   ) : null}
                 </dl>

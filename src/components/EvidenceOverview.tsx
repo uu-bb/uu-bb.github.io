@@ -1,6 +1,6 @@
 import { evidenceById, projectById } from '../data/content'
 
-const coreProjectIds = ['job-assistant', 'xiaoyu', 'rag-knowledge-base']
+const coreProjectIds = ['job-assistant', 'careerpilot', 'rag-knowledge-base']
 
 export function EvidenceOverview() {
   const items = coreProjectIds.flatMap((projectId) => {
@@ -17,7 +17,7 @@ export function EvidenceOverview() {
       <header>
         <p className="section-kicker">VERIFIED / PUBLIC EVIDENCE</p>
         <h2 id="evidence-overview-title">核心项目证据</h2>
-        <p>数字只表示已定义测试全部通过，不代表代码覆盖率或真实业务效果。</p>
+        <p>每条成果都写清了它能证明什么、以及它不证明什么。</p>
       </header>
       <div className="evidence-overview__grid">
         {items.map(({ project, evidence }, index) => (
@@ -30,7 +30,7 @@ export function EvidenceOverview() {
           >
             <span>0{index + 1} / {project.shortTitle}</span>
             <strong>{evidence.detail}</strong>
-            <p>{evidence.framework ?? '项目验收'}</p>
+            <p>{evidence.framework ?? '成果已实现'}</p>
             {evidence.verifiedAt ? <time dateTime={evidence.verifiedAt}>最近核验：{evidence.verifiedAt}</time> : null}
             <small>查看对应项目 ↗</small>
           </a>

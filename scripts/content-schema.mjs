@@ -125,9 +125,31 @@ const profileSchema = z
 const lensesSchema = z
   .object({
     overview: z.array(projectIdSchema).length(3),
-    product: z.array(projectIdSchema).length(3),
+    presales: z.array(projectIdSchema).length(3),
+    support: z.array(projectIdSchema).length(3),
     'ai-app': z.array(projectIdSchema).length(3),
-    python: z.array(projectIdSchema).length(3),
+  })
+  .strict()
+
+const educationSchema = z
+  .object({
+    school: z.string().min(1),
+    major: z.string().min(1),
+    degree: z.string().min(1),
+    period: z.string().min(1),
+    courses: z.array(z.string().min(1)).min(1),
+  })
+  .strict()
+
+const internshipSchema = z
+  .object({
+    id: projectIdSchema,
+    company: z.string().min(1),
+    role: z.string().min(1),
+    period: z.string().min(1),
+    order: z.number().int().positive(),
+    highlights: z.array(z.string().min(1)).min(1),
+    sourceRefs: z.array(sourceRefSchema).min(1),
   })
   .strict()
 
@@ -135,10 +157,12 @@ export const publicContentSchema = z
   .object({
     generatedAt: z.string().date(),
     profile: profileSchema,
+    education: educationSchema,
+    internships: z.array(internshipSchema).min(1),
     sourceRefs: z.array(sourceRefSchema).min(1),
     lenses: lensesSchema,
     evidence: z.array(evidenceBaseSchema).min(1),
-    evidenceMedia: z.array(evidenceMediaSchema).length(9),
+    evidenceMedia: z.array(evidenceMediaSchema).length(6),
     projects: z.array(publicProjectSchema).min(3),
     experiments: z.array(experimentSchema),
   })
@@ -154,10 +178,12 @@ export const privateFactsSchema = z
       .object({
         generatedAt: z.string().date(),
         profile: profileSchema,
+        education: educationSchema,
+        internships: z.array(internshipSchema).min(1),
         sourceRefs: z.array(sourceRefSchema).min(1),
         lenses: lensesSchema,
         evidence: z.array(privateEvidenceSchema).min(1),
-        evidenceMedia: z.array(evidenceMediaSchema).length(9),
+        evidenceMedia: z.array(evidenceMediaSchema).length(6),
         projects: z.array(publicProjectSchema).min(3),
         experiments: z.array(experimentSchema),
       })
@@ -190,6 +216,10 @@ const userHomePattern = new RegExp(
 const internalLabelsPattern = new RegExp(
   `${['内', '部', '母', '库'].join('')}|${['仅', '用', '于', '岗', '位', '定', '制'].join('')}`,
 )
+const privateOnlyPattern = new RegExp(['private', 'only'].join('_'), 'i')
+const releaseCandidateAssetsPattern = new RegExp(['release', 'candidate', 'assets'].join('-'), 'i')
+const xwechatFilesPattern = new RegExp(['xwechat', 'files'].join('_'), 'i')
+const masterLabelPattern = new RegExp(`\\b${['Mas', 'ter'].join('')}\\b`)
 
 const textRules = [
   ['ABSOLUTE_PATH', /(?:^|[\s"'`(])(?:[A-Za-z]:[\\/])/],
@@ -212,6 +242,10 @@ const textRules = [
   ],
   ['INTERNAL_LABEL', internalLabelsPattern],
   ['INTERNAL_CITATION', new RegExp(forbiddenToken, 'i')],
+  [['PRIVATE', 'ONLY'].join('_'), privateOnlyPattern],
+  ['RELEASE_CANDIDATE_ASSETS', releaseCandidateAssetsPattern],
+  [['XWECHAT', 'FILES'].join('_'), xwechatFilesPattern],
+  ['MASTER_LABEL', masterLabelPattern],
 ]
 
 const forbiddenFilePatterns = [

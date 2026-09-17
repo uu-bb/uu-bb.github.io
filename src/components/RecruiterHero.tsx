@@ -50,7 +50,7 @@ export function RecruiterHero({ resumePath }: RecruiterHeroProps) {
           <a href="#focus">切换求职方向</a>
           <a
             href={resumePath}
-            download="杨皓博_AI产品与应用工程_公开简历.pdf"
+            download="杨皓博_公开简历.pdf"
             aria-label="下载 PDF"
           >
             下载 PDF

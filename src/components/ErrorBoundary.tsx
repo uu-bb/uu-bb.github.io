@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <h1>杨皓博 · 睡醒实验室</h1>
         <p>你仍然可以查看简历或通过邮箱联系我。</p>
         <div className="button-row">
-          <a href={assetPath('resume/yang-haobo-ai-product-application.pdf')}>
+          <a href={assetPath('resume/yang-haobo-resume.pdf')}>
             查看综合简历
           </a>
           <a href="mailto:920816086@qq.com">发送邮件</a>

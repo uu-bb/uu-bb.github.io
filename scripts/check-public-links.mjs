@@ -21,7 +21,7 @@ if (!emailPattern.test(content.profile.email)) {
 }
 
 try {
-  await access(resolve('public/resume/yang-haobo-ai-product-application.pdf'))
+  await access(resolve('public/resume/yang-haobo-resume.pdf'))
 } catch {
   console.error('PUBLIC_LINK_CHECK_FAILED:RESUME')
   process.exit(1)
