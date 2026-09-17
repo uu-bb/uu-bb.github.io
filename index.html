@@ -7,28 +7,28 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; connect-src 'self' blob:; font-src 'self' data:; frame-src 'none'; img-src 'self' data: blob:; object-src 'none'; script-src 'self' 'sha256-XBLWXE+JLQlhvLb3/cwxzduKCbUwMix0ApKHsHm/riY='; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests"
+      content="default-src 'self'; base-uri 'self'; connect-src 'self' blob:; font-src 'self' data:; frame-src 'none'; img-src 'self' data: blob:; object-src 'none'; script-src 'self' 'sha256-hf3FgMlrLsBku7JrMlomKEolY4pU40Z8zvhSN/w4pI0='; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests"
     />
     <meta
       name="description"
-      content="杨皓博的 AI 产品与应用工程作品集，包含 RAG、Agent、FastAPI 与产品落地项目。"
+      content="杨皓博的 AI 解决方案 / 售前技术支持求职作品集，含两段实习经历、RAG 与 Agent 项目，以及可核验的能力边界。"
     />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:title" content="杨皓博 · AI 产品与应用工程作品集" />
+    <meta property="og:title" content="杨皓博 · AI 解决方案 / 售前技术支持" />
     <meta
       property="og:description"
-      content="用可控、可验证的方式，把 RAG、Agent 和后端能力做成能交付的产品。"
+      content="两段实习覆盖售前与研发；项目只公开功能成果与边界，不堆砌测试指标。"
     />
     <meta property="og:url" content="https://uu-bb.github.io/" />
     <meta property="og:image" content="https://uu-bb.github.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="杨皓博 · AI 产品与应用工程作品集" />
+    <meta name="twitter:title" content="杨皓博 · AI 解决方案 / 售前技术支持" />
     <meta
       name="twitter:description"
-      content="AI 产品与应用工程作品集：RAG、Agent、FastAPI 与产品落地。"
+      content="AI 解决方案与售前技术支持作品集：两段实习经历、RAG 与 Agent 项目、可核验的能力边界。"
     />
     <meta name="twitter:image" content="https://uu-bb.github.io/og.png" />
     <link rel="canonical" href="https://uu-bb.github.io/" />
@@ -37,7 +37,7 @@
       rel="preload"
       as="image"
       type="image/webp"
-      href="/cover/slumber-sleep-768.webp"
+      href="/cover/slumber-wake-transition-768.webp"
       media="(max-width: 767px)"
       fetchpriority="high"
     />
@@ -45,7 +45,7 @@
       rel="preload"
       as="image"
       type="image/webp"
-      href="/cover/slumber-sleep-1280.webp"
+      href="/cover/slumber-wake-transition-1280.webp"
       media="(min-width: 768px) and (max-width: 1399px)"
       fetchpriority="high"
     />
@@ -53,7 +53,7 @@
       rel="preload"
       as="image"
       type="image/webp"
-      href="/cover/slumber-sleep-1672.webp"
+      href="/cover/slumber-wake-transition-1672.webp"
       media="(min-width: 1400px)"
       fetchpriority="high"
     />
@@ -66,14 +66,18 @@
       .static-portfolio ul { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; list-style: none; }
       .static-portfolio li { padding: 8px 12px; border: 1px solid currentcolor; }
       .static-portfolio__projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+      .static-portfolio__experience { display: grid; gap: 14px; }
+      .static-portfolio__experience article { padding: 20px; border: 1px solid currentcolor; }
+      .static-portfolio__experience ul { display: block; padding-left: 18px; list-style: disc; }
+      .static-portfolio__experience li { padding: 0; border: 0; }
       .static-portfolio article { padding: 20px; border: 1px solid currentcolor; }
       .static-portfolio footer { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 48px; padding-top: 24px; border-top: 1px solid currentcolor; }
       .static-portfolio footer p { width: 100%; font-weight: 800; }
     </style>
-    <title>杨皓博｜AI 产品与应用工程作品集 · 睡醒实验室</title>
-    <script type="module" crossorigin src="/assets/index-DVMXaxap.js"></script>
+    <title>杨皓博｜AI 解决方案 / 售前技术支持 · 睡醒实验室</title>
+    <script type="module" crossorigin src="/assets/index-ClAHQCxi.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-B5yqYJvp.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-mc-osQTz.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-CjPpAVZq.css">
   </head>
   <body>
     <div id="root">
@@ -81,38 +85,55 @@
     <header>
       <p class="static-portfolio__eyebrow">SLEEPY LAB / 睡醒实验室</p>
       <h1>杨皓博</h1>
-      <p class="static-portfolio__role">AI 产品 × AI 应用工程</p>
-      <p>把 RAG、Agent 和后端能力，做成可控、可验证、能交付的 AI 产品。</p>
-      <p>2027 届本科 · 深圳 · 寻找 AI 产品 / AI 应用工程实习 · 可尽快到岗 · 每周 5 天 · 可持续 3 个月以上</p>
+      <p class="static-portfolio__role">AI 解决方案 × 售前技术支持</p>
+      <p>把客户需求整理成可交付、可验证的方案，并保持客户、方案与研发三方同一事实口径。</p>
+      <p>2027 届本科 · 深圳 · 求职 AI 解决方案 / 售前技术支持（秋招正式岗） · 可尽快到岗 · 支持出差</p>
     </header>
+    <section aria-labelledby="static-experience-title">
+      <h2 id="static-experience-title">实习经历</h2>
+      <div class="static-portfolio__experience"><article>
+      <h3>蓝色光标-思恩客</h3>
+      <p>AI 开发实习生 · 2026.04 – 至今</p>
+      <ul><li>独立开发 SNK 招聘协作管理系统，需求由业务方提出并逐轮验收。</li><li>完成飞书平台数据接入，自动拉取并同步真实岗位与人才数据。</li><li>数据可见范围按职级与负责区域划分，避免越权查看。</li><li>实现招聘总览、筛选与明细模块，协同完善人工判重与内部记录，在自动处理与人工确认之间划定边界。</li><li>完成 SNK 新人介绍互动展示与离线分享材料，跟进交互、兼容性与使用反馈。</li></ul>
+    </article><article>
+      <h3>深圳猞猁保科技有限公司</h3>
+      <p>售前技术支持 · 2026.01 – 2026.04</p>
+      <ul><li>参与客户需求沟通，记录业务场景、关注点与待确认事项，把口头信息整理为可跟进的需求内容。</li><li>根据沟通结论完成方案整理与文档编写，持续维护方案说明、问题记录与沟通材料，保证客户与内部信息口径一致。</li><li>参与问题排查，整理现象、复现信息与处理结果，为技术定位与客户沟通提供可核对的依据。</li><li>跟进客户与内部反馈，更新方案与处理进度，推动问题闭环，形成从需求到交付的完整跟进链路。</li></ul>
+    </article></div>
+      <h3>教育背景</h3>
+      <p>电子科技大学中山学院 ｜ 人工智能 ｜ 本科</p>
+      <p>2023.09 – 2027.06</p>
+      <ul><li>机器学习</li><li>深度学习</li><li>Python 程序设计</li><li>数据结构与算法</li><li>数据库原理</li><li>计算机视觉</li></ul>
+    </section>
     <section aria-labelledby="static-capabilities-title">
       <h2 id="static-capabilities-title">核心能力</h2>
-      <ul><li>AI 产品设计</li><li>Agent 工作流</li><li>RAG 知识系统</li><li>FastAPI 后端服务</li></ul>
+      <ul><li>需求分析与方案设计</li><li>客户沟通与问题闭环</li><li>AI 应用交付（RAG · Agent）</li><li>Python 与 FastAPI 工程</li></ul>
     </section>
     <section aria-labelledby="static-projects-title">
       <h2 id="static-projects-title">核心项目与证据</h2>
       <div class="static-portfolio__projects"><article>
       <h3>深圳 AI 求职助手</h3>
       <p>把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。</p>
-      <p><strong>32/32 项测试通过</strong></p>
-      <p>pytest · 2026-08-01</p>
+      <p><strong>岗位发现 → JD 解析 → 证据匹配 → 人工确认，四段链路可完整走通</strong></p>
+      <p>最近核验于 2026-08-01</p>
       <a href="/?project=job-assistant&amp;focus=overview">查看对应项目</a>
     </article><article>
-      <h3>小u鱼｜本地双角色长期陪伴系统</h3>
-      <p>为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。</p>
-      <p><strong>436/436 项当前 V3 自动化测试通过</strong></p>
-      <p>pytest · 2026-08-05</p>
-      <a href="/?project=xiaoyu&amp;focus=overview">查看对应项目</a>
+      <h3>CareerPilot AI 职业探索与成长规划助手</h3>
+      <p>把「我适合什么岗位、差在哪里」拆成可确认的画像、可追溯的推荐和可执行的差距分析。</p>
+      <p><strong>职业画像逐项确认 → 知识库匹配 → 规则推荐 → 能力差距分析，四段流程可完整演示</strong></p>
+      
+      <a href="/?project=careerpilot&amp;focus=overview">查看对应项目</a>
     </article><article>
       <h3>RAG 智能知识库问答系统</h3>
       <p>让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。</p>
-      <p><strong>7/7 项 Lite 与元数据链路测试通过</strong></p>
-      <p>unittest · 2026-08-01</p>
+      <p><strong>Lite 查询 → 来源引用 → 无匹配降级，三段结果均可复现</strong></p>
+      <p>最近核验于 2026-08-01</p>
       <a href="/?project=rag-knowledge-base&amp;focus=overview">查看对应项目</a>
     </article></div>
     </section>
     <footer>
-      <p>正在寻找 AI 产品 / AI 应用工程实习</p>
+      <p>正在寻找 AI 解决方案 / 售前技术支持岗位</p>
+      <a href="/resume/yang-haobo-resume.pdf">查看简历</a>
       <a href="mailto:920816086@qq.com">920816086@qq.com</a>
       <a href="https://github.com/uu-bb">GitHub</a>
     </footer>
@@ -124,43 +145,60 @@
     <header>
       <p class="static-portfolio__eyebrow">SLEEPY LAB / 睡醒实验室</p>
       <h1>杨皓博</h1>
-      <p class="static-portfolio__role">AI 产品 × AI 应用工程</p>
-      <p>把 RAG、Agent 和后端能力，做成可控、可验证、能交付的 AI 产品。</p>
-      <p>2027 届本科 · 深圳 · 寻找 AI 产品 / AI 应用工程实习 · 可尽快到岗 · 每周 5 天 · 可持续 3 个月以上</p>
+      <p class="static-portfolio__role">AI 解决方案 × 售前技术支持</p>
+      <p>把客户需求整理成可交付、可验证的方案，并保持客户、方案与研发三方同一事实口径。</p>
+      <p>2027 届本科 · 深圳 · 求职 AI 解决方案 / 售前技术支持（秋招正式岗） · 可尽快到岗 · 支持出差</p>
     </header>
+    <section aria-labelledby="static-experience-title">
+      <h2 id="static-experience-title">实习经历</h2>
+      <div class="static-portfolio__experience"><article>
+      <h3>蓝色光标-思恩客</h3>
+      <p>AI 开发实习生 · 2026.04 – 至今</p>
+      <ul><li>独立开发 SNK 招聘协作管理系统，需求由业务方提出并逐轮验收。</li><li>完成飞书平台数据接入，自动拉取并同步真实岗位与人才数据。</li><li>数据可见范围按职级与负责区域划分，避免越权查看。</li><li>实现招聘总览、筛选与明细模块，协同完善人工判重与内部记录，在自动处理与人工确认之间划定边界。</li><li>完成 SNK 新人介绍互动展示与离线分享材料，跟进交互、兼容性与使用反馈。</li></ul>
+    </article><article>
+      <h3>深圳猞猁保科技有限公司</h3>
+      <p>售前技术支持 · 2026.01 – 2026.04</p>
+      <ul><li>参与客户需求沟通，记录业务场景、关注点与待确认事项，把口头信息整理为可跟进的需求内容。</li><li>根据沟通结论完成方案整理与文档编写，持续维护方案说明、问题记录与沟通材料，保证客户与内部信息口径一致。</li><li>参与问题排查，整理现象、复现信息与处理结果，为技术定位与客户沟通提供可核对的依据。</li><li>跟进客户与内部反馈，更新方案与处理进度，推动问题闭环，形成从需求到交付的完整跟进链路。</li></ul>
+    </article></div>
+      <h3>教育背景</h3>
+      <p>电子科技大学中山学院 ｜ 人工智能 ｜ 本科</p>
+      <p>2023.09 – 2027.06</p>
+      <ul><li>机器学习</li><li>深度学习</li><li>Python 程序设计</li><li>数据结构与算法</li><li>数据库原理</li><li>计算机视觉</li></ul>
+    </section>
     <section aria-labelledby="static-capabilities-title">
       <h2 id="static-capabilities-title">核心能力</h2>
-      <ul><li>AI 产品设计</li><li>Agent 工作流</li><li>RAG 知识系统</li><li>FastAPI 后端服务</li></ul>
+      <ul><li>需求分析与方案设计</li><li>客户沟通与问题闭环</li><li>AI 应用交付（RAG · Agent）</li><li>Python 与 FastAPI 工程</li></ul>
     </section>
     <section aria-labelledby="static-projects-title">
       <h2 id="static-projects-title">核心项目与证据</h2>
       <div class="static-portfolio__projects"><article>
       <h3>深圳 AI 求职助手</h3>
       <p>把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。</p>
-      <p><strong>32/32 项测试通过</strong></p>
-      <p>pytest · 2026-08-01</p>
+      <p><strong>岗位发现 → JD 解析 → 证据匹配 → 人工确认，四段链路可完整走通</strong></p>
+      <p>最近核验于 2026-08-01</p>
       <a href="/?project=job-assistant&amp;focus=overview">查看对应项目</a>
     </article><article>
-      <h3>小u鱼｜本地双角色长期陪伴系统</h3>
-      <p>为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。</p>
-      <p><strong>436/436 项当前 V3 自动化测试通过</strong></p>
-      <p>pytest · 2026-08-05</p>
-      <a href="/?project=xiaoyu&amp;focus=overview">查看对应项目</a>
+      <h3>CareerPilot AI 职业探索与成长规划助手</h3>
+      <p>把「我适合什么岗位、差在哪里」拆成可确认的画像、可追溯的推荐和可执行的差距分析。</p>
+      <p><strong>职业画像逐项确认 → 知识库匹配 → 规则推荐 → 能力差距分析，四段流程可完整演示</strong></p>
+      
+      <a href="/?project=careerpilot&amp;focus=overview">查看对应项目</a>
     </article><article>
       <h3>RAG 智能知识库问答系统</h3>
       <p>让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。</p>
-      <p><strong>7/7 项 Lite 与元数据链路测试通过</strong></p>
-      <p>unittest · 2026-08-01</p>
+      <p><strong>Lite 查询 → 来源引用 → 无匹配降级，三段结果均可复现</strong></p>
+      <p>最近核验于 2026-08-01</p>
       <a href="/?project=rag-knowledge-base&amp;focus=overview">查看对应项目</a>
     </article></div>
     </section>
     <footer>
-      <p>正在寻找 AI 产品 / AI 应用工程实习</p>
+      <p>正在寻找 AI 解决方案 / 售前技术支持岗位</p>
+      <a href="/resume/yang-haobo-resume.pdf">查看简历</a>
       <a href="mailto:920816086@qq.com">920816086@qq.com</a>
       <a href="https://github.com/uu-bb">GitHub</a>
     </footer>
   </main>
     </noscript>
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://uu-bb.github.io/#person","name":"杨皓博","url":"https://uu-bb.github.io/","jobTitle":"AI 产品 × AI 应用工程","sameAs":["https://github.com/uu-bb"],"knowsAbout":["AI 产品设计","Agent 工作流","RAG 知识系统","FastAPI 后端服务"]},{"@type":"WebSite","@id":"https://uu-bb.github.io/#website","url":"https://uu-bb.github.io/","name":"杨皓博 · AI 产品 × AI 应用工程作品集","inLanguage":"zh-CN","author":{"@id":"https://uu-bb.github.io/#person"}},{"@type":"ItemList","@id":"https://uu-bb.github.io/#core-projects","name":"核心项目","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"CreativeWork","name":"深圳 AI 求职助手","description":"把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。","url":"https://uu-bb.github.io/?project=job-assistant","creator":{"@id":"https://uu-bb.github.io/#person"}}},{"@type":"ListItem","position":2,"item":{"@type":"CreativeWork","name":"小u鱼｜本地双角色长期陪伴系统","description":"为单机工作与学习场景提供低打扰陪伴，而不是无限扩张成系统控制助手。","url":"https://uu-bb.github.io/?project=xiaoyu","creator":{"@id":"https://uu-bb.github.io/#person"}}},{"@type":"ListItem","position":3,"item":{"@type":"CreativeWork","name":"RAG 智能知识库问答系统","description":"让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。","url":"https://uu-bb.github.io/?project=rag-knowledge-base","creator":{"@id":"https://uu-bb.github.io/#person"}}}]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://uu-bb.github.io/#person","name":"杨皓博","url":"https://uu-bb.github.io/","jobTitle":"AI 解决方案 × 售前技术支持","sameAs":["https://github.com/uu-bb"],"knowsAbout":["需求分析与方案设计","客户沟通与问题闭环","AI 应用交付（RAG · Agent）","Python 与 FastAPI 工程"]},{"@type":"WebSite","@id":"https://uu-bb.github.io/#website","url":"https://uu-bb.github.io/","name":"杨皓博 · AI 解决方案 × 售前技术支持作品集","inLanguage":"zh-CN","author":{"@id":"https://uu-bb.github.io/#person"}},{"@type":"ItemList","@id":"https://uu-bb.github.io/#core-projects","name":"核心项目","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"CreativeWork","name":"深圳 AI 求职助手","description":"把分散的岗位发现、JD 理解、证据匹配和人工确认串成可追踪工作流。","url":"https://uu-bb.github.io/?project=job-assistant","creator":{"@id":"https://uu-bb.github.io/#person"}}},{"@type":"ListItem","position":2,"item":{"@type":"CreativeWork","name":"CareerPilot AI 职业探索与成长规划助手","description":"把「我适合什么岗位、差在哪里」拆成可确认的画像、可追溯的推荐和可执行的差距分析。","url":"https://uu-bb.github.io/?project=careerpilot","creator":{"@id":"https://uu-bb.github.io/#person"}}},{"@type":"ListItem","position":3,"item":{"@type":"CreativeWork","name":"RAG 智能知识库问答系统","description":"让本地文档问答可追溯、可解释，并在没有模型下载时仍可演示核心链路。","url":"https://uu-bb.github.io/?project=rag-knowledge-base","creator":{"@id":"https://uu-bb.github.io/#person"}}}]}]}</script>
   </body>
 </html>
